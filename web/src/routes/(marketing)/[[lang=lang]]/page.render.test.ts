@@ -127,7 +127,7 @@ describe('the landing page', () => {
     const download = links('Download savctl');
     expect(download).toHaveLength(1);
     expect(download[0]?.getAttribute('href')).toBe(
-      'https://github.com/savvagent/otto-platform/releases/latest'
+      'https://github.com/savvagent/platform/releases/latest'
     );
     const more = links('About the command line');
     expect(more).toHaveLength(1);

@@ -15,8 +15,8 @@ import { SERVICES } from '$lib/services';
 import { session } from '$lib/session.svelte';
 import Page from './+page.svelte';
 
-const LATEST = 'https://github.com/savvagent/otto-platform/releases/latest';
-const DOCS = 'https://github.com/savvagent/otto-platform/blob/main/docs/savctl.md';
+const LATEST = 'https://github.com/savvagent/platform/releases/latest';
+const DOCS = 'https://github.com/savvagent/platform/blob/main/docs/savctl.md';
 
 const ARCHIVES = [
   'savctl-x86_64-unknown-linux-musl.tar.gz',
@@ -124,7 +124,7 @@ describe('the CLI page', () => {
     expect(windows).toContain('Get-FileHash savctl.zip -Algorithm SHA256');
 
     expect(all).toContain(
-      'cargo install --locked --git https://github.com/savvagent/otto-platform savvagent-ctl savvagent-flags-cli'
+      'cargo install --locked --git https://github.com/savvagent/platform savvagent-ctl savvagent-flags-cli'
     );
 
     unmount(instance);

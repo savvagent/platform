@@ -22,9 +22,9 @@
    */
   let { data }: { data: PageData } = $props();
 
-  const RELEASES = 'https://github.com/savvagent/otto-platform/releases/latest';
+  const RELEASES = 'https://github.com/savvagent/platform/releases/latest';
   const DOWNLOAD = `${RELEASES}/download`;
-  const DOCS = 'https://github.com/savvagent/otto-platform/blob/main/docs/savctl.md';
+  const DOCS = 'https://github.com/savvagent/platform/blob/main/docs/savctl.md';
 
   /** Platform names are names, so they are not translated. */
   const PLATFORMS = [
@@ -54,7 +54,7 @@
   ].join('\n');
 
   const FROM_SOURCE =
-    'cargo install --locked --git https://github.com/savvagent/otto-platform savvagent-ctl savvagent-flags-cli';
+    'cargo install --locked --git https://github.com/savvagent/platform savvagent-ctl savvagent-flags-cli';
 
   const why = [
     { title: () => m.cli_why_signin_title(), body: () => m.cli_why_signin_body() },

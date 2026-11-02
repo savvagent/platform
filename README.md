@@ -54,7 +54,7 @@ own subcommands (`savctl flags` runs the `savctl-flags` binary shipped beside
 it). Its first use is otto-flags server keys, which reach a person's terminal
 and never pass through a model. Prebuilt binaries for Linux (x86_64, arm64),
 macOS (Apple silicon, Intel) and Windows (x86_64) are attached to every
-[release](https://github.com/savvagent/otto-platform/releases/latest), with
+[release](https://github.com/savvagent/platform/releases/latest), with
 checksums. To install and verify one, see
 [docs/savctl.md](docs/savctl.md#install). `savctl` replaces `savvagent-ctl`:
 credentials now live under `~/.config/savvagent` (`SAVVAGENT_CONFIG_DIR`), so

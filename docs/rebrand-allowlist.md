@@ -28,7 +28,6 @@ fails on any "otto" in a user-visible surface that no pattern accounts for.
 | The `otto.savvagent.com` legacy host | `fly.toml` (`SAVVAGENT_REDIRECT_HOSTS`), its Fly certificate, `docs/deploy/fly.md` | It only redirects to `savvagent.com` (#135). The certificate stays so the redirect works over HTTPS for anyone still holding an old URL. | When no client uses it any more |
 | The `otto_app` Postgres role and the `otto_platform` database | `savvagent-tenant`, deploy config | Renaming a live role and database needs downtime and buys nothing. | Never (a #128 non-goal) |
 | Every migration file | `crates/*/migrations` | Applied migrations are checksummed. Editing one breaks every existing database. | Never |
-| The repository `savvagent/otto-platform` | GitHub links on the landing and CLI pages | The repo is renamed by hand at the end of #136, and GitHub redirects old links after that. | The repo rename |
 | The Fly app `otto-platform` and its `otto-platform.fly.dev` host | `fly.toml`, the Worker's origin | Renaming a Fly app means a new app. | Never (a #128 non-goal) |
 | Retired token prefixes `otto_at_`, `otto_rt_`, `otto_ac_`, `otto_ss_`, `otto_pat_`, and kept secret prefixes `otto_rs_`, `otto_whsec_`, `otto_client_`, `otto_inv_`, `otto_sst_`, `otto_ssb_` | `savvagent-auth` `crypto.rs`, `savvagent-resource` `types.rs` | The rejection list must name the old prefixes to refuse them. Kept secrets were issued to services and customers and stay valid. | Until no secret with the old prefix is in use |
 | The consent-seal key label `otto-web/consent-request-seal` | `savvagent-web` `consent_seal.rs` | The sealing key is derived from this label. A new label would invalidate every consent request in flight during a deploy, and nobody sees it. | Never |
@@ -37,7 +36,7 @@ fails on any "otto" in a user-visible surface that no pattern accounts for.
 
 Code comments, log lines and test fixtures say "otto" only where they name one
 of the identifiers above. The crates, packages and Rust paths became
-`savvagent-*` in #136.
+`savvagent-*` in #136, and the repository became `savvagent/platform`.
 
 ## What the check reads
 
@@ -63,8 +62,7 @@ a pattern matches is removed before the check looks for "otto". Lines starting
 with `#` are comments.
 
 ```allowlist
-# The repository and the Fly app.
-savvagent/otto-platform\b
+# The Fly app's host.
 \botto-platform\.fly\.dev\b
 # Services' resource URIs (the MCP connector address), until phase 3 (#135).
 https://otto-(?:tower|flags|cxp)\.savvagent\.com/mcp
