@@ -72,7 +72,7 @@ describe('the product page', () => {
     );
     expect(card).toBeDefined();
     expect(headings[0]?.textContent).toContain('Savvagent Tower');
-    expect(container.textContent).toContain('https://otto-tower.savvagent.com/mcp');
+    expect(container.textContent).toContain('https://tower.savvagent.com/mcp');
 
     // The page title is the name and the product's own title phrase, with no
     // closing full stop; the description is the short SEO one, not the summary.
@@ -109,7 +109,7 @@ describe('the product page', () => {
     expect(headings).toHaveLength(1);
     expect(headings[0]?.textContent).toContain('Savvagent Flags');
     expectNoSkips(headingLevels(container));
-    expect(container.textContent).toContain('https://otto-flags.savvagent.com/mcp');
+    expect(container.textContent).toContain('https://flags.savvagent.com/mcp');
     expect(container.textContent).toContain('Automatic rollback on Team plans and above.');
     expect(container.querySelector('a[href="/products/tower"]')).not.toBeNull();
     expect(container.querySelector('a[href="/products/flags"]')).toBeNull();
@@ -209,12 +209,12 @@ describe('the product page', () => {
 
       const text = connect?.textContent ?? '';
       expect(text).toContain('Connector address');
-      expect(text).toContain(`https://otto-${slug}.savvagent.com/mcp`);
+      expect(text).toContain(`https://${slug}.savvagent.com/mcp`);
       expect(text).toContain('Add custom connector');
       expect(text).toContain('ChatGPT');
       expect(text).toContain('developer mode');
       expect(text).toContain(
-        `claude mcp add --transport http otto-${slug} https://otto-${slug}.savvagent.com/mcp`
+        `claude mcp add --transport http savvagent-${slug} https://${slug}.savvagent.com/mcp`
       );
       expect(text).toContain('/mcp');
       expectNoSkips(headingLevels(container));

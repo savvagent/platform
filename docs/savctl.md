@@ -77,9 +77,9 @@ browser consent screen. The screen lists each resource with its scopes. Untick
 a resource to leave it out: it gets no access, and `savctl` reports it as left
 out rather than as a failure. The resources are:
 
-- `https://otto-tower.savvagent.com/mcp`
-- `https://otto-flags.savvagent.com/mcp`
-- `https://otto-cxp.savvagent.com/mcp`
+- `https://tower.savvagent.com/mcp`
+- `https://flags.savvagent.com/mcp`
+- `https://cxp.savvagent.com/mcp`
 
 For each it asks for the scopes the resource advertises, except opt-in issue
 scopes (`<thing>:issue`), which are asked for only with `--scope`; consent
@@ -176,7 +176,7 @@ A `savctl-<app>` binary links the `savvagent-client` crate:
 These issue an Savvagent Flags app's SDK keys. `app create` registers the app and
 issues both keys. `keys rotate` replaces the server key by default, and the old
 one stops working at once. Both need an owner or admin of the organization. They
-sign in to `$SAVVAGENT_FLAGS_RESOURCE` (default `https://otto-flags.savvagent.com/mcp`)
+sign in to `$SAVVAGENT_FLAGS_RESOURCE` (default `https://flags.savvagent.com/mcp`)
 with the `apps:admin` and `keys:issue` scopes. Any scopes already granted to the
 cached sign-in are kept.
 
@@ -226,7 +226,7 @@ Registering the scope on the platform, with plain words for the consent screen.
 `resource register` is idempotent: on an existing resource it replaces the name
 and scopes, and keeps descriptions it is not given.
 
-    savvagent-platform-server resource register https://otto-flags.savvagent.com/mcp \
+    savvagent-platform-server resource register https://flags.savvagent.com/mcp \
       --name otto-flags \
       --scopes flags:read,flags:write,apps:admin,keys:issue \
       --default-scopes flags:read \

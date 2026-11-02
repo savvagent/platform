@@ -7,6 +7,7 @@ import {
   SERVICES,
   claudeCodeCommand,
   connectorName,
+  mcpServerName,
   serviceBySlug,
   serviceLink,
   servicesIn,
@@ -39,10 +40,10 @@ describe('the services list', () => {
       ['flags', 'Savvagent Flags'],
       ['cxp', 'Savvagent CXP']
     ]);
-    // The MCP address is the service's OAuth resource URI, which stays on its
-    // pre-rebrand host until the service switches in rebrand phase 3 (#135).
+    // The MCP address is the service's OAuth resource URI, on the service's
+    // own host since rebrand phase 3 (#135); the platform knows no other (#148).
     for (const service of SERVICES) {
-      expect(service.mcpUrl).toBe(`https://otto-${service.slug}.savvagent.com/mcp`);
+      expect(service.mcpUrl).toBe(`https://${service.slug}.savvagent.com/mcp`);
     }
   });
 
@@ -176,16 +177,21 @@ describe('where a link to a service goes', () => {
 });
 
 describe('the Claude Code command', () => {
-  it("names each server after its host, so it matches the service's own docs", () => {
+  it("names each server savvagent-<slug>, so it matches the service's own docs", () => {
+    expect(SERVICES.map(mcpServerName)).toEqual([
+      'savvagent-tower',
+      'savvagent-flags',
+      'savvagent-cxp'
+    ]);
+  });
+
+  it('keeps the billing slug apart from the server name', () => {
     expect(SERVICES.map(connectorName)).toEqual(['otto-tower', 'otto-flags', 'otto-cxp']);
-    for (const service of SERVICES) {
-      expect(new URL(service.mcpUrl!).hostname.split('.')[0]).toBe(connectorName(service));
-    }
   });
 
   it('adds the MCP endpoint over HTTP', () => {
     expect(claudeCodeCommand(serviceBySlug('cxp')!)).toBe(
-      'claude mcp add --transport http otto-cxp https://otto-cxp.savvagent.com/mcp'
+      'claude mcp add --transport http savvagent-cxp https://cxp.savvagent.com/mcp'
     );
     expect(claudeCodeCommand(candidate({ slug: 'x', name: 'X' }))).toBeUndefined();
   });

@@ -80,10 +80,10 @@ export interface Service {
    *
    * **This is the service's OAuth resource URI, not just a link.** An MCP
    * client signs in for exactly this URL (RFC 8707 `resource`), and the
-   * service's protected-resource metadata must name the same one. The services
-   * still serve their pre-rebrand resource URIs, so these stay on the old hosts
-   * until each service switches in rebrand phase 3 (#135); the web console
-   * link (`consoleUrl`) is only a link, so it is already on the new host.
+   * service's protected-resource metadata must name the same one. Since
+   * rebrand phase 3 (#135) that is the service's own host; the retired
+   * hosts only redirect, and the platform no longer knows their resource
+   * URIs (#148).
    */
   mcpUrl?: string;
   copy: ServiceCopy;
@@ -96,7 +96,7 @@ const CONFIGURED: readonly Service[] = [
     consoleUrl: 'https://tower.savvagent.com',
     // `OF_RESOURCE_URI` in the service's `fly.toml`: the MCP endpoint is
     // `/mcp` on the service's own origin.
-    mcpUrl: 'https://otto-tower.savvagent.com/mcp',
+    mcpUrl: 'https://tower.savvagent.com/mcp',
     copy: {
       title: () => m.product_tower_title(),
       description: () => m.product_tower_description(),
@@ -115,7 +115,7 @@ const CONFIGURED: readonly Service[] = [
     slug: 'flags',
     name: 'Savvagent Flags',
     // No `consoleUrl`: the origin serves the API and `/mcp`, not a page.
-    mcpUrl: 'https://otto-flags.savvagent.com/mcp',
+    mcpUrl: 'https://flags.savvagent.com/mcp',
     copy: {
       title: () => m.product_flags_title(),
       description: () => m.product_flags_description(),
@@ -134,7 +134,7 @@ const CONFIGURED: readonly Service[] = [
     slug: 'cxp',
     name: 'Savvagent CXP',
     // No `consoleUrl`: the origin serves the API and `/mcp`, not a page.
-    mcpUrl: 'https://otto-cxp.savvagent.com/mcp',
+    mcpUrl: 'https://cxp.savvagent.com/mcp',
     copy: {
       title: () => m.product_cxp_title(),
       description: () => m.product_cxp_description(),
@@ -219,8 +219,17 @@ export function connectorName(service: Service): string {
   return `otto-${service.slug}`;
 }
 
+/**
+ * The MCP server name the "Add to Claude Code" command gives the service,
+ * matching each service's own docs (`savvagent-tower` and so on). Not the
+ * billing slug, which never changes (`connectorName`).
+ */
+export function mcpServerName(service: Service): string {
+  return `savvagent-${service.slug}`;
+}
+
 /** The Claude Code command that adds the service, or `undefined` without an MCP endpoint. */
 export function claudeCodeCommand(service: Service): string | undefined {
   if (!service.mcpUrl) return undefined;
-  return `claude mcp add --transport http ${connectorName(service)} ${service.mcpUrl}`;
+  return `claude mcp add --transport http ${mcpServerName(service)} ${service.mcpUrl}`;
 }

@@ -23,8 +23,6 @@ fails on any "otto" in a user-visible surface that no pattern accounts for.
 | Webhook headers `Otto-Signature`, `Otto-Event-Id`, `Otto-Event-Type` | `savvagent-resource` `webhook.rs`, `savvagent-platform-server` `webhooks.rs` | Every service verifies and routes deliveries by these names. | A coordinated change with every service |
 | Meter event names `otto_flags__…`, `otto_factory__…` | Stripe billing meters | Stripe meters are keyed by event name, and existing meters hold billed history. | Never |
 | Billing service slugs `otto-tower`, `otto-flags`, `otto-cxp`, `otto-factory`, and meter keys such as `otto-flags/evaluations` | Usage rows, budgets, price book, the console's `connectorName`, which is the billing slug | Stored on every usage, budget and price row and in Stripe. Only display names change: the console maps a slug to "Savvagent Flags" and so on, and budget emails do too. | Never (a #128 non-goal) |
-| MCP server names `otto-tower`, `otto-flags`, `otto-cxp` in the console's "Add to Claude Code" command | `web/src/lib/services.ts` `connectorName` | They match each service's own docs and the billing slug. They change with each service's MCP server name. | Rebrand phase 3 (#135) |
-| Services' resource URIs `https://otto-{tower,flags,cxp}.savvagent.com/mcp` | `web/src/lib/services.ts` `mcpUrl`, the CLI page's `savctl login --resource` examples, the resource registry | An MCP client signs in for exactly this URL (RFC 8707), and each service still names it in its protected-resource metadata. The console's web links already use the new hosts. | Rebrand phase 3 (#135) |
 | The `otto.savvagent.com` legacy host | `fly.toml` (`SAVVAGENT_REDIRECT_HOSTS`), its Fly certificate, `docs/deploy/fly.md` | It only redirects to `savvagent.com` (#135). The certificate stays so the redirect works over HTTPS for anyone still holding an old URL. | When no client uses it any more |
 | The `otto_app` Postgres role and the `otto_platform` database | `savvagent-tenant`, deploy config | Renaming a live role and database needs downtime and buys nothing. | Never (a #128 non-goal) |
 | Every migration file | `crates/*/migrations` | Applied migrations are checksummed. Editing one breaks every existing database. | Never |
@@ -64,8 +62,6 @@ with `#` are comments.
 ```allowlist
 # The Fly app's host.
 \botto-platform\.fly\.dev\b
-# Services' resource URIs (the MCP connector address), until phase 3 (#135).
-https://otto-(?:tower|flags|cxp)\.savvagent\.com/mcp
 # Billing service slugs and meter keys, never renamed. The console's
 # connectorName is the billing slug.
 \botto-(?:tower|flags|cxp|factory)(?![\w.-])

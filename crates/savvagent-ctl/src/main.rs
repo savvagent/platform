@@ -18,17 +18,17 @@ use savvagent_client::LoginOutcome;
 /// given. the `resources_match_the_web_services` test fails if this differs from the MCP URLs in
 /// `web/src/lib/services.ts`, the list the web CLI page is built from.
 const RESOURCES: [&str; 3] = [
-    "https://otto-tower.savvagent.com/mcp",
-    "https://otto-flags.savvagent.com/mcp",
-    "https://otto-cxp.savvagent.com/mcp",
+    "https://tower.savvagent.com/mcp",
+    "https://flags.savvagent.com/mcp",
+    "https://cxp.savvagent.com/mcp",
 ];
 
 const USAGE: &str = "\
 usage:
   savctl login [--force]         sign in to every Savvagent resource:
-                                   https://otto-tower.savvagent.com/mcp
-                                   https://otto-flags.savvagent.com/mcp
-                                   https://otto-cxp.savvagent.com/mcp
+                                   https://tower.savvagent.com/mcp
+                                   https://flags.savvagent.com/mcp
+                                   https://cxp.savvagent.com/mcp
                                  asking for each one's scopes except opt-in
                                  `<thing>:issue` ones, which need --scope
   savctl login --resource <uri> [--scope <scope>]... [--force]

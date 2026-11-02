@@ -172,7 +172,7 @@ pub const MAX_SCOPE_DESCRIPTION_CHARS: usize = 200;
 /// What a resource server declares about itself.
 #[derive(Debug, Clone, Copy)]
 pub struct ResourceServerSpec<'a> {
-    /// Its RFC 8707 resource indicator, e.g. `https://otto-factory.savvagent.com/mcp`.
+    /// Its RFC 8707 resource indicator, e.g. `https://tower.savvagent.com/mcp`.
     pub resource_uri: &'a str,
     /// Shown on the consent screen.
     pub name: &'a str,

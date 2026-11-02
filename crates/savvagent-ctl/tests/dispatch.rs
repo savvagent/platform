@@ -105,7 +105,7 @@ fn login_scopes_need_a_resource() {
     let stderr = String::from_utf8_lossy(&out.stderr);
     assert!(stderr.contains("--scope needs --resource"), "{stderr}");
     assert!(
-        stderr.contains("https://otto-flags.savvagent.com/mcp"),
+        stderr.contains("https://flags.savvagent.com/mcp"),
         "{stderr}"
     );
 }
