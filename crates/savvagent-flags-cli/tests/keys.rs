@@ -352,3 +352,24 @@ fn an_unwritable_directory_is_refused_before_anything_is_issued() {
     assert_eq!(e.calls(), 0);
     assert!(!key.exists());
 }
+
+/// A reader that stops early (`savctl flags help | grep -q "keys rotate"`) is
+/// not a crash.
+#[test]
+fn help_survives_a_closed_pipe() {
+    use std::process::Stdio;
+    let mut child = Command::new(env!("CARGO_BIN_EXE_savctl-flags"))
+        .arg("help")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    drop(child.stdout.take());
+    let out = child.wait_with_output().unwrap();
+    assert_eq!(
+        out.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+}

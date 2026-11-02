@@ -12,6 +12,7 @@
 //! rotation revokes the old key at once, so a key that could not then be
 //! delivered would leave the app with no working one.
 
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -146,7 +147,9 @@ fn parse(args: &[String]) -> Result<Command, String> {
 async fn run(command: Command, resource: &str) -> Result<(), String> {
     let (tool, arguments, sink, app, issues_server_key) = match command {
         Command::Help => {
-            println!("{USAGE}");
+            // Not `println!`, which panics when the reader has gone, as
+            // `savctl flags help | grep -q "keys rotate"` does once it has its match.
+            let _ = writeln!(std::io::stdout(), "{USAGE}");
             return Ok(());
         }
         Command::Create {
