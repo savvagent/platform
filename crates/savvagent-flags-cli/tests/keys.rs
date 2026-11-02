@@ -273,11 +273,11 @@ fn the_old_otto_variables_are_ignored() {
     let (_, stderr) = no_leak(&out);
     assert_eq!(out.status.code(), Some(1), "{stderr}");
     assert!(
-        stderr.contains("the cached sign-in for https://otto-flags.savvagent.com/mcp lacks"),
+        stderr.contains("the cached sign-in for https://flags.savvagent.com/mcp lacks"),
         "{stderr}"
     );
     assert!(
-        stderr.contains("savctl login --resource https://otto-flags.savvagent.com/mcp"),
+        stderr.contains("savctl login --resource https://flags.savvagent.com/mcp"),
         "{stderr}"
     );
     assert_eq!(e.calls(), 0);

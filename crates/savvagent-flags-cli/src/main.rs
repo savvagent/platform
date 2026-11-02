@@ -18,7 +18,7 @@ use std::process::ExitCode;
 use savvagent_client::{Client, Error, Sink, ToolOutput};
 use serde_json::{json, Value};
 
-const DEFAULT_RESOURCE: &str = "https://otto-flags.savvagent.com/mcp";
+const DEFAULT_RESOURCE: &str = "https://flags.savvagent.com/mcp";
 /// What issuing a key takes: `apps:admin` to manage apps, `keys:issue` to be
 /// handed the server key.
 const SCOPES: [&str; 2] = ["apps:admin", "keys:issue"];
@@ -40,7 +40,7 @@ written owner-only to the file given with --out (which must not exist unless
 
 Both commands need an owner or admin of the organization, and sign in with
 the apps:admin and keys:issue scopes. The service is $SAVVAGENT_FLAGS_RESOURCE,
-else https://otto-flags.savvagent.com/mcp.";
+else https://flags.savvagent.com/mcp.";
 
 #[tokio::main]
 async fn main() -> ExitCode {
