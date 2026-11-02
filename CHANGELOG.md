@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.18.2](https://github.com/savvagent/platform/compare/v0.18.1...v0.18.2) (2026-11-02)
+
+
+### Bug Fixes
+
+* **savvagent-ctl:** sign in to the services' canonical resource URLs ([#150](https://github.com/savvagent/platform/issues/150)) ([d31f2b2](https://github.com/savvagent/platform/commit/d31f2b2c3d3187a79114491ee03319b24f27b2f9)), closes [#148](https://github.com/savvagent/platform/issues/148)
+* **savvagent-flags-cli:** don't panic when the reader of help output goes away ([#149](https://github.com/savvagent/platform/issues/149)) ([62d84c8](https://github.com/savvagent/platform/commit/62d84c832d48ccc8b694499395638321a10bcd70)), closes [#147](https://github.com/savvagent/platform/issues/147)
+
 ## [0.18.1](https://github.com/savvagent/platform/compare/v0.18.0...v0.18.1) (2026-11-02)
 
 
