@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/savvagent/platform/compare/v0.18.0...v0.18.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* **web:** point GitHub links at savvagent/platform ([#145](https://github.com/savvagent/platform/issues/145)) ([d4efecd](https://github.com/savvagent/platform/commit/d4efecd13d03629937f17bd562d48d483075b2a4)), closes [#136](https://github.com/savvagent/platform/issues/136)
+
 ## [0.18.0](https://github.com/savvagent/otto-platform/compare/v0.17.0...v0.18.0) (2026-10-31)
 
 
