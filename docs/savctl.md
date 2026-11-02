@@ -6,7 +6,7 @@ key) reaches a person's terminal with no model in the path.
 
 ## Install
 
-Every [release](https://github.com/savvagent/otto-platform/releases/latest)
+Every [release](https://github.com/savvagent/platform/releases/latest)
 attaches a prebuilt `savctl` for each of these, with a `SHA256SUMS` file:
 
 | Platform | Archive |
@@ -24,7 +24,7 @@ directory named after the archive. Install both: `savctl flags` runs `savctl-fla
 Linux and macOS. Set `target` to your platform's name from the table:
 
     target=aarch64-apple-darwin
-    base=https://github.com/savvagent/otto-platform/releases/latest/download
+    base=https://github.com/savvagent/platform/releases/latest/download
     curl -fsSLO "$base/savctl-$target.tar.gz"
     curl -fsSLO "$base/SHA256SUMS"
     grep " savctl-$target.tar.gz\$" SHA256SUMS | shasum -a 256 -c
@@ -33,7 +33,7 @@ Linux and macOS. Set `target` to your platform's name from the table:
 
 Windows (PowerShell):
 
-    $base = "https://github.com/savvagent/otto-platform/releases/latest/download"
+    $base = "https://github.com/savvagent/platform/releases/latest/download"
     Invoke-WebRequest "$base/savctl-x86_64-pc-windows-msvc.zip" -OutFile savctl.zip
     Invoke-WebRequest "$base/SHA256SUMS" -OutFile SHA256SUMS
     (Get-FileHash savctl.zip -Algorithm SHA256).Hash   # compare with SHA256SUMS
@@ -51,7 +51,7 @@ release published.
 
 From source, with Rust 1.89 or later:
 
-    cargo install --locked --git https://github.com/savvagent/otto-platform savvagent-ctl savvagent-flags-cli
+    cargo install --locked --git https://github.com/savvagent/platform savvagent-ctl savvagent-flags-cli
 
 The packages keep their old names, `savvagent-ctl` and `savvagent-flags-cli`, for now; they
 install the `savctl` and `savctl-flags` binaries.

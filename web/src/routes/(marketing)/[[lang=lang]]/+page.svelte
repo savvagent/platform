@@ -38,7 +38,7 @@
     { title: () => m.landing_family_tokens_title(), body: () => m.landing_family_tokens_body() }
   ];
 
-  const RELEASES = 'https://github.com/savvagent/otto-platform/releases/latest';
+  const RELEASES = 'https://github.com/savvagent/platform/releases/latest';
 
   const steps = [
     { title: () => m.landing_how_step1_title(), body: () => m.landing_how_step1_body() },
