@@ -31,7 +31,7 @@ export interface User {
    * The console language this account chose, or `null` for "never chose".
    *
    * `null` is not English — it is the state where the browser's own preference
-   * is still in charge. See `$lib/locale`.
+   * is still in charge. See `#lib/locale.js`.
    */
   locale: string | null;
   createdAt: string;
@@ -313,7 +313,7 @@ export type PlanTier = 'free' | 'team' | 'business' | 'enterprise';
  * (see `PricedMeter`).
  *
  * `monthlyCents` is US cents, and `0` means two different things: free on
- * `free`, *negotiated* on `enterprise`. Read it through `$lib/pricing`'s
+ * `free`, *negotiated* on `enterprise`. Read it through `#lib/pricing`'s
  * `priceLabel`, which knows the difference, rather than formatting it
  * directly.
  *
@@ -341,7 +341,7 @@ export interface PriceTier {
   upTo: number | null;
   /**
    * Price per unit in **millionths of a US cent** (`1_000_000` is one cent).
-   * Never divide it as a float; `$lib/pricing`'s `unitPrice` formats it
+   * Never divide it as a float; `#lib/pricing`'s `unitPrice` formats it
    * exactly.
    */
   unitAmountUcents: number;

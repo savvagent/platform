@@ -1,14 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { session } from '$lib/session.svelte';
-  import { slugPreview } from '$lib/format';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Field from '$lib/components/Field.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { session } from '#lib/session.svelte.js';
+  import { slugPreview } from '#lib/format.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Field from '#lib/components/Field.svelte';
 
   /**
    * Create an organization. The creator becomes its owner — an org with no
@@ -38,7 +38,7 @@
       const org = await api.createOrg(suggested, name.trim() || suggested);
       await session.refresh();
       session.lastOrg = org.slug;
-      await goto(`/o/${org.slug}`, { replaceState: true });
+      await goto(`/o/${org.slug}`, { replace: true });
     } catch (e) {
       error = messageFor(e, m.orgnew_error_fallback());
     } finally {

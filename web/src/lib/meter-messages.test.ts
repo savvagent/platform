@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
-import { m } from '$lib/paraglide/messages';
-import { locales } from '$lib/paraglide/runtime';
+import { m } from '#lib/paraglide/messages.js';
+import { locales } from '#lib/paraglide/runtime.js';
 
 /**
  * The console's usage, budget and billing copy, in every locale.

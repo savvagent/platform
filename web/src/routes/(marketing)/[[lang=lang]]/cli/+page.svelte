@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages';
-  import { SERVICES } from '$lib/services';
-  import CopyField from '$lib/components/CopyField.svelte';
-  import Seo from '$lib/components/Seo.svelte';
+  import { m } from '#lib/paraglide/messages.js';
+  import { SERVICES } from '#lib/services.js';
+  import CopyField from '#lib/components/CopyField.svelte';
+  import Seo from '#lib/components/Seo.svelte';
 
   import type { PageData } from './$types';
 

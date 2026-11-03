@@ -3,13 +3,13 @@
 
   import { page } from '$app/state';
 
-  import { LOCALE_NAMES, detect, readCached, type Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { overwriteGetLocale } from '$lib/paraglide/runtime';
-  import { session } from '$lib/session.svelte';
-  import { localizedPath, stripLocale } from '$lib/site';
-  import MarketingFooter from '$lib/components/marketing/MarketingFooter.svelte';
-  import MarketingHeader from '$lib/components/marketing/MarketingHeader.svelte';
+  import { LOCALE_NAMES, detect, readCached, type Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { overwriteGetLocale } from '#lib/paraglide/runtime.js';
+  import { session } from '#lib/session.svelte.js';
+  import { localizedPath, stripLocale } from '#lib/site.js';
+  import MarketingFooter from '#lib/components/marketing/MarketingFooter.svelte';
+  import MarketingHeader from '#lib/components/marketing/MarketingHeader.svelte';
 
   import type { LayoutData } from './$types';
 
@@ -51,7 +51,7 @@
      * error, no server in `vite dev`, a bug. It is logged, and the page keeps
      * the signed-out links, which still work.
      *
-     * `$lib/session.svelte` and `$lib/api` are imported statically: neither
+     * `#lib/session.svelte.js` and `#lib/api.js` are imported statically: neither
      * touches a browser global at module scope (one builds a `$state` object,
      * the other defines functions), so both are safe in the build's render.
      */

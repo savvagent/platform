@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 
-import { baseLocale, locales } from '$lib/paraglide/runtime';
-import { SERVICES, serviceBySlug } from '$lib/services';
+import { baseLocale, locales } from '#lib/paraglide/runtime.js';
+import { SERVICES, serviceBySlug } from '#lib/services.js';
 
 import type { EntryGenerator, PageLoad } from './$types';
 

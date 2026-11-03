@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import type { Service } from '$lib/services';
-  import { localizedPath } from '$lib/site';
+  import type { Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import type { Service } from '#lib/services.js';
+  import { localizedPath } from '#lib/site.js';
 
   /**
    * One product, as a card that links to its page in the current language.

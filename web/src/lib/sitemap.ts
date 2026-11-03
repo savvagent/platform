@@ -18,7 +18,7 @@ import { SERVICES } from './services';
  * Every marketing page, by its English path.
  *
  * `scripts/check-build.mjs` keeps its own copy of this list (it runs in plain
- * Node, without SvelteKit's `$lib` alias), and its test asserts the two agree.
+ * Node, without SvelteKit's `#lib` alias), and its test asserts the two agree.
  */
 export const MARKETING_PATHS: readonly string[] = [
   '/',

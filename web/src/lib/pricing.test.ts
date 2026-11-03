@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { m } from '$lib/paraglide/messages';
-import { getLocale, locales, overwriteGetLocale } from '$lib/paraglide/runtime';
+import { m } from '#lib/paraglide/messages.js';
+import { getLocale, locales, overwriteGetLocale } from '#lib/paraglide/runtime.js';
 
 import {
   featureLabels,

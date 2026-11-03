@@ -1,6 +1,6 @@
-import type { ParamMatcher } from '@sveltejs/kit';
+import { defineParams } from '@sveltejs/kit/params';
 
-import { baseLocale, locales } from '$lib/paraglide/runtime';
+import { baseLocale, locales } from '#lib/paraglide/runtime.js';
 
 /**
  * The locales that appear as a URL prefix: every one but the base locale.
@@ -16,4 +16,9 @@ import { baseLocale, locales } from '$lib/paraglide/runtime';
  */
 const PREFIXED: ReadonlySet<string> = new Set(locales.filter((l) => l !== baseLocale));
 
-export const match: ParamMatcher = (param) => PREFIXED.has(param);
+/** Whether `param` is a locale that appears as a URL prefix. */
+export const matchLang = (param: string): boolean => PREFIXED.has(param);
+
+export const params = defineParams({
+  lang: (param) => (matchLang(param) ? param : undefined)
+});

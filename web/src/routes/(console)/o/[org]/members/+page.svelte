@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { roleLabel } from '$lib/labels';
-  import { useOrg } from '$lib/org.svelte';
-  import { session } from '$lib/session.svelte';
-  import { relative, person } from '$lib/format';
-  import type { ClaimCode, CreatedInvite, Invite, OrgMember, Role } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import CopyField from '$lib/components/CopyField.svelte';
-  import Empty from '$lib/components/Empty.svelte';
-  import Field from '$lib/components/Field.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { roleLabel } from '#lib/labels.js';
+  import { useOrg } from '#lib/org.svelte.js';
+  import { session } from '#lib/session.svelte.js';
+  import { relative, person } from '#lib/format.js';
+  import type { ClaimCode, CreatedInvite, Invite, OrgMember, Role } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Card from '#lib/components/Card.svelte';
+  import CopyField from '#lib/components/CopyField.svelte';
+  import Empty from '#lib/components/Empty.svelte';
+  import Field from '#lib/components/Field.svelte';
+  import Loading from '#lib/components/Loading.svelte';
 
   /**
    * Members and outstanding invitations.

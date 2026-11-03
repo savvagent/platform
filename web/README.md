@@ -1,6 +1,6 @@
 # `web/` — the Savvagent platform console and public site
 
-SvelteKit 2 · Svelte 5 (runes) · Tailwind v4 · TypeScript, strict.
+SvelteKit 3 · Svelte 5 (runes) · Tailwind v4 · TypeScript, strict.
 
 One static bundle, two things in it. The **public marketing pages**: what Savvagent is, a page
 per product, and pricing read live from the plan catalog, in every language the console
@@ -133,7 +133,7 @@ which says how to add it to an AI assistant, instead of to a JSON 404. From that
 it gets a link in the console and marketing headers, a card on the landing page, a prerendered
 `/products/{slug}` in every language, and its sitemap entries. The build check is the one
 place that does not follow by itself: `scripts/check-build.mjs` runs in plain Node, without
-`$lib`, so it keeps its own copy of the slugs, and `scripts/check-build.test.mjs` fails until
+`#lib`, so it keeps its own copy of the slugs, and `scripts/check-build.test.mjs` fails until
 the new slug is added there too. `services.test.ts` pins the shipped list as well.
 
 ## Messages, and what a new string costs

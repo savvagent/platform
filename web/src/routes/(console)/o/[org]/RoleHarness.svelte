@@ -9,8 +9,8 @@
    */
   import type { Component } from 'svelte';
 
-  import { OrgContext, provideOrg } from '$lib/org.svelte';
-  import type { Role } from '$lib/types';
+  import { OrgContext, provideOrg } from '#lib/org.svelte.js';
+  import type { Role } from '#lib/types.js';
 
   let { slug, role, page: Page }: { slug: string; role: Role; page: Component } = $props();
 

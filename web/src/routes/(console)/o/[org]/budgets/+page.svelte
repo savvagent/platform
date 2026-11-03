@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { api } from '$lib/api';
-  import { formatCents, serviceName } from '$lib/billing';
-  import { messageFor } from '$lib/errors';
-  import { day } from '$lib/format';
-  import { currentLocale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { useOrg } from '$lib/org.svelte';
-  import type { BudgetsResponse, ServiceBudget } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import BudgetAlerts from '$lib/components/BudgetAlerts.svelte';
-  import BudgetForm from '$lib/components/BudgetForm.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import Empty from '$lib/components/Empty.svelte';
-  import Loading from '$lib/components/Loading.svelte';
-  import Meter from '$lib/components/Meter.svelte';
+  import { api } from '#lib/api.js';
+  import { formatCents, serviceName } from '#lib/billing.js';
+  import { messageFor } from '#lib/errors.js';
+  import { day } from '#lib/format.js';
+  import { currentLocale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { useOrg } from '#lib/org.svelte.js';
+  import type { BudgetsResponse, ServiceBudget } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import BudgetAlerts from '#lib/components/BudgetAlerts.svelte';
+  import BudgetForm from '#lib/components/BudgetForm.svelte';
+  import Card from '#lib/components/Card.svelte';
+  import Empty from '#lib/components/Empty.svelte';
+  import Loading from '#lib/components/Loading.svelte';
+  import Meter from '#lib/components/Meter.svelte';
 
   /**
    * Monthly budgets, per service.

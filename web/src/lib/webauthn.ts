@@ -168,7 +168,7 @@ export async function authenticate(
  *
  * **Carries a `code` for the same reason `ApiError` does**: an error has a code
  * before it has a message. The code is the stable branch point a UI switches on
- * — here, what `$lib/errors` looks up to render the message in the reader's
+ * — here, what `#lib/errors` looks up to render the message in the reader's
  * language — and the `message` is the English fallback for a code nothing has
  * been taught yet. This type was the one error surface in the console exempt
  * from that rule, which meant the login page — the first page anyone sees —

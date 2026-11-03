@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
 
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { CONSOLE_HOME, consoleNext, isServerRoute } from '$lib/next';
-  import { m } from '$lib/paraglide/messages';
-  import { session } from '$lib/session.svelte';
-  import * as webauthn from '$lib/webauthn';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Field from '$lib/components/Field.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { gotoOrLoad } from '#lib/navigate.js';
+  import { CONSOLE_HOME, consoleNext, isServerRoute } from '#lib/next.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { session } from '#lib/session.svelte.js';
+  import * as webauthn from '#lib/webauthn.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Field from '#lib/components/Field.svelte';
 
   const next = $derived(page.url.searchParams.get('next'));
 
@@ -80,7 +80,7 @@
       // on `/oauth/authorize` rather than on the console home.
       const dest = consoleNext(next);
       if (dest && isServerRoute(dest)) location.assign(dest);
-      else await goto(dest ?? CONSOLE_HOME, { replaceState: true });
+      else await gotoOrLoad(dest ?? CONSOLE_HOME);
     } catch (e) {
       error = messageFor(e, m.error_could_not_save());
     } finally {

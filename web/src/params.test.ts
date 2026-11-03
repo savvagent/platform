@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { baseLocale, locales } from '$lib/paraglide/runtime';
+import { baseLocale, locales } from '#lib/paraglide/runtime.js';
 
-import { match } from './lang';
+import { matchLang as match, params } from './params';
 
 describe('the lang param matcher', () => {
   it('accepts every non-base locale', () => {
@@ -23,5 +23,14 @@ describe('the lang param matcher', () => {
   // not be read as a page in the "login" locale.
   it.each(['', 'login', 'o', 'home', 'ES', 'es-MX', 'xx', 'pricing'])('rejects %j', (value) => {
     expect(match(value)).toBe(false);
+  });
+
+  // What the router actually calls: the `defineParams` entry, which must agree
+  // with `matchLang` and pass the matched value through unchanged.
+  it('is what the `lang` entry of `params` matches', async () => {
+    const validate = (value: string) => params.lang['~standard'].validate(value);
+    expect(await validate('es')).toEqual({ value: 'es' });
+    expect(await validate('en')).toHaveProperty('issues');
+    expect(await validate('login')).toHaveProperty('issues');
   });
 });

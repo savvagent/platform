@@ -12,8 +12,8 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { session } from '$lib/session.svelte';
-import type { Me } from '$lib/types';
+import { session } from '#lib/session.svelte.js';
+import type { Me } from '#lib/types.js';
 import Page from './+page.svelte';
 
 /** Heading levels in document order, so a skip (h1 → h3) is visible as a jump of two. */

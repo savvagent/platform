@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
 
-  import { m } from '$lib/paraglide/messages';
-  import { SERVICES, claudeCodeCommand, serviceBySlug, serviceLink } from '$lib/services';
-  import { consoleEntry, session } from '$lib/session.svelte';
-  import { localizedPath } from '$lib/site';
-  import CopyField from '$lib/components/CopyField.svelte';
-  import LinkButton from '$lib/components/LinkButton.svelte';
-  import Seo from '$lib/components/Seo.svelte';
-  import ConsoleLink from '$lib/components/marketing/ConsoleLink.svelte';
-  import ProductCard from '$lib/components/marketing/ProductCard.svelte';
+  import { m } from '#lib/paraglide/messages.js';
+  import { SERVICES, claudeCodeCommand, serviceBySlug, serviceLink } from '#lib/services.js';
+  import { consoleEntry, session } from '#lib/session.svelte.js';
+  import { localizedPath } from '#lib/site.js';
+  import CopyField from '#lib/components/CopyField.svelte';
+  import LinkButton from '#lib/components/LinkButton.svelte';
+  import Seo from '#lib/components/Seo.svelte';
+  import ConsoleLink from '#lib/components/marketing/ConsoleLink.svelte';
+  import ProductCard from '#lib/components/marketing/ProductCard.svelte';
 
   import type { PageData } from './$types';
 

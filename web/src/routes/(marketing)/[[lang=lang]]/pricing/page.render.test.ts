@@ -16,16 +16,16 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('$lib/api', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('$lib/api')>();
+vi.mock('#lib/api.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('#lib/api.js')>();
   return { ...actual, api: { ...actual.api, plans: vi.fn() } };
 });
 
-import { ApiError, api } from '$lib/api';
-import { getLocale, overwriteGetLocale } from '$lib/paraglide/runtime';
-import { session } from '$lib/session.svelte';
-import { CONTACT_EMAIL } from '$lib/site';
-import type { Me, Plan, PlansResponse, PricedMeter } from '$lib/types';
+import { ApiError, api } from '#lib/api.js';
+import { getLocale, overwriteGetLocale } from '#lib/paraglide/runtime.js';
+import { session } from '#lib/session.svelte.js';
+import { CONTACT_EMAIL } from '#lib/site.js';
+import type { Me, Plan, PlansResponse, PricedMeter } from '#lib/types.js';
 import Page from './+page.svelte';
 
 const SEEDED: Plan[] = [

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages';
-  import { consoleEntry, session } from '$lib/session.svelte';
-  import LinkButton from '$lib/components/LinkButton.svelte';
-  import type { ButtonSize, ButtonTone } from '$lib/components/button';
+  import { m } from '#lib/paraglide/messages.js';
+  import { consoleEntry, session } from '#lib/session.svelte.js';
+  import LinkButton from '#lib/components/LinkButton.svelte';
+  import type { ButtonSize, ButtonTone } from '#lib/components/button.js';
 
   /**
    * The way into the console from a marketing page: "Create account" for a

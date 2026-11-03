@@ -10,11 +10,14 @@ import { createRawSnippet, flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn(() => Promise.resolve()) }));
-vi.mock('$app/state', async () => await import('$lib/components/marketing/fake-app-state.svelte'));
+vi.mock(
+  '$app/state',
+  async () => await import('#lib/components/marketing/fake-app-state.svelte.js')
+);
 
-import { page } from '$lib/components/marketing/fake-app-state.svelte';
-import { session } from '$lib/session.svelte';
-import type { Me } from '$lib/types';
+import { page } from '#lib/components/marketing/fake-app-state.svelte.js';
+import { session } from '#lib/session.svelte.js';
+import type { Me } from '#lib/types.js';
 import Layout from './+layout.svelte';
 
 let container: HTMLElement;

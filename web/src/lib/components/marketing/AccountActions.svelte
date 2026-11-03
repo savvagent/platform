@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { localizedPath } from '$lib/site';
-  import LinkButton from '$lib/components/LinkButton.svelte';
+  import type { Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { localizedPath } from '#lib/site.js';
+  import LinkButton from '#lib/components/LinkButton.svelte';
   import ConsoleLink from './ConsoleLink.svelte';
 
   /**

@@ -14,8 +14,8 @@
  * Run after `npm run build`: `npm run check:build` (or
  * `node scripts/check-build.mjs [dir]`, default `build/`).
  *
- * **It runs in plain Node**, without SvelteKit's `$lib` alias or TypeScript,
- * so it cannot import `$lib/site` or `$lib/sitemap`. It keeps copies of the
+ * **It runs in plain Node**, without Vite or TypeScript, so it cannot import
+ * `#lib/site.ts` or `#lib/sitemap.ts`. It keeps copies of the
  * page list, the origin and the locale-prefix rule instead, and
  * `check-build.test.mjs` asserts each copy against the original — so a new
  * product added to `services.ts` fails that test until it is added here too.

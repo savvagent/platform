@@ -6,8 +6,8 @@
  * reads.
  */
 
-import { m } from '$lib/paraglide/messages';
-import type { Role } from '$lib/types';
+import { m } from '#lib/paraglide/messages.js';
+import type { Role } from '#lib/types.js';
 
 /**
  * The word for a role.

@@ -9,7 +9,7 @@
 import { mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { Role } from '$lib/types';
+import type { Role } from '#lib/types.js';
 import OverviewPage from './+page.svelte';
 import Harness from './OrgPageHarness.svelte';
 import RoleHarness from './RoleHarness.svelte';

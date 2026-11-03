@@ -3,18 +3,19 @@
   import { page } from '$app/state';
   import type { Snippet } from 'svelte';
 
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { reconcile, resolveAtBoot } from '$lib/locale';
-  import { guard } from '$lib/routing';
-  import { session } from '$lib/session.svelte';
-  import { SERVICES } from '$lib/services';
-  import { APP_VERSION } from '$lib/version';
-  import Alert from '$lib/components/Alert.svelte';
-  import Loading from '$lib/components/Loading.svelte';
-  import Logo from '$lib/components/Logo.svelte';
-  import ServiceLink from '$lib/components/ServiceLink.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { gotoOrLoad } from '#lib/navigate.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { reconcile, resolveAtBoot } from '#lib/locale.js';
+  import { guard } from '#lib/routing.js';
+  import { session } from '#lib/session.svelte.js';
+  import { SERVICES } from '#lib/services.js';
+  import { APP_VERSION } from '#lib/version.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Loading from '#lib/components/Loading.svelte';
+  import Logo from '#lib/components/Logo.svelte';
+  import ServiceLink from '#lib/components/ServiceLink.svelte';
 
   /**
    * Decide the language before anything renders.
@@ -106,7 +107,7 @@
 
     // No enrollment gate any more: a session only exists for an account that
     // already registered a passkey, because the passkey is what creates the
-    // account. The rules themselves, and why, are in `$lib/routing`.
+    // account. The rules themselves, and why, are in `#lib/routing.js`.
     const move = guard({
       signedIn: session.signedIn,
       needsProfile: session.me != null && session.me.user.email == null,
@@ -115,7 +116,7 @@
       next: page.url.searchParams.get('next')
     });
     if (move?.kind === 'assign') location.assign(move.to);
-    else if (move) void goto(move.to, { replaceState: true });
+    else if (move) void gotoOrLoad(move.to);
   });
 
   async function signOut() {
@@ -129,7 +130,7 @@
       // console looking signed in after someone pressed "sign out" is the worse
       // of the two wrong answers.
       session.clear();
-      await goto('/login', { replaceState: true });
+      await goto('/login', { replace: true });
       signingOut = false;
     }
   }

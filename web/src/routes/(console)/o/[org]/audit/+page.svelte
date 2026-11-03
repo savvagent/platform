@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { useOrg } from '$lib/org.svelte';
-  import { absolute, relative } from '$lib/format';
-  import type { AuditEvent } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import Empty from '$lib/components/Empty.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { useOrg } from '#lib/org.svelte.js';
+  import { absolute, relative } from '#lib/format.js';
+  import type { AuditEvent } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Empty from '#lib/components/Empty.svelte';
+  import Loading from '#lib/components/Loading.svelte';
 
   /**
    * The security log.

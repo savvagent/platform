@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { relative } from '$lib/format';
-  import { useOrg } from '$lib/org.svelte';
-  import type { ClaimedDomain, IdpConnection } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import CopyField from '$lib/components/CopyField.svelte';
-  import Empty from '$lib/components/Empty.svelte';
-  import Field from '$lib/components/Field.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { relative } from '#lib/format.js';
+  import { useOrg } from '#lib/org.svelte.js';
+  import type { ClaimedDomain, IdpConnection } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Card from '#lib/components/Card.svelte';
+  import CopyField from '#lib/components/CopyField.svelte';
+  import Empty from '#lib/components/Empty.svelte';
+  import Field from '#lib/components/Field.svelte';
+  import Loading from '#lib/components/Loading.svelte';
 
   /**
    * Enterprise single sign-on: the org's identity provider connection, the
@@ -26,7 +26,7 @@
    * Every lockout refusal (`sso_lockout`, from the connection delete, the
    * last-verified-domain delete, or turning `enforceSso` on) is shown with
    * the server's own reason inline, never folded into a generic message —
-   * `$lib/errors` already does the right thing for that code by falling back
+   * `#lib/errors.js` already does the right thing for that code by falling back
    * to the server's own sentence (see the comment there).
    */
 

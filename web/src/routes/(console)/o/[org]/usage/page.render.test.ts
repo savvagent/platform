@@ -7,7 +7,7 @@
 import { mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { Role } from '$lib/types';
+import type { Role } from '#lib/types.js';
 import Harness from '../RoleHarness.svelte';
 import {
   BUDGETS,

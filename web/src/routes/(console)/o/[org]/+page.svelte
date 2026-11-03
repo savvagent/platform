@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { currentLocale } from '$lib/locale';
-  import { useOrg } from '$lib/org.svelte';
-  import { roleLabel } from '$lib/labels';
-  import { SERVICES } from '$lib/services';
-  import type { BudgetsResponse, OrgMember, Team, UsageStatus } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import BudgetAlerts from '$lib/components/BudgetAlerts.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import Empty from '$lib/components/Empty.svelte';
-  import Loading from '$lib/components/Loading.svelte';
-  import Meter from '$lib/components/Meter.svelte';
-  import PaymentRequiredNotices from '$lib/components/PaymentRequiredNotices.svelte';
-  import ServiceLink from '$lib/components/ServiceLink.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { currentLocale } from '#lib/locale.js';
+  import { useOrg } from '#lib/org.svelte.js';
+  import { roleLabel } from '#lib/labels.js';
+  import { SERVICES } from '#lib/services.js';
+  import type { BudgetsResponse, OrgMember, Team, UsageStatus } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import BudgetAlerts from '#lib/components/BudgetAlerts.svelte';
+  import Card from '#lib/components/Card.svelte';
+  import Empty from '#lib/components/Empty.svelte';
+  import Loading from '#lib/components/Loading.svelte';
+  import Meter from '#lib/components/Meter.svelte';
+  import PaymentRequiredNotices from '#lib/components/PaymentRequiredNotices.svelte';
+  import ServiceLink from '#lib/components/ServiceLink.svelte';
 
   /**
    * The organization overview: who is in it, what plan it is on, what each

@@ -10,19 +10,22 @@
 import { mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('$app/state', async () => await import('$lib/components/marketing/fake-app-state.svelte'));
+vi.mock(
+  '$app/state',
+  async () => await import('#lib/components/marketing/fake-app-state.svelte.js')
+);
 vi.mock('./checkout', () => ({ leaveForCheckout: vi.fn(() => true) }));
 vi.mock('$app/navigation', async () => {
-  const { page } = await import('$lib/components/marketing/fake-app-state.svelte');
+  const { page } = await import('#lib/components/marketing/fake-app-state.svelte.js');
   return {
-    replaceState: vi.fn((url: URL) => {
+    goto: vi.fn(async (url: URL) => {
       page.url = new URL(url);
     })
   };
 });
 
-import { page } from '$lib/components/marketing/fake-app-state.svelte';
-import type { BillingStatus, Role } from '$lib/types';
+import { page } from '#lib/components/marketing/fake-app-state.svelte.js';
+import type { BillingStatus, Role } from '#lib/types.js';
 import Harness from '../RoleHarness.svelte';
 import { failure, json, requests, serve } from '../test-fixtures';
 import { leaveForCheckout } from './checkout';

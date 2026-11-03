@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { currentLocale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { serviceLink, type Service } from '$lib/services';
+  import { currentLocale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { serviceLink, type Service } from '#lib/services.js';
 
   /**
    * A link to a Savvagent service from inside the console: the header's Services

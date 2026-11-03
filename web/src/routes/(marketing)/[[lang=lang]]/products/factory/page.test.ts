@@ -5,7 +5,7 @@
 import { isRedirect } from '@sveltejs/kit';
 import { describe, expect, it } from 'vitest';
 
-import { baseLocale, locales } from '$lib/paraglide/runtime';
+import { baseLocale, locales } from '#lib/paraglide/runtime.js';
 import { entries, load } from './+page';
 
 type LoadEvent = Parameters<typeof load>[0];

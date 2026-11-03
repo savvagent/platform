@@ -11,8 +11,8 @@ vi.mock('$app/state', () => ({
   page: { params: { org: 'acme' }, url: new URL('http://localhost/o/acme/usage') }
 }));
 
-import { session } from '$lib/session.svelte';
-import type { Me, Role } from '$lib/types';
+import { session } from '#lib/session.svelte.js';
+import type { Me, Role } from '#lib/types.js';
 import Layout from './+layout.svelte';
 import { json, serve } from './test-fixtures';
 

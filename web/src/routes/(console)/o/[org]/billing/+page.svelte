@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { replaceState } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { tick, untrack } from 'svelte';
 
-  import { api, ApiError } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { useOrg } from '$lib/org.svelte';
-  import type { BillingStatus, CardStatus } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { api, ApiError } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { useOrg } from '#lib/org.svelte.js';
+  import type { BillingStatus, CardStatus } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Card from '#lib/components/Card.svelte';
+  import Loading from '#lib/components/Loading.svelte';
   import { leaveForCheckout } from './checkout';
 
   /**
@@ -59,9 +59,9 @@
       returned = setup;
       pollOnLoad = setup === 'success';
     });
-    const url = new URL(page.url);
+    const url = new URL(page.url.href);
     url.searchParams.delete('setup');
-    replaceState(url, {});
+    void goto(url, { shallow: true, replace: true });
   });
 
   /**

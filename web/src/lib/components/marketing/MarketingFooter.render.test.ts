@@ -14,8 +14,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('$app/state', async () => await import('./fake-app-state.svelte'));
 
-import { session } from '$lib/session.svelte';
-import type { Me } from '$lib/types';
+import { session } from '#lib/session.svelte.js';
+import type { Me } from '#lib/types.js';
 import { page } from './fake-app-state.svelte';
 import MarketingFooter from './MarketingFooter.svelte';
 import MarketingHeader from './MarketingHeader.svelte';
