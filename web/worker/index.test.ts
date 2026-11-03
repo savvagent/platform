@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import worker, { belongsToOrigin, isNeverProxied, type Env } from './index';
+import worker, {
+  PUBLIC_DATA,
+  PUBLIC_DATA_HEADERS,
+  belongsToOrigin,
+  isNeverProxied,
+  type Env
+} from './index';
 
 /**
  * `belongsToOrigin` is a second copy of the server's `API_PREFIXES`, in a
@@ -209,7 +215,8 @@ describe('the Worker in front of the asset bundle', () => {
     '/es/pricing': '<html>es pricing</html>',
     '/%5Cevil': '<html>backslash</html>',
     '/200': '<html>shell</html>',
-    '/_app/app.js': 'console.log(1)'
+    '/_app/app.js': 'console.log(1)',
+    '/services/v1.json': '{"version":1,"services":[]}'
   };
   const immutable = (body: string | null, status: number) => {
     const response = new Response(body, {
@@ -293,6 +300,50 @@ describe('the Worker in front of the asset bundle', () => {
       expect(response.headers.has('x-robots-tag'), path).toBe(false);
       expect(askedFor(), path).toEqual([path]);
     }
+  });
+
+  /**
+   * The service list is read cross-origin by every other console's header,
+   * so it needs CORS and a cache lifetime the binding does not give it, on a
+   * copy, because the binding's headers are immutable.
+   */
+  it('serves the public service list readable from any origin, and cacheable', async () => {
+    expect(PUBLIC_DATA).toEqual(['/services/v1.json']);
+    for (const method of ['GET', 'HEAD']) {
+      assets.mockClear();
+      const response = await call('/services/v1.json', {
+        method,
+        headers: { origin: 'https://tower.savvagent.com' }
+      });
+      expect(response.status, method).toBe(200);
+      expect(response.headers.get('access-control-allow-origin'), method).toBe('*');
+      expect(response.headers.get('cache-control'), method).toBe('public, max-age=300');
+      expect(response.headers.get('x-content-type-options'), method).toBe('nosniff');
+      // Never a credentialed read: `*` and credentials cannot go together.
+      expect(response.headers.has('access-control-allow-credentials'), method).toBe(false);
+      // The binding's own headers survive the copy.
+      expect(response.headers.get('etag'), method).toBe('"v1"');
+      expect(response.headers.has('x-robots-tag'), method).toBe(false);
+      expect(askedFor(), method).toEqual(['/services/v1.json']);
+      if (method === 'GET') {
+        expect(await response.text()).toBe(pages['/services/v1.json']);
+      }
+    }
+    expect(PUBLIC_DATA_HEADERS['access-control-allow-origin']).toBe('*');
+  });
+
+  it('adds those headers to the service list only', async () => {
+    for (const path of ['/', '/pricing', '/_app/app.js', '/o/acme/members']) {
+      const response = await call(path);
+      expect(response.headers.has('access-control-allow-origin'), path).toBe(false);
+    }
+    // `/services` itself is a page route, so it is still the shell.
+    const bare = await call('/services');
+    expect(await bare.text()).toBe('<html>shell</html>');
+    expect(bare.headers.has('access-control-allow-origin')).toBe(false);
+    // Decided on the decoded path, like everything else here.
+    const encoded = await call('/services/v1%2Ejson');
+    expect(encoded.headers.get('access-control-allow-origin')).toBe('*');
   });
 
   it('redirects /index.html to the one URL the landing page has', async () => {

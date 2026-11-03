@@ -3,13 +3,17 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { m } from '#lib/paraglide/messages.js';
 import { getLocale, locales, overwriteGetLocale } from '#lib/paraglide/runtime.js';
 
+import { existsSync } from 'node:fs';
+
 import {
   SERVICES,
+  SERVICE_DIRECTORY_PATH,
   claudeCodeCommand,
   connectorName,
   mcpServerName,
   serviceBySlug,
   serviceLink,
+  serviceDirectory,
   servicesIn,
   type Service
 } from './services';
@@ -217,5 +221,93 @@ describe('the agent-only billing sentence', () => {
       const parts = m.product_agent_only_billing({ console: '\u0000' }, { locale }).split('\u0000');
       expect(parts, locale).toHaveLength(2);
     }
+  });
+});
+
+/**
+ * `/services/v1.json`, which every other console's header reads. Its shape is
+ * a published contract (`docs/service-directory.md`), so these tests pin it
+ * exactly: a new key here is a change other repositories have to hear about.
+ */
+describe('the published service list', () => {
+  it('is version 1, served at a path that names the version', () => {
+    expect(SERVICE_DIRECTORY_PATH).toBe('/services/v1.json');
+    expect(serviceDirectory().version).toBe(1);
+    // The route that writes the file lives at the path the constant names.
+    const route = new URL(`../routes${SERVICE_DIRECTORY_PATH}/+server.ts`, import.meta.url);
+    expect(existsSync(route), route.pathname).toBe(true);
+  });
+
+  it('is exactly what this site renders: the same services, in the same order', () => {
+    expect(serviceDirectory()).toEqual({
+      version: 1,
+      services: [
+        {
+          slug: 'tower',
+          name: 'Savvagent Tower',
+          consoleUrl: 'https://tower.savvagent.com',
+          mcpUrl: 'https://tower.savvagent.com/mcp',
+          connectPath: '/products/tower#connect'
+        },
+        {
+          slug: 'flags',
+          name: 'Savvagent Flags',
+          consoleUrl: null,
+          mcpUrl: 'https://flags.savvagent.com/mcp',
+          connectPath: '/products/flags#connect'
+        },
+        {
+          slug: 'cxp',
+          name: 'Savvagent CXP',
+          consoleUrl: 'https://cxp.savvagent.com/console/',
+          mcpUrl: 'https://cxp.savvagent.com/mcp',
+          connectPath: '/products/cxp#connect'
+        }
+      ]
+    });
+    expect(serviceDirectory().services.map((s) => s.slug)).toEqual(SERVICES.map((s) => s.slug));
+  });
+
+  it("points connectPath where this site's own header sends a service with no console", () => {
+    const flags = serviceDirectory().services.find((s) => s.slug === 'flags')!;
+    expect(flags.connectPath).toBe(serviceLink(serviceBySlug('flags')!, 'en').href);
+  });
+
+  it('gives every entry the same five keys, and never the marketing copy', () => {
+    for (const entry of serviceDirectory().services) {
+      expect(Object.keys(entry).sort(), entry.slug).toEqual([
+        'connectPath',
+        'consoleUrl',
+        'mcpUrl',
+        'name',
+        'slug'
+      ]);
+    }
+    // Survives JSON as it is: no functions, no `undefined`s that would vanish.
+    const body = serviceDirectory();
+    expect(JSON.parse(JSON.stringify(body))).toEqual(body);
+  });
+
+  it('drops what servicesIn drops, even from a list that skipped it', () => {
+    const published = serviceDirectory([
+      candidate({ slug: 'ok', name: 'OK', consoleUrl: 'https://ok.example' }),
+      candidate({ slug: 'plain', name: 'Plain', consoleUrl: 'http://plain.example' }),
+      candidate({ slug: 'script', name: 'Script', consoleUrl: 'javascript:alert(1)' }),
+      candidate({ slug: 'mcp', name: 'MCP', mcpUrl: 'http://mcp.example/mcp' }),
+      candidate({ slug: 'Bad/Slug', name: 'Bad', mcpUrl: 'https://bad.example/mcp' }),
+      candidate({ slug: 'blank', name: '  ', mcpUrl: 'https://blank.example/mcp' }),
+      candidate({ slug: 'nowhere', name: 'Nowhere' }),
+      candidate({ slug: 'agent', name: 'Agent', mcpUrl: 'https://agent.example/mcp' })
+    ]);
+    expect(published.services).toEqual([
+      { slug: 'ok', name: 'OK', consoleUrl: 'https://ok.example', mcpUrl: null, connectPath: null },
+      {
+        slug: 'agent',
+        name: 'Agent',
+        consoleUrl: null,
+        mcpUrl: 'https://agent.example/mcp',
+        connectPath: '/products/agent#connect'
+      }
+    ]);
   });
 });
