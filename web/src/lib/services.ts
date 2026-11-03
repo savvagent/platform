@@ -26,9 +26,9 @@
  * so a typo cannot put a plaintext or `javascript:` link in the header.
  */
 
-import type { Locale } from '$lib/locale';
-import { m } from '$lib/paraglide/messages';
-import { localizedPath } from '$lib/site';
+import type { Locale } from '#lib/locale.js';
+import { m } from '#lib/paraglide/messages.js';
+import { localizedPath } from '#lib/site.js';
 
 /**
  * A product's marketing copy, as functions.

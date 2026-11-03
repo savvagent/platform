@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { meterTiers, type ServiceUsageGroup, type TierRange } from '$lib/pricing';
+  import type { Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { meterTiers, type ServiceUsageGroup, type TierRange } from '#lib/pricing.js';
 
   /**
    * One service's usage prices, as the pricing page shows them: the service's
@@ -11,7 +11,7 @@
    * The meter's `displayName` and `unit` are written by the service, in
    * English, and are shown as given, like a plan's name; everything around
    * them is a message, and every number is formatted in the page's `lang`
-   * (see `$lib/pricing`).
+   * (see `#lib/pricing.js`).
    *
    * A table rather than a list because a tier has two facts that read across
    * (which units, at what price), and a screen reader announces each price

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { featureLabels, priceLabel } from '$lib/pricing';
-  import { CONTACT_EMAIL } from '$lib/site';
-  import type { Plan } from '$lib/types';
-  import LinkButton from '$lib/components/LinkButton.svelte';
+  import type { Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { featureLabels, priceLabel } from '#lib/pricing.js';
+  import { CONTACT_EMAIL } from '#lib/site.js';
+  import type { Plan } from '#lib/types.js';
+  import LinkButton from '#lib/components/LinkButton.svelte';
   import ConsoleLink from './ConsoleLink.svelte';
 
   /**
@@ -18,7 +18,7 @@
    *
    * `displayName` comes from the server and is a name, so it is shown as
    * given in every language. Everything around it is a message, and every
-   * number is formatted in the page's `lang` (see `$lib/pricing`).
+   * number is formatted in the page's `lang` (see `#lib/pricing.js`).
    *
    * **The way in depends on the tier, not on the price.** The self-serve
    * tiers get `ConsoleLink`, which follows the session like every other way

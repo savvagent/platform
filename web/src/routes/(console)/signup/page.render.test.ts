@@ -14,10 +14,13 @@ vi.mock('$app/navigation', () => ({
   goto: vi.fn(() => Promise.resolve())
 }));
 
-vi.mock('$app/state', async () => await import('$lib/components/marketing/fake-app-state.svelte'));
+vi.mock(
+  '$app/state',
+  async () => await import('#lib/components/marketing/fake-app-state.svelte.js')
+);
 
-vi.mock('$lib/webauthn', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('$lib/webauthn')>();
+vi.mock('#lib/webauthn.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('#lib/webauthn.js')>();
   return {
     ...actual,
     isSupported: vi.fn(() => true),
@@ -27,8 +30,8 @@ vi.mock('$lib/webauthn', async (importOriginal) => {
   };
 });
 
-vi.mock('$lib/api', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('$lib/api')>();
+vi.mock('#lib/api.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('#lib/api.js')>();
   return {
     ...actual,
     api: {
@@ -42,8 +45,8 @@ vi.mock('$lib/api', async (importOriginal) => {
 });
 
 import { goto } from '$app/navigation';
-import { page } from '$lib/components/marketing/fake-app-state.svelte';
-import { session } from '$lib/session.svelte';
+import { page } from '#lib/components/marketing/fake-app-state.svelte.js';
+import { session } from '#lib/session.svelte.js';
 import Page from './+page.svelte';
 
 let container: HTMLElement;
@@ -88,13 +91,13 @@ async function signUpAt(search: string) {
 describe('where the signup page lands', () => {
   it('lands on /home with no next', async () => {
     const { goto, assign } = await signUpAt('');
-    expect(goto).toHaveBeenCalledWith('/home', { replaceState: true });
+    expect(goto).toHaveBeenCalledWith('/home', { replace: true });
     expect(assign).not.toHaveBeenCalled();
   });
 
   it('lands on /home for next=/, never on the marketing page', async () => {
     const { goto } = await signUpAt('?next=%2F');
-    expect(goto).toHaveBeenCalledWith('/home', { replaceState: true });
+    expect(goto).toHaveBeenCalledWith('/home', { replace: true });
   });
 
   it('navigates fully to a server route such as /oauth/authorize', async () => {

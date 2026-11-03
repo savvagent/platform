@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { m } from '$lib/paraglide/messages';
-  import { session } from '$lib/session.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { m } from '#lib/paraglide/messages.js';
+  import { session } from '#lib/session.svelte.js';
+  import Loading from '#lib/components/Loading.svelte';
 
   /**
    * `/home` has no content of its own: it forwards.
@@ -20,7 +20,7 @@
   $effect(() => {
     if (!session.ready || !session.signedIn) return;
     const home = session.homeOrg;
-    void goto(home ? `/o/${home}` : '/orgs/new', { replaceState: true });
+    void goto(home ? `/o/${home}` : '/orgs/new', { replace: true });
   });
 </script>
 

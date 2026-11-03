@@ -2,7 +2,7 @@
  * Money, budgets and service names for the console's usage, budgets and
  * billing pages.
  *
- * Pure, and free of English, like `$lib/pricing`: each helper returns a
+ * Pure, and free of English, like `#lib/pricing.js`: each helper returns a
  * formatted value or a structured one the component puts into words.
  *
  * **Money is integer US cents, end to end.** Spend and budgets arrive as
@@ -11,10 +11,10 @@
  * through a float, where `0.29 * 100` is `28.999999999999996`.
  */
 
-import type { Locale } from '$lib/locale';
-import { formatUsd } from '$lib/pricing';
-import { SERVICES, connectorName } from '$lib/services';
-import type { BudgetThreshold, ServiceBudget } from '$lib/types';
+import type { Locale } from '#lib/locale.js';
+import { formatUsd } from '#lib/pricing.js';
+import { SERVICES, connectorName } from '#lib/services.js';
+import type { BudgetThreshold, ServiceBudget } from '#lib/types.js';
 
 /**
  * The largest monthly budget the server accepts, in cents ($10,000,000):

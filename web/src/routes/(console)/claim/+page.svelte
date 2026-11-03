@@ -2,15 +2,15 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
 
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { CONSOLE_HOME } from '$lib/next';
-  import { m } from '$lib/paraglide/messages';
-  import { session } from '$lib/session.svelte';
-  import * as webauthn from '$lib/webauthn';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Field from '$lib/components/Field.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { CONSOLE_HOME } from '#lib/next.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { session } from '#lib/session.svelte.js';
+  import * as webauthn from '#lib/webauthn.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Field from '#lib/components/Field.svelte';
 
   /**
    * Register a new passkey after an admin cleared this account's.
@@ -44,7 +44,7 @@
       // signal attached to two of the three registration paths is the one that
       // gets forgotten when a fourth is added.
       if (session.me) await webauthn.signalAccount(session.me);
-      await goto(CONSOLE_HOME, { replaceState: true });
+      await goto(CONSOLE_HOME, { replace: true });
     } catch (e) {
       error = messageFor(e, m.claim_error_fallback());
     } finally {

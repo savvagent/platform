@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
-import { baseLocale, locales, type Locale } from '$lib/paraglide/runtime';
-import { localizedPath } from '$lib/site';
+import { baseLocale, locales, type Locale } from '#lib/paraglide/runtime.js';
+import { localizedPath } from '#lib/site.js';
 
 import type { EntryGenerator, PageLoad } from './$types';
 

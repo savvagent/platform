@@ -12,10 +12,13 @@ vi.mock('$app/navigation', () => ({
   goto: vi.fn(() => Promise.resolve())
 }));
 
-vi.mock('$app/state', async () => await import('$lib/components/marketing/fake-app-state.svelte'));
+vi.mock(
+  '$app/state',
+  async () => await import('#lib/components/marketing/fake-app-state.svelte.js')
+);
 
-vi.mock('$lib/webauthn', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('$lib/webauthn')>();
+vi.mock('#lib/webauthn.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('#lib/webauthn.js')>();
   return {
     ...actual,
     register: vi.fn(async () => ({ rawId: 'cred-1' })),
@@ -23,8 +26,8 @@ vi.mock('$lib/webauthn', async (importOriginal) => {
   };
 });
 
-vi.mock('$lib/api', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('$lib/api')>();
+vi.mock('#lib/api.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('#lib/api.js')>();
   return {
     ...actual,
     api: {
@@ -37,9 +40,9 @@ vi.mock('$lib/api', async (importOriginal) => {
 });
 
 import { goto } from '$app/navigation';
-import { api } from '$lib/api';
-import { page } from '$lib/components/marketing/fake-app-state.svelte';
-import { session } from '$lib/session.svelte';
+import { api } from '#lib/api.js';
+import { page } from '#lib/components/marketing/fake-app-state.svelte.js';
+import { session } from '#lib/session.svelte.js';
 import Page from './+page.svelte';
 
 let container: HTMLElement;
@@ -65,7 +68,7 @@ describe('where the claim page lands', () => {
     (container.querySelector('form') as HTMLFormElement).requestSubmit();
 
     await vi.waitFor(() => expect(goto).toHaveBeenCalledOnce());
-    expect(goto).toHaveBeenCalledWith('/home', { replaceState: true });
+    expect(goto).toHaveBeenCalledWith('/home', { replace: true });
     expect(api.claimStart).toHaveBeenCalledWith('abc-123');
     unmount(instance);
   });

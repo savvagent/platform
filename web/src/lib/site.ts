@@ -11,8 +11,8 @@
  * one spelling and declared canonical under another.
  */
 
-import { baseLocale, locales } from '$lib/paraglide/runtime';
-import type { Locale } from '$lib/locale';
+import { baseLocale, locales } from '#lib/paraglide/runtime.js';
+import type { Locale } from '#lib/locale.js';
 
 /**
  * The production origin, with no trailing slash.

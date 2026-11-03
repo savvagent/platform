@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { relative } from '$lib/format';
-  import { LOCALE_NAMES, SUPPORTED, applyLocale, type Locale } from '$lib/locale';
-  import { session } from '$lib/session.svelte';
-  import * as webauthn from '$lib/webauthn';
-  import type { Passkey } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import Field from '$lib/components/Field.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { relative } from '#lib/format.js';
+  import { LOCALE_NAMES, SUPPORTED, applyLocale, type Locale } from '#lib/locale.js';
+  import { session } from '#lib/session.svelte.js';
+  import * as webauthn from '#lib/webauthn.js';
+  import type { Passkey } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Card from '#lib/components/Card.svelte';
+  import Field from '#lib/components/Field.svelte';
+  import Loading from '#lib/components/Loading.svelte';
 
   /**
    * The account: its passkeys, and its profile.

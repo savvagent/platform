@@ -2,12 +2,12 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
 
-  import { api, ApiError } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { session } from '$lib/session.svelte';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
+  import { api, ApiError } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { session } from '#lib/session.svelte.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
 
   /**
    * What an invitation link opens.
@@ -38,7 +38,7 @@
     try {
       const joined = await api.acceptInvite(org, token);
       await session.refresh();
-      await goto(`/o/${joined.org.slug}`, { replaceState: true });
+      await goto(`/o/${joined.org.slug}`, { replace: true });
     } catch (e) {
       wrongAccount = e instanceof ApiError && e.status === 403;
       error = messageFor(e, m.invite_error_fallback());

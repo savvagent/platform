@@ -10,7 +10,7 @@
 
 import { vi } from 'vitest';
 
-import type { BudgetsResponse, ServiceBudget, UsageStatus } from '$lib/types';
+import type { BudgetsResponse, ServiceBudget, UsageStatus } from '#lib/types.js';
 
 export const FLAGS_BUDGET = {
   monthlyBudgetCents: 10_000,

@@ -10,9 +10,9 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { getLocale, overwriteGetLocale } from '$lib/paraglide/runtime';
-import { SERVICES } from '$lib/services';
-import { session } from '$lib/session.svelte';
+import { getLocale, overwriteGetLocale } from '#lib/paraglide/runtime.js';
+import { SERVICES } from '#lib/services.js';
+import { session } from '#lib/session.svelte.js';
 import Page from './+page.svelte';
 
 const LATEST = 'https://github.com/savvagent/platform/releases/latest';

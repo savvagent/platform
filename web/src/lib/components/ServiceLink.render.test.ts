@@ -13,12 +13,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /** The console's language, which a test may change: `currentLocale` reads it. */
 const locale = vi.hoisted(() => ({ current: 'en' }));
-vi.mock('$lib/locale', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('$lib/locale')>()),
+vi.mock('#lib/locale.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('#lib/locale.js')>()),
   currentLocale: () => locale.current
 }));
 
-import { serviceBySlug } from '$lib/services';
+import { serviceBySlug } from '#lib/services.js';
 import ServiceLink from './ServiceLink.svelte';
 
 let container: HTMLElement;

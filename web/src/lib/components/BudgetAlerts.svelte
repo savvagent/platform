@@ -1,10 +1,10 @@
 <script lang="ts">
   import { untrack } from 'svelte';
 
-  import { budgetAlerts, formatPercent, serviceName, type BudgetAlert } from '$lib/billing';
-  import { currentLocale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import type { ServiceBudget } from '$lib/types';
+  import { budgetAlerts, formatPercent, serviceName, type BudgetAlert } from '#lib/billing.js';
+  import { currentLocale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import type { ServiceBudget } from '#lib/types.js';
 
   /**
    * The budget thresholds this month has crossed (50, 80, 100%), as the

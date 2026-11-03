@@ -7,7 +7,7 @@
  * reads correctly in every catalog and the tests can pin the rules without a
  * DOM.
  *
- * **The locale is a parameter, not `currentLocale()`.** `$lib/format` reads the
+ * **The locale is a parameter, not `currentLocale()`.** `#lib/format.js` reads the
  * console's resolved locale, which on a marketing page is whatever the visitor
  * last chose in the console, not the language of the URL they are reading. The
  * page passes its own `lang`, so `/de/pricing` groups digits the German way
@@ -17,10 +17,10 @@
  * reader sees `29 US$`, never a euro amount nobody charges.
  */
 
-import { m } from '$lib/paraglide/messages';
-import type { Locale } from '$lib/locale';
-import { SERVICES, connectorName } from '$lib/services';
-import type { Plan, PlanTier, PlansResponse, PriceTier, PricedMeter } from '$lib/types';
+import { m } from '#lib/paraglide/messages.js';
+import type { Locale } from '#lib/locale.js';
+import { SERVICES, connectorName } from '#lib/services.js';
+import type { Plan, PlanTier, PlansResponse, PriceTier, PricedMeter } from '#lib/types.js';
 
 const TIERS: readonly PlanTier[] = ['free', 'team', 'business', 'enterprise'];
 

@@ -1,12 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
 
-  import type { Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { SERVICES } from '$lib/services';
-  import { session } from '$lib/session.svelte';
-  import { localizedPath } from '$lib/site';
-  import Logo from '$lib/components/Logo.svelte';
+  import type { Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { SERVICES } from '#lib/services.js';
+  import { session } from '#lib/session.svelte.js';
+  import { localizedPath } from '#lib/site.js';
+  import Logo from '#lib/components/Logo.svelte';
   import ConsoleLink from './ConsoleLink.svelte';
 
   /**

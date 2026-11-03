@@ -1,4 +1,4 @@
-import { isSupported, type Locale } from '$lib/locale';
+import { isSupported, type Locale } from '#lib/locale.js';
 
 import type { LayoutLoad } from './$types';
 

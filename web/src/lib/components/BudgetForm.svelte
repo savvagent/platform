@@ -1,7 +1,7 @@
 <script lang="ts">
   import { tick, untrack } from 'svelte';
 
-  import { api } from '$lib/api';
+  import { api } from '#lib/api.js';
   import {
     MAX_MONTHLY_BUDGET_CENTS,
     MIN_MONTHLY_BUDGET_CENTS,
@@ -10,11 +10,11 @@
     parseDollars,
     serviceName,
     type DollarsError
-  } from '$lib/billing';
-  import { messageFor } from '$lib/errors';
-  import { currentLocale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import type { ServiceBudget } from '$lib/types';
+  } from '#lib/billing.js';
+  import { messageFor } from '#lib/errors.js';
+  import { currentLocale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import type { ServiceBudget } from '#lib/types.js';
   import Alert from './Alert.svelte';
   import Button from './Button.svelte';
 

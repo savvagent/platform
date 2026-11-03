@@ -2,13 +2,13 @@
   import { page } from '$app/state';
   import type { Snippet } from 'svelte';
 
-  import { api, ApiError } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { OrgContext, provideOrg } from '$lib/org.svelte';
-  import { session } from '$lib/session.svelte';
-  import Alert from '$lib/components/Alert.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { api, ApiError } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { OrgContext, provideOrg } from '#lib/org.svelte.js';
+  import { session } from '#lib/session.svelte.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Loading from '#lib/components/Loading.svelte';
 
   let { children }: { children: Snippet } = $props();
 

@@ -1,10 +1,10 @@
 <script lang="ts">
   import { page } from '$app/state';
 
-  import { LOCALE_NAMES, type Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { CONTACT_EMAIL, MARKETING_LOCALES, localizedPath, stripLocale } from '$lib/site';
-  import { APP_VERSION } from '$lib/version';
+  import { LOCALE_NAMES, type Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { CONTACT_EMAIL, MARKETING_LOCALES, localizedPath, stripLocale } from '#lib/site.js';
+  import { APP_VERSION } from '#lib/version.js';
 
   /**
    * The marketing pages' footer: the language switcher, the API reference,

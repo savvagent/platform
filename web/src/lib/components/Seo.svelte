@@ -1,7 +1,13 @@
 <script lang="ts">
-  import type { Locale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import { MARKETING_LOCALES, OG_LOCALES, SITE_ORIGIN, alternates, localizedPath } from '$lib/site';
+  import type { Locale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import {
+    MARKETING_LOCALES,
+    OG_LOCALES,
+    SITE_ORIGIN,
+    alternates,
+    localizedPath
+  } from '#lib/site.js';
 
   /**
    * A marketing page's head: title, description, canonical URL, every

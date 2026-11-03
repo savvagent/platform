@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { api } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { m } from '$lib/paraglide/messages';
-  import { useOrg } from '$lib/org.svelte';
-  import { slugPreview, person } from '$lib/format';
-  import type { OrgMember, Team, TeamMember } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Card from '$lib/components/Card.svelte';
-  import Empty from '$lib/components/Empty.svelte';
-  import Field from '$lib/components/Field.svelte';
-  import Loading from '$lib/components/Loading.svelte';
+  import { api } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { useOrg } from '#lib/org.svelte.js';
+  import { slugPreview, person } from '#lib/format.js';
+  import type { OrgMember, Team, TeamMember } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Card from '#lib/components/Card.svelte';
+  import Empty from '#lib/components/Empty.svelte';
+  import Field from '#lib/components/Field.svelte';
+  import Loading from '#lib/components/Loading.svelte';
 
   /**
    * Teams — a grouping of members inside an org.

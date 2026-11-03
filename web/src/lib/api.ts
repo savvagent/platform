@@ -191,7 +191,7 @@ export const api = {
    * The rp_id every passkey on this deployment is bound to.
    *
    * Public, and it discloses nothing: the same value is in every challenge this
-   * server hands an unauthenticated caller. `$lib/webauthn` reads it once and
+   * server hands an unauthenticated caller. `#lib/webauthn.js` reads it once and
    * caches it — see `rpId()` there for why guessing is not an option.
    */
   webauthnConfig: () => get<WebauthnConfig>('/api/auth/webauthn'),

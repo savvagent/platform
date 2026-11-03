@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
 
-  import { api, ApiError } from '$lib/api';
-  import { messageFor } from '$lib/errors';
-  import { CONSOLE_HOME, consoleNext, isServerRoute } from '$lib/next';
-  import { m } from '$lib/paraglide/messages';
-  import { session } from '$lib/session.svelte';
-  import * as webauthn from '$lib/webauthn';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Field from '$lib/components/Field.svelte';
+  import { api, ApiError } from '#lib/api.js';
+  import { messageFor } from '#lib/errors.js';
+  import { gotoOrLoad } from '#lib/navigate.js';
+  import { CONSOLE_HOME, consoleNext, isServerRoute } from '#lib/next.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { session } from '#lib/session.svelte.js';
+  import * as webauthn from '#lib/webauthn.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Field from '#lib/components/Field.svelte';
 
   /**
    * Sign in.
@@ -43,7 +43,7 @@
    * `POST /api/auth/sso/start` resolves the identity provider purely from
    * the email's domain; there is no account lookup, so it needs no session
    * either. `sso_not_configured` is the one error this form expects and has
-   * a translated sentence for (see `$lib/errors`), and that sentence itself
+   * a translated sentence for (see `#lib/errors.js`), and that sentence itself
    * points back at the passkey button above rather than naming a second
    * place to go.
    */
@@ -91,7 +91,7 @@
       // server route such as `/oauth/authorize` needs a real navigation.
       const dest = consoleNext(next);
       if (dest && isServerRoute(dest)) location.assign(dest);
-      else await goto(dest ?? CONSOLE_HOME, { replaceState: true });
+      else await gotoOrLoad(dest ?? CONSOLE_HOME);
     } catch (e) {
       // The message is set first. `signalUnknownCredential` cannot throw today,
       // but if it ever could, awaiting it before this line would leave someone

@@ -7,7 +7,7 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { Role, ServiceBudget } from '$lib/types';
+import type { Role, ServiceBudget } from '#lib/types.js';
 import Harness from '../RoleHarness.svelte';
 import { BUDGETS, FLAGS_ROW, CXP_ROW, failure, json, requests, serve } from '../test-fixtures';
 import Page from './+page.svelte';

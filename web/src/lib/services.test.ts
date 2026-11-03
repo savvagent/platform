@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { m } from '$lib/paraglide/messages';
-import { getLocale, locales, overwriteGetLocale } from '$lib/paraglide/runtime';
+import { m } from '#lib/paraglide/messages.js';
+import { getLocale, locales, overwriteGetLocale } from '#lib/paraglide/runtime.js';
 
 import {
   SERVICES,

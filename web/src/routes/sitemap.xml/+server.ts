@@ -1,4 +1,4 @@
-import { sitemapXml } from '$lib/sitemap';
+import { sitemapXml } from '#lib/sitemap.js';
 
 import type { RequestHandler } from './$types';
 

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages';
-  import { SERVICES } from '$lib/services';
-  import Logo from '$lib/components/Logo.svelte';
-  import Seo from '$lib/components/Seo.svelte';
-  import AccountActions from '$lib/components/marketing/AccountActions.svelte';
-  import ProductCard from '$lib/components/marketing/ProductCard.svelte';
-  import LinkButton from '$lib/components/LinkButton.svelte';
-  import { localizedPath } from '$lib/site';
+  import { m } from '#lib/paraglide/messages.js';
+  import { SERVICES } from '#lib/services.js';
+  import Logo from '#lib/components/Logo.svelte';
+  import Seo from '#lib/components/Seo.svelte';
+  import AccountActions from '#lib/components/marketing/AccountActions.svelte';
+  import ProductCard from '#lib/components/marketing/ProductCard.svelte';
+  import LinkButton from '#lib/components/LinkButton.svelte';
+  import { localizedPath } from '#lib/site.js';
 
   import type { PageData } from './$types';
 

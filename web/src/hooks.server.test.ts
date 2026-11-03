@@ -1,4 +1,5 @@
-import type { RequestEvent, ResolveOptions } from '@sveltejs/kit';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { ResolveOptions } from '@sveltejs/kit/hooks';
 import { describe, expect, it } from 'vitest';
 
 import { handle } from './hooks.server';

@@ -1,6 +1,6 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
-import { isSupported } from '$lib/locale';
+import { isSupported } from '#lib/locale.js';
 
 /**
  * The whole opening of the root element, not the bare placeholder, so the
@@ -24,7 +24,7 @@ const PLACEHOLDER = '<html lang="%savvagent.lang%"';
  * the matcher must not be able to write arbitrary text into the document.
  *
  * The console still sets `<html lang>` itself at boot (`resolveAtBoot` in
- * `$lib/locale`), since its language comes from the account and the browser,
+ * `#lib/locale.js`), since its language comes from the account and the browser,
  * which no build step can know.
  */
 export const handle: Handle = ({ event, resolve }) => {

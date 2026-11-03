@@ -25,7 +25,7 @@ describe('the copies this script keeps of the app’s rules', () => {
     expect(PAGE_PATHS).toEqual(MARKETING_PATHS);
   });
 
-  it('uses the same origin and locale spelling as $lib/site', () => {
+  it('uses the same origin and locale spelling as #lib/site', () => {
     expect(SITE_ORIGIN).toBe(SITE_TS_ORIGIN);
     const pages = expectedPages(settings);
     for (const lang of MARKETING_LOCALES) {

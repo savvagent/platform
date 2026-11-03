@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { formatCents, formatPercent, serviceName } from '$lib/billing';
-  import { currentLocale } from '$lib/locale';
-  import { m } from '$lib/paraglide/messages';
-  import type { ServiceUsage } from '$lib/types';
+  import { formatCents, formatPercent, serviceName } from '#lib/billing.js';
+  import { currentLocale } from '#lib/locale.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import type { ServiceUsage } from '#lib/types.js';
 
   /**
    * One service's spend this month, against its budget when it has one.

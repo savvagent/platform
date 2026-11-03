@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { serviceName } from '$lib/billing';
-  import { m } from '$lib/paraglide/messages';
-  import type { ServiceUsage } from '$lib/types';
+  import { serviceName } from '#lib/billing.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import type { ServiceUsage } from '#lib/types.js';
   import LinkButton from './LinkButton.svelte';
 
   /**

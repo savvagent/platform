@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
 
-  import { api } from '$lib/api';
-  import { m } from '$lib/paraglide/messages';
-  import { parseCatalog, usageByService } from '$lib/pricing';
-  import { CONTACT_EMAIL } from '$lib/site';
-  import type { PlansResponse } from '$lib/types';
-  import Alert from '$lib/components/Alert.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Seo from '$lib/components/Seo.svelte';
-  import PlanCard from '$lib/components/marketing/PlanCard.svelte';
-  import ServiceUsage from '$lib/components/marketing/ServiceUsage.svelte';
+  import { api } from '#lib/api.js';
+  import { m } from '#lib/paraglide/messages.js';
+  import { parseCatalog, usageByService } from '#lib/pricing.js';
+  import { CONTACT_EMAIL } from '#lib/site.js';
+  import type { PlansResponse } from '#lib/types.js';
+  import Alert from '#lib/components/Alert.svelte';
+  import Button from '#lib/components/Button.svelte';
+  import Seo from '#lib/components/Seo.svelte';
+  import PlanCard from '#lib/components/marketing/PlanCard.svelte';
+  import ServiceUsage from '#lib/components/marketing/ServiceUsage.svelte';
 
   import type { PageData } from './$types';
 
