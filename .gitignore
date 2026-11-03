@@ -12,3 +12,7 @@ web/build
 # Paraglide compiles messages into here on every check/build.
 web/src/lib/paraglide
 web/project.inlang/cache
+
+# Machine-local agent tooling output.
+.claude/worktrees/
+.playwright-mcp/
