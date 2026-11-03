@@ -48,15 +48,15 @@ describe('the services list', () => {
   });
 
   /**
-   * Only Savvagent Tower serves a web console. Flags and CXP answer a browser
-   * at their origin with a JSON 404, so a `consoleUrl` on either would put a
-   * dead end back in the header.
+   * Savvagent Tower serves its console at its origin, and Savvagent CXP under
+   * `/console/`. Flags answers a browser with a JSON 404, so a `consoleUrl` on
+   * it would put a dead end back in the header.
    */
-  it('gives a web console to Savvagent Tower only', () => {
+  it('gives a web console to Savvagent Tower and Savvagent CXP only', () => {
     expect(SERVICES.map((s) => [s.slug, s.consoleUrl])).toEqual([
       ['tower', 'https://tower.savvagent.com'],
       ['flags', undefined],
-      ['cxp', undefined]
+      ['cxp', 'https://cxp.savvagent.com/console/']
     ]);
   });
 
@@ -158,14 +158,22 @@ describe('where a link to a service goes', () => {
       kind: 'console',
       href: 'https://tower.savvagent.com'
     });
+    // A console under a path is linked to that path, not to the origin.
+    expect(serviceLink(serviceBySlug('cxp')!, 'en')).toEqual({
+      kind: 'console',
+      href: 'https://cxp.savvagent.com/console/'
+    });
   });
 
   it("goes to the product page's connect card, in the given language, when there is not", () => {
-    const cxp = serviceBySlug('cxp')!;
-    expect(serviceLink(cxp, 'en')).toEqual({ kind: 'connector', href: '/products/cxp#connect' });
-    expect(serviceLink(cxp, 'es')).toEqual({
+    const flags = serviceBySlug('flags')!;
+    expect(serviceLink(flags, 'en')).toEqual({
       kind: 'connector',
-      href: '/es/products/cxp#connect'
+      href: '/products/flags#connect'
+    });
+    expect(serviceLink(flags, 'es')).toEqual({
+      kind: 'connector',
+      href: '/es/products/flags#connect'
     });
   });
 

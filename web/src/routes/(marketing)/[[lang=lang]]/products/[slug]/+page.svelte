@@ -28,11 +28,12 @@
    * text names the destination, with an arrow (hidden from assistive
    * technology, which already hears the name) marking it as leaving this
    * site. The second button is this site's account console, through
-   * `ConsoleLink`, so it follows the session like the header's.
+   * `ConsoleLink`, so it follows the session like the header's; it is
+   * `named` ("Open Savvagent console"), so the two never read alike (#155).
    *
    * **A product with no console of its own says so, rather than linking to
-   * its origin.** Savvagent Flags and Savvagent CXP answer a browser with a JSON 404:
-   * the place a person uses them is their AI assistant. So for a service
+   * its origin.** Savvagent Flags answers a browser with a JSON 404: the
+   * place a person uses it is their AI assistant. So for a service
    * without `consoleUrl` the primary button is "Add to your AI assistant", an
    * in-page link to the connect card, and one line under the buttons says
    * there is no web console and where usage and billing are instead. That
@@ -61,7 +62,7 @@
   const others = $derived(SERVICES.filter((candidate) => candidate.slug !== data.slug));
   /** Where `serviceLink` sends a link to this service: the one place that decides "has a console". */
   const link = $derived(service ? serviceLink(service, data.lang) : undefined);
-  /** No web console of its own, but an endpoint to add to an assistant: Flags, CXP. */
+  /** No web console of its own, but an endpoint to add to an assistant: Flags. */
   const agentOnly = $derived(link?.kind === 'connector');
   const savvagentConsole = $derived(consoleEntry(session));
   const command = $derived(service ? claudeCodeCommand(service) : undefined);
@@ -145,7 +146,7 @@
             {m.product_add_to_assistant()}
           </LinkButton>
         {/if}
-        <ConsoleLink tone="quiet" />
+        <ConsoleLink tone="quiet" named />
       </div>
       {#if agentOnly}
         <!-- Underlined at rest: inside a sentence, colour alone would not mark it as a link. -->

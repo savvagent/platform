@@ -99,14 +99,13 @@ describe('the organization overview', () => {
     expect(tiles.some((t) => t?.includes('2') && t.includes('Members'))).toBe(true);
     expect(tiles.some((t) => t?.includes('1') && t.includes('Teams'))).toBe(true);
 
-    // Savvagent Tower has a web console to leave for; Flags and CXP do not, so
-    // they go to their connect cards, badged as connectors.
+    // Savvagent Tower and Savvagent CXP have web consoles to leave for; Flags
+    // does not, so it goes to its connect card, badged as a connector.
     const tower = container.querySelector('a[href="https://tower.savvagent.com"]');
     expect(tower?.textContent?.trim()).toBe('Savvagent Tower');
-    for (const [slug, name] of [
-      ['flags', 'Savvagent Flags'],
-      ['cxp', 'Savvagent CXP']
-    ]) {
+    const cxpConsole = container.querySelector('a[href="https://cxp.savvagent.com/console/"]');
+    expect(cxpConsole?.textContent?.trim()).toBe('Savvagent CXP');
+    for (const [slug, name] of [['flags', 'Savvagent Flags']]) {
       const link = container.querySelector(`a[href="/products/${slug}#connect"]`);
       expect(link?.getAttribute('aria-label')).toBe(`${name}, connector`);
       expect(link?.textContent).toContain('Connector');

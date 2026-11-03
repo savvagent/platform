@@ -38,7 +38,7 @@ afterEach(() => {
 });
 
 describe('the console header', () => {
-  it('links out to Tower, and to the connect cards of Flags and CXP', () => {
+  it('links out to Tower and CXP, and to the connect card of Flags', () => {
     const children = createRawSnippet(() => ({ render: () => '<p>page</p>' }));
     const instance = mount(Layout, { target: container, props: { children } });
     flushSync();
@@ -52,13 +52,11 @@ describe('the console header', () => {
     expect(links).toEqual([
       ['https://tower.savvagent.com', 'Savvagent Tower'],
       ['/products/flags#connect', 'Savvagent Flags, connector'],
-      ['/products/cxp#connect', 'Savvagent CXP, connector']
+      ['https://cxp.savvagent.com/console/', 'Savvagent CXP']
     ]);
-    for (const slug of ['flags', 'cxp']) {
-      expect(nav!.querySelector(`a[href="/products/${slug}#connect"]`)?.textContent).toContain(
-        'Connector'
-      );
-    }
+    expect(nav!.querySelector('a[href="/products/flags#connect"]')?.textContent).toContain(
+      'Connector'
+    );
 
     unmount(instance);
   });

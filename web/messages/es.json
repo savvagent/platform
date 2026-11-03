@@ -329,6 +329,7 @@
   "marketing_nav_menu": "Menú",
   "marketing_create_account": "Crear cuenta",
   "marketing_open_console": "Abrir la consola",
+  "marketing_open_savvagent_console": "Abrir la consola de Savvagent",
   "marketing_footer_language": "Idioma",
   "marketing_footer_contact": "Contacto:",
   "marketing_locale_hint": "Leer en {language}",

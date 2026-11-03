@@ -4,9 +4,9 @@
  * and the MCP endpoint an agent is pointed at, as text that can be copied.
  *
  * Its primary button depends on whether the product has a web console of its
- * own. Savvagent Tower does, and the button leaves for it; Savvagent Flags and
- * Savvagent CXP live inside the visitor's AI assistant, so theirs stays on the page and
- * points at the connect card.
+ * own. Savvagent Tower and Savvagent CXP do, and the button leaves for it;
+ * Savvagent Flags lives inside the visitor's AI assistant, so its button stays
+ * on the page and points at the connect card.
  */
 
 import { flushSync, mount, unmount } from 'svelte';
@@ -117,7 +117,7 @@ describe('the product page', () => {
     unmount(instance);
   });
 
-  it('turns "Create account" into "Open console" for a signed-in visitor', () => {
+  it('turns "Create account" into "Open Savvagent console" for a signed-in visitor', () => {
     const instance = mountProduct('tower');
     expect(linkText('/signup')).toBe('Create account');
 
@@ -129,7 +129,7 @@ describe('the product page', () => {
     flushSync();
 
     expect(container.querySelector('a[href="/signup"]')).toBeNull();
-    expect(linkText('/o/acme')).toBe('Open console');
+    expect(linkText('/o/acme')).toBe('Open Savvagent console');
     expect(
       container.querySelector('a[href="/o/acme"]')?.hasAttribute('data-sveltekit-reload')
     ).toBe(true);
@@ -137,20 +137,42 @@ describe('the product page', () => {
     unmount(instance);
   });
 
-  it("keeps the way into a product's own web console when it has one", () => {
-    const instance = mountProduct('tower');
+  for (const [slug, name, href] of [
+    ['tower', 'Savvagent Tower', 'https://tower.savvagent.com'],
+    ['cxp', 'Savvagent CXP', 'https://cxp.savvagent.com/console/']
+  ] as const) {
+    it(`keeps the way into ${name}'s own web console`, () => {
+      const instance = mountProduct(slug);
 
-    expect(linkText('https://tower.savvagent.com')).toContain('Open the Savvagent Tower console');
-    expect(container.querySelector('a[href="#connect"]')).toBeNull();
-    expect(container.textContent).not.toContain('has no web console of its own');
+      expect(linkText(href)).toContain(`Open the ${name} console`);
+      expect(container.querySelector('a[href="#connect"]')).toBeNull();
+      expect(container.textContent).not.toContain('has no web console of its own');
+
+      unmount(instance);
+    });
+  }
+
+  it("names the account console beside a product's own, so the two never read alike (#155)", () => {
+    session.me = {
+      orgs: [
+        { orgId: 'o1', userId: 'u1', role: 'owner', orgSlug: 'acme', orgName: 'Acme', plan: 'free' }
+      ]
+    } as unknown as Me;
+    const instance = mountProduct('cxp');
+
+    expect(linkText('https://cxp.savvagent.com/console/')).toContain(
+      'Open the Savvagent CXP console'
+    );
+    expect(linkText('/o/acme')).toBe('Open Savvagent console');
+    const plain = Array.from(container.querySelectorAll('a')).filter(
+      (a) => a.textContent?.trim() === 'Open console'
+    );
+    expect(plain).toHaveLength(0);
 
     unmount(instance);
   });
 
-  for (const [slug, name] of [
-    ['flags', 'Savvagent Flags'],
-    ['cxp', 'Savvagent CXP']
-  ] as const) {
+  for (const [slug, name] of [['flags', 'Savvagent Flags']] as const) {
     it(`sends a visitor to the connect card for ${name}, which has no web console`, () => {
       const instance = mountProduct(slug);
 
@@ -188,7 +210,7 @@ describe('the product page', () => {
         { orgId: 'o1', userId: 'u1', role: 'owner', orgSlug: 'acme', orgName: 'Acme', plan: 'free' }
       ]
     } as unknown as Me;
-    const instance = mountProduct('cxp');
+    const instance = mountProduct('flags');
 
     const otto = Array.from(container.querySelectorAll('a')).find(
       (a) => a.textContent?.trim() === 'Savvagent console'
@@ -224,7 +246,7 @@ describe('the product page', () => {
   });
 
   it('moves focus to the connect card, marked as arrived, when the button is followed', async () => {
-    const instance = mountProduct('cxp');
+    const instance = mountProduct('flags');
     const connect = container.querySelector<HTMLElement>('#connect')!;
     expect(connect.classList.contains('arrived')).toBe(false);
 
@@ -242,7 +264,7 @@ describe('the product page', () => {
   });
 
   it('does not mark a click on the card itself as an arrival', () => {
-    const instance = mountProduct('cxp');
+    const instance = mountProduct('flags');
     const connect = container.querySelector<HTMLElement>('#connect')!;
 
     connect.focus();
@@ -254,16 +276,16 @@ describe('the product page', () => {
   });
 
   it('moves focus to the connect card when the hash changes to #connect, and only then', async () => {
-    const instance = mountProduct('cxp');
+    const instance = mountProduct('flags');
     const connect = container.querySelector<HTMLElement>('#connect')!;
 
-    history.replaceState(null, '', '/products/cxp#elsewhere');
+    history.replaceState(null, '', '/products/flags#elsewhere');
     window.dispatchEvent(new HashChangeEvent('hashchange'));
     await Promise.resolve();
     flushSync();
     expect(document.activeElement).not.toBe(connect);
 
-    history.replaceState(null, '', '/products/cxp#connect');
+    history.replaceState(null, '', '/products/flags#connect');
     window.dispatchEvent(new HashChangeEvent('hashchange'));
     await vi.waitFor(() => expect(document.activeElement).toBe(connect));
 
@@ -271,8 +293,8 @@ describe('the product page', () => {
   });
 
   it('moves focus to the connect card on arriving at #connect from another page', async () => {
-    history.replaceState(null, '', '/products/cxp#connect');
-    const instance = mountProduct('cxp');
+    history.replaceState(null, '', '/products/flags#connect');
+    const instance = mountProduct('flags');
 
     await vi.waitFor(() =>
       expect(document.activeElement).toBe(container.querySelector('#connect'))
@@ -285,8 +307,8 @@ describe('the product page', () => {
     const elsewhere = document.createElement('button');
     document.body.appendChild(elsewhere);
     elsewhere.focus();
-    history.replaceState(null, '', '/products/cxp#connect');
-    const instance = mountProduct('cxp');
+    history.replaceState(null, '', '/products/flags#connect');
+    const instance = mountProduct('flags');
 
     await Promise.resolve();
     flushSync();
