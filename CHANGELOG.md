@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.19.0](https://github.com/savvagent/platform/compare/v0.18.2...v0.19.0) (2026-11-03)
+
+
+### Features
+
+* **web:** publish the service list at /services/v1.json ([#162](https://github.com/savvagent/platform/issues/162)) ([78f6d6c](https://github.com/savvagent/platform/commit/78f6d6c14a32bc8c17f65df27a6a739b54a794d7)), closes [#157](https://github.com/savvagent/platform/issues/157)
+
+
+### Bug Fixes
+
+* **web:** send "Open console" for CXP to the CXP console ([#159](https://github.com/savvagent/platform/issues/159)) ([3d6b6f9](https://github.com/savvagent/platform/commit/3d6b6f9fcd50b124919b54f93bdc46e335205540)), closes [#155](https://github.com/savvagent/platform/issues/155)
+
 ## [0.18.2](https://github.com/savvagent/platform/compare/v0.18.1...v0.18.2) (2026-11-02)
 
 
