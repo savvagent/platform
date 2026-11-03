@@ -103,6 +103,49 @@ export function isNeverProxied(path: string): boolean {
   return p !== undefined && underPrefix(p, NEVER_PROXIED);
 }
 
+/**
+ * Files in the bundle that other Savvagent origins read with `fetch`: today
+ * the service list every console's header renders (`docs/service-directory.md`).
+ * **Mirrors `PUBLIC_DATA` in `crates/savvagent-platform-server/src/lib.rs`**,
+ * which adds the same headers when the server serves the bundle itself.
+ *
+ * An exact list, not a prefix: `/services` alone is an extensionless path, a
+ * page route that must still fall through to the shell. A new version of the
+ * list is a new entry here, beside the old one.
+ */
+export const PUBLIC_DATA = ['/services/v1.json'];
+
+/**
+ * What a public data file is served with.
+ *
+ * `Access-Control-Allow-Origin: *` rather than a list of console origins: the
+ * file is the same public data the marketing pages print, it carries no
+ * credential, and `*` is the one value a browser refuses to combine with
+ * credentials, so it cannot turn into a cookie-bearing read. A list would be a
+ * second copy of the consoles' origins to keep in step with the file, would
+ * leave out a self-hoster's or a developer's console, and would need
+ * `Vary: Origin`, which splits every cache by caller.
+ *
+ * `max-age=300` matches `GET /api/plans`: a change to the list reaches every
+ * console within five minutes of a deploy, with no rebuild of any of them.
+ */
+export const PUBLIC_DATA_HEADERS: Readonly<Record<string, string>> = {
+  'access-control-allow-origin': '*',
+  'cache-control': 'public, max-age=300',
+  'x-content-type-options': 'nosniff'
+};
+
+/** A copy of `response` with the public data headers; the binding's headers are immutable. */
+function publicData(response: Response): Response {
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(PUBLIC_DATA_HEADERS)) headers.set(name, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+
 export interface Env {
   /** The built `web/build` bundle, uploaded with the Worker. */
   ASSETS: Fetcher;
@@ -247,6 +290,9 @@ async function fromBundle(request: Request, env: Env, url: URL, path: string): P
   }
 
   const response = await env.ASSETS.fetch(request);
+  if (page && PUBLIC_DATA.includes(path)) {
+    return publicData(response);
+  }
   if (response.status !== 404 || !page || !extensionless(path)) {
     return response;
   }

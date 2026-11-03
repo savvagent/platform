@@ -14,7 +14,9 @@
 //!   /.well-known/…            savvagent-web    AS discovery, open by necessity
 //!   everything else           web/build   prerendered pages, then the SPA shell
 //!                                         (200.html, noindex) for client routes;
-//!                                         only with SAVVAGENT_STATIC_DIR set
+//!                                         only with SAVVAGENT_STATIC_DIR set;
+//!                                         /services/v1.json from there with CORS
+//!                                         `*` (docs/service-directory.md)
 //! ```
 //!
 //! The resource-server-facing endpoints authenticate with the resource
@@ -289,7 +291,8 @@ const SHELL: &str = "200.html";
 ///    well as `es.html` a file.
 /// 8. A request for a page's own file, `/pricing.html`, is `308`'d to
 ///    `/pricing`, as the Cloudflare binding does: one URL per page.
-/// 9. The path as given: the assets.
+/// 9. The path as given: the assets. A [`PUBLIC_DATA`] file is answered
+///    here, with the headers that let other origins read and cache it.
 /// 10. What is left: an extensionless `GET`/`HEAD` gets the shell, and
 ///     anything else keeps its answer. A missing `/_app/x.js` answered with
 ///     HTML is a syntax error in the browser.
@@ -346,6 +349,9 @@ async fn route(files: &ServeDir, shell: ServeFile, req: Request<Body>) -> Respon
     }
 
     let res = lookup(files, &req, &raw).await;
+    if page_method && PUBLIC_DATA.contains(&path.as_str()) {
+        return public_data(res);
+    }
     if page_method && last.ends_with(".html") && res.status() != StatusCode::NOT_FOUND {
         if let Some(page) = path.strip_suffix(".html") {
             return redirect_on_site(page, query);
@@ -507,6 +513,47 @@ where
         Ok(res) => res.map(Body::new),
         Err(never) => match never {},
     }
+}
+
+/// Files in the bundle that other Savvagent origins read with `fetch`: today
+/// the service list every console's header renders
+/// (`docs/service-directory.md`), written by the build from
+/// `web/src/lib/services.ts`.
+///
+/// **`web/worker/index.ts` keeps the matching list (`PUBLIC_DATA`) and headers
+/// for the Cloudflare deployment** and must not drift from this one.
+///
+/// An exact list, not a prefix: `/services` alone is a page route and must
+/// still get the shell. A new version of the list is a new entry, beside the
+/// old one.
+const PUBLIC_DATA: [&str; 1] = ["/services/v1.json"];
+
+/// `Access-Control-Allow-Origin: *` rather than a list of console origins: the
+/// file is the same public data the marketing pages print, no credential is
+/// involved, and `*` is the one value a browser refuses to combine with
+/// credentials, so it cannot become a cookie-bearing read. A list would be a
+/// second copy of the consoles' origins to keep in step with the file, would
+/// shut out a self-hoster's or a developer's console, and would need
+/// `Vary: Origin`, which splits every cache by caller.
+///
+/// `max-age=300` matches `GET /api/plans`: a change to the list reaches every
+/// console within five minutes of a deploy, with no rebuild of any of them.
+/// tower-http's `Last-Modified` stays, so a revalidation can be a `304`.
+fn public_data(mut res: Response) -> Response {
+    let headers = res.headers_mut();
+    headers.insert(
+        axum::http::header::ACCESS_CONTROL_ALLOW_ORIGIN,
+        HeaderValue::from_static("*"),
+    );
+    headers.insert(
+        axum::http::header::CACHE_CONTROL,
+        HeaderValue::from_static("public, max-age=300"),
+    );
+    headers.insert(
+        axum::http::header::X_CONTENT_TYPE_OPTIONS,
+        HeaderValue::from_static("nosniff"),
+    );
+    res
 }
 
 fn noindex(mut res: Response) -> Response {
@@ -706,7 +753,7 @@ mod tests {
     fn bundle(test: &str) -> Bundle {
         let dir =
             std::env::temp_dir().join(format!("otto-console-test-{}-{test}", std::process::id()));
-        for sub in ["_app", "es", "products"] {
+        for sub in ["_app", "es", "products", "services"] {
             std::fs::create_dir_all(dir.join(sub)).expect("mkdir");
         }
         for (file, body) in [
@@ -717,6 +764,7 @@ mod tests {
             ("es/pricing.html", "<html>es pricing</html>"),
             ("products/factory.html", "<html>factory</html>"),
             ("_app/app.js", "console.log(1)"),
+            ("services/v1.json", SERVICES_JSON),
         ] {
             std::fs::write(dir.join(file), body).expect(file);
         }
@@ -724,6 +772,100 @@ mod tests {
     }
 
     const SHELL_HTML: &str = "<html>shell</html>";
+    const SERVICES_JSON: &str = r#"{"version":1,"services":[]}"#;
+
+    /// The service list is read cross-origin by every other console's header:
+    /// it is served as JSON, readable from any origin without credentials, and
+    /// cacheable, for `GET` and `HEAD`, however the path is spelled.
+    #[tokio::test]
+    async fn the_service_list_is_public_and_cacheable() {
+        let bundle = bundle("public-data");
+        let make = || console_app(&bundle);
+
+        for method in [Method::GET, Method::HEAD] {
+            for path in [
+                "/services/v1.json",
+                "/services/v1%2Ejson",
+                "//services//v1.json",
+            ] {
+                let req = Request::builder()
+                    .method(method.clone())
+                    .uri(path)
+                    .header("origin", "https://tower.savvagent.com")
+                    .body(Body::empty())
+                    .unwrap();
+                let res = send(make(), req).await;
+                let header = |name: &str| {
+                    res.headers()
+                        .get(name)
+                        .and_then(|v| v.to_str().ok())
+                        .map(str::to_owned)
+                };
+                let at = format!("{method} {path}");
+                assert_eq!(res.status(), StatusCode::OK, "{at}");
+                assert_eq!(
+                    header("access-control-allow-origin").as_deref(),
+                    Some("*"),
+                    "{at}"
+                );
+                assert_eq!(
+                    header("cache-control").as_deref(),
+                    Some("public, max-age=300"),
+                    "{at}"
+                );
+                assert_eq!(
+                    header("x-content-type-options").as_deref(),
+                    Some("nosniff"),
+                    "{at}"
+                );
+                assert_eq!(
+                    header("content-type").as_deref(),
+                    Some("application/json"),
+                    "{at}"
+                );
+                // `*` must never be paired with credentials.
+                assert_eq!(header("access-control-allow-credentials"), None, "{at}");
+                assert_eq!(header("x-robots-tag"), None, "{at}");
+                assert!(header("last-modified").is_some(), "{at}");
+                if method == Method::GET {
+                    assert_eq!(body(res).await, SERVICES_JSON, "{at}");
+                }
+            }
+        }
+    }
+
+    /// Only the listed file gets those headers. `/services` alone is a page
+    /// route, so it is still the shell; pages and assets are untouched.
+    #[tokio::test]
+    async fn only_the_service_list_is_cross_origin() {
+        let bundle = bundle("public-data-only");
+        let make = || console_app(&bundle);
+
+        for path in [
+            "/",
+            "/pricing",
+            "/_app/app.js",
+            "/o/acme/members",
+            "/services",
+        ] {
+            let res = get(make(), path).await;
+            assert_eq!(res.status(), StatusCode::OK, "{path}");
+            assert!(
+                res.headers().get("access-control-allow-origin").is_none(),
+                "{path}"
+            );
+        }
+        let (_, shell) = status_and_body(make(), "/services").await;
+        assert_eq!(shell, SHELL_HTML);
+
+        // A write is not a read of public data: tower-http's own `405`.
+        let req = Request::post("/services/v1.json")
+            .body(Body::empty())
+            .unwrap();
+        let res = send(make(), req).await;
+        assert_eq!(res.status(), StatusCode::METHOD_NOT_ALLOWED);
+        assert!(res.headers().get("access-control-allow-origin").is_none());
+    }
 
     /// A router over a fresh bundle; the bundle must outlive the router.
     fn console_app(bundle: &Bundle) -> Router {

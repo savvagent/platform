@@ -221,6 +221,54 @@ export function checkRobots(text, paths) {
   return errors;
 }
 
+/** Mirrors `SERVICE_DIRECTORY_PATH` in `src/lib/services.ts`, as a file in the bundle. */
+export const SERVICE_DIRECTORY_FILE = 'services/v1.json';
+
+/**
+ * What is wrong with the published service list (`docs/service-directory.md`):
+ * every other console's header reads it, so a build that wrote no file, a
+ * file that is not JSON, or one that lost a product, is a broken header on
+ * another origin that this site's own pages would never show.
+ */
+export function checkServiceDirectory(text, file = SERVICE_DIRECTORY_FILE) {
+  let body;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    return [`${file}: not JSON`];
+  }
+  const errors = [];
+  if (body?.version !== 1) errors.push(`${file}: expected "version": 1`);
+  const services = Array.isArray(body?.services) ? body.services : [];
+  const slugs = services.map((service) => service?.slug);
+  if (JSON.stringify(slugs) !== JSON.stringify(PRODUCT_SLUGS)) {
+    errors.push(
+      `${file}: lists ${JSON.stringify(slugs)}, expected ${JSON.stringify(PRODUCT_SLUGS)}`
+    );
+  }
+  for (const service of services) {
+    const keys = Object.keys(service ?? {}).sort();
+    if (
+      JSON.stringify(keys) !==
+      JSON.stringify(['connectPath', 'consoleUrl', 'mcpUrl', 'name', 'slug'])
+    ) {
+      errors.push(`${file}: ${service?.slug} has keys ${keys.join(', ')}`);
+    }
+    for (const key of ['consoleUrl', 'mcpUrl']) {
+      const url = service?.[key];
+      if (url !== null && !(typeof url === 'string' && url.startsWith('https://'))) {
+        errors.push(`${file}: ${service?.slug} ${key} is neither https nor null`);
+      }
+    }
+    const connect = service?.connectPath;
+    const expected = service?.mcpUrl ? `/products/${service?.slug}#connect` : null;
+    if (connect !== expected) {
+      errors.push(`${file}: ${service?.slug} connectPath is ${connect}, expected ${expected}`);
+    }
+  }
+  return errors;
+}
+
 /** The files the placeholder scan reads; images and fonts are not text. */
 const TEXT_EXTENSIONS = new Set(['.html', '.xml', '.txt', '.js']);
 
@@ -247,8 +295,11 @@ export function checkBuild(
     else errors.push(...checkPage(read(page.file), page, catalog(page.lang)));
   }
 
-  for (const file of ['200.html', 'sitemap.xml', 'robots.txt']) {
+  for (const file of ['200.html', 'sitemap.xml', 'robots.txt', SERVICE_DIRECTORY_FILE]) {
     if (!existsSync(join(dir, file))) errors.push(`${file}: missing`);
+  }
+  if (existsSync(join(dir, SERVICE_DIRECTORY_FILE))) {
+    errors.push(...checkServiceDirectory(read(SERVICE_DIRECTORY_FILE)));
   }
   if (existsSync(join(dir, '200.html'))) errors.push(...checkShell(read('200.html')));
   if (existsSync(join(dir, 'robots.txt'))) {

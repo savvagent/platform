@@ -24,6 +24,13 @@
  *
  * `consoleUrl` and `mcpUrl` are https only — `servicesIn` drops anything else,
  * so a typo cannot put a plaintext or `javascript:` link in the header.
+ *
+ * **Other consoles read this list at runtime.** The build writes
+ * `serviceDirectory()` to `/services/v1.json`, which every Savvagent console's
+ * header (through `@savvagent/console-ui`) fetches cross-origin. It is made
+ * from `SERVICES`, the same filtered list this site's own header and product
+ * pages render, so the two cannot disagree. The response shape is a contract:
+ * see `docs/service-directory.md` before changing `ServiceDirectory`.
  */
 
 import type { Locale } from '#lib/locale.js';
@@ -236,4 +243,63 @@ export function mcpServerName(service: Service): string {
 export function claudeCodeCommand(service: Service): string | undefined {
   if (!service.mcpUrl) return undefined;
   return `claude mcp add --transport http ${mcpServerName(service)} ${service.mcpUrl}`;
+}
+
+/**
+ * The version of the published service list. Part of its path
+ * (`SERVICE_DIRECTORY_PATH`) and repeated in its body.
+ *
+ * Adding a field is not a new version. Removing or renaming one, or changing
+ * what one means, is: publish `/services/v2.json` beside v1 and keep v1 until
+ * every pinned `@savvagent/console-ui` has moved. See
+ * `docs/service-directory.md`.
+ */
+export const SERVICE_DIRECTORY_VERSION = 1;
+
+/** Where the build writes the service list, on the platform's origin. */
+export const SERVICE_DIRECTORY_PATH = `/services/v${SERVICE_DIRECTORY_VERSION}.json`;
+
+/** One service as other consoles see it: where to send a person, and nothing else. */
+export interface ServiceDirectoryEntry {
+  slug: string;
+  name: string;
+  /** `null` when the service has no web console (see `Service.consoleUrl`). */
+  consoleUrl: string | null;
+  /** `null` when the service has no MCP endpoint (see `Service.mcpUrl`). */
+  mcpUrl: string | null;
+  /**
+   * The product page's connect card, as a path on the platform's own origin
+   * (`/products/{slug}#connect`), so a console resolves it against the URL it
+   * read the list from and a self-hosted platform needs no rebuild. `null`
+   * when there is no MCP endpoint to connect to.
+   */
+  connectPath: string | null;
+}
+
+/** The body of `SERVICE_DIRECTORY_PATH`. */
+export interface ServiceDirectory {
+  version: typeof SERVICE_DIRECTORY_VERSION;
+  services: ServiceDirectoryEntry[];
+}
+
+/**
+ * The service list as it is published for other consoles.
+ *
+ * Filtered by `servicesIn` here as well, so an unsafe entry is dropped even
+ * when a caller passes a list that has not been through it. Each field is
+ * picked by name, so the marketing copy (and anything added to `Service`
+ * later) never leaks into a public contract by accident. An absent URL is
+ * `null` rather than a missing key, so every entry has the same five keys.
+ */
+export function serviceDirectory(services: readonly Service[] = SERVICES): ServiceDirectory {
+  return {
+    version: SERVICE_DIRECTORY_VERSION,
+    services: servicesIn(services).map((service) => ({
+      slug: service.slug,
+      name: service.name,
+      consoleUrl: service.consoleUrl ?? null,
+      mcpUrl: service.mcpUrl ?? null,
+      connectPath: service.mcpUrl ? `/products/${service.slug}#connect` : null
+    }))
+  };
 }

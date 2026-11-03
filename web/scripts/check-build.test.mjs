@@ -5,13 +5,16 @@ import { dirname, join, relative } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { MARKETING_LOCALES, SITE_ORIGIN as SITE_TS_ORIGIN, localizedPath } from '../src/lib/site';
+import { SERVICE_DIRECTORY_PATH, serviceDirectory } from '../src/lib/services';
 import { MARKETING_PATHS } from '../src/lib/sitemap';
 import {
   PAGE_PATHS,
+  SERVICE_DIRECTORY_FILE,
   SITE_ORIGIN,
   checkBuild,
   checkPage,
   checkRobots,
+  checkServiceDirectory,
   checkShell,
   expectedPages,
   fileFor,
@@ -23,6 +26,11 @@ const settings = { baseLocale: 'en', locales: ['en', 'es', 'de', 'fr', 'it', 'hi
 describe('the copies this script keeps of the app’s rules', () => {
   it('lists the same pages as the sitemap', () => {
     expect(PAGE_PATHS).toEqual(MARKETING_PATHS);
+  });
+
+  it('expects the service list where services.ts writes it, with the same products', () => {
+    expect(`/${SERVICE_DIRECTORY_FILE}`).toBe(SERVICE_DIRECTORY_PATH);
+    expect(checkServiceDirectory(JSON.stringify(serviceDirectory()))).toEqual([]);
   });
 
   it('uses the same origin and locale spelling as #lib/site', () => {
@@ -223,8 +231,41 @@ describe('checkBuild', () => {
     write('sitemap.xml', '<urlset></urlset>');
     write('robots.txt', `User-agent: *\nDisallow: /o/\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
     write('_app/immutable/app.js', 'console.log(1)');
+    write(SERVICE_DIRECTORY_FILE, JSON.stringify(serviceDirectory()));
     return { dir, write };
   }
+
+  it('names a missing service list, and one that is broken', () => {
+    const { dir, write } = bundle();
+    rmSync(join(dir, SERVICE_DIRECTORY_FILE));
+    expect(checkBuild(dir, small, catalog)).toEqual(['services/v1.json: missing']);
+    write(SERVICE_DIRECTORY_FILE, '<html>shell</html>');
+    expect(checkBuild(dir, small, catalog)).toEqual(['services/v1.json: not JSON']);
+  });
+
+  it('names a service list that lost a product, a key, https, or its connect card', () => {
+    const body = serviceDirectory();
+    const broken = {
+      version: 2,
+      services: [
+        {
+          ...body.services[0],
+          consoleUrl: 'http://tower.savvagent.com',
+          connectPath: 'https://elsewhere.example/'
+        },
+        { slug: 'flags', name: 'Savvagent Flags', mcpUrl: 'https://flags.savvagent.com/mcp' }
+      ]
+    };
+    expect(checkServiceDirectory(JSON.stringify(broken))).toEqual([
+      'services/v1.json: expected "version": 1',
+      'services/v1.json: lists ["tower","flags"], expected ["tower","flags","cxp"]',
+      'services/v1.json: tower consoleUrl is neither https nor null',
+      'services/v1.json: tower connectPath is https://elsewhere.example/, expected /products/tower#connect',
+      'services/v1.json: flags has keys mcpUrl, name, slug',
+      'services/v1.json: flags consoleUrl is neither https nor null',
+      'services/v1.json: flags connectPath is undefined, expected /products/flags#connect'
+    ]);
+  });
 
   it('passes a complete bundle', () => {
     const { dir } = bundle();
@@ -236,7 +277,7 @@ describe('checkBuild', () => {
     const files = [...walk(dir)].map((path) => relative(dir, path)).sort();
     expect(files).toContain('es/pricing.html');
     expect(files).toContain('_app/immutable/app.js');
-    expect(files).toHaveLength(expectedPages(small).length + 4);
+    expect(files).toHaveLength(expectedPages(small).length + 5);
   });
 
   it('names a missing page', () => {

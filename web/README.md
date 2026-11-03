@@ -15,7 +15,9 @@ agent connection live in each service, which signs in here with OAuth, and are u
 its own web console (Savvagent Tower's, for one) or, for an agent-only service such as Savvagent Flags
 or Savvagent CXP, through the person's AI assistant. The products are a small list in
 [`src/lib/services.ts`](src/lib/services.ts), which the console header links from and the
-marketing pages describe; see "Adding a product" below.
+marketing pages describe; see "Adding a product" below. The build also publishes that list
+as `/services/v1.json` for the other consoles' headers to read cross-origin; its shape is a
+contract, documented in [`docs/service-directory.md`](../docs/service-directory.md).
 
 ```bash
 npm install
