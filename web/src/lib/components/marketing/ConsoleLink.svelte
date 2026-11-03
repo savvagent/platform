@@ -19,17 +19,30 @@
    * boot from a full load — its `resolveAtBoot` runs, and nothing of the
    * marketing layout's locale override survives — and the console has one URL
    * per page whatever the language, so the link is never localized.
+   *
+   * **`named` says whose console it is.** On a product page it sits beside
+   * "Open the {name} console", and two buttons that both say "Open console"
+   * leave a person guessing which one goes where (#155), so there it reads
+   * "Open Savvagent console". Elsewhere, where it is the only console in
+   * sight, the short form is enough.
    */
   interface Props {
     tone?: ButtonTone;
     size?: ButtonSize;
+    named?: boolean;
   }
 
-  let { tone = 'primary', size = 'lg' }: Props = $props();
+  let { tone = 'primary', size = 'lg', named = false }: Props = $props();
 
   const entry = $derived(consoleEntry(session));
 </script>
 
 <LinkButton href={entry.href} {tone} {size} data-sveltekit-reload>
-  {entry.kind === 'console' ? m.marketing_open_console() : m.marketing_create_account()}
+  {#if entry.kind === 'signup'}
+    {m.marketing_create_account()}
+  {:else if named}
+    {m.marketing_open_savvagent_console()}
+  {:else}
+    {m.marketing_open_console()}
+  {/if}
 </LinkButton>

@@ -6,11 +6,11 @@
  * organization (sign-in, passkeys, members, teams, SSO, usage, audit), and each
  * product is a service on its own host that signs in here with OAuth.
  *
- * **Not every service has a web console.** Savvagent Tower serves one, which
- * links back to this console, so a person never has to know a hostname.
- * Savvagent Flags and Savvagent CXP are agent-only: their origin answers a browser with a JSON 404,
- * and the place a person uses them is their AI assistant, with the service
- * added as a custom connector. So the field is `consoleUrl`, and optional, and
+ * **Not every service has a web console.** Savvagent Tower and Savvagent CXP
+ * serve one, so a person never has to know a hostname. Savvagent Flags is
+ * agent-only: its origin answers a browser with a JSON 404, and the place a
+ * person uses it is their AI assistant, with the service added as a custom
+ * connector. So the field is `consoleUrl`, and optional, and
  * a link to a service goes through `serviceLink`, which sends a service with no
  * console to its product page's connect card instead of to its origin.
  *
@@ -66,8 +66,10 @@ export interface Service {
   /** Product name. A name, so it is never translated. */
   name: string;
   /**
-   * The origin of the service's own web console, with no trailing slash, e.g.
-   * `https://tower.savvagent.com` — or absent for a service that has
+   * Where the service's own web console starts: its origin with no trailing
+   * slash when the console is at the root (`https://tower.savvagent.com`), or
+   * the full URL of the path it is served under (CXP's is
+   * `https://cxp.savvagent.com/console/`) — or absent for a service that has
    * none. Absent is not "unknown": it is what makes every link to the service
    * point at its connect card, so set it only for an origin that answers a
    * browser with a page. An external origin, so a link to it is a full
@@ -133,7 +135,9 @@ const CONFIGURED: readonly Service[] = [
   {
     slug: 'cxp',
     name: 'Savvagent CXP',
-    // No `consoleUrl`: the origin serves the API and `/mcp`, not a page.
+    // The console is served under `/console/` (savvagent/cxp#80); the origin
+    // itself is the connector install page and the API.
+    consoleUrl: 'https://cxp.savvagent.com/console/',
     mcpUrl: 'https://cxp.savvagent.com/mcp',
     copy: {
       title: () => m.product_cxp_title(),

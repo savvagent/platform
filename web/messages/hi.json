@@ -329,6 +329,7 @@
   "marketing_nav_menu": "मेनू",
   "marketing_create_account": "खाता बनाएँ",
   "marketing_open_console": "कंसोल खोलें",
+  "marketing_open_savvagent_console": "Savvagent कंसोल खोलें",
   "marketing_footer_language": "भाषा",
   "marketing_footer_contact": "संपर्क:",
   "marketing_locale_hint": "{language} में पढ़ें",
