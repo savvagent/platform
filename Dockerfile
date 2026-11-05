@@ -14,8 +14,16 @@ FROM node:22-slim AS console
 
 WORKDIR /web
 # Manifests alone, so `npm ci` is cached until a dependency actually changes.
-COPY web/package.json web/package-lock.json ./
-RUN npm ci
+# `.npmrc` points the @savvagent scope at GitHub Packages and reads the token
+# from NODE_AUTH_TOKEN; it holds no secret itself.
+COPY web/package.json web/package-lock.json web/.npmrc ./
+# The token is a BuildKit secret, not a build ARG: an ARG is recorded in the
+# image history, while a secret mount is never written to a layer, and the
+# variable exists only for this one command. CI passes the job's token
+# (`secrets: npm_token=...`, `flyctl deploy --build-secret npm_token=...`); a
+# local build passes `--secret id=npm_token,env=NODE_AUTH_TOKEN`.
+RUN --mount=type=secret,id=npm_token,required=true \
+    NODE_AUTH_TOKEN="$(cat /run/secrets/npm_token)" npm ci
 
 COPY web/ ./
 RUN npm run build
