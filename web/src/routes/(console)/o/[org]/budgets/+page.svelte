@@ -85,7 +85,8 @@
       {#each view.services as row (row.service)}
         <Card>
           <CardHeader class="border-b">
-            <CardTitle><h2 class="text-sm font-semibold">{serviceName(row.service)}</h2></CardTitle>
+            <CardTitle level={2} class="text-sm font-semibold">{serviceName(row.service)}</CardTitle
+            >
           </CardHeader>
           <CardContent>
             <div class="space-y-4">

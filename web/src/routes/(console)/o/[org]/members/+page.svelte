@@ -175,7 +175,7 @@
   {#if org.isAdmin}
     <Card>
       <CardHeader class="border-b">
-        <CardTitle><h2 class="text-sm font-semibold">{m.members_invite_title()}</h2></CardTitle>
+        <CardTitle level={2} class="text-sm font-semibold">{m.members_invite_title()}</CardTitle>
         <CardDescription>{m.members_invite_description()}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -229,7 +229,7 @@
   {:else}
     <Card>
       <CardHeader class="border-b">
-        <CardTitle><h2 class="text-sm font-semibold">{m.members_roster_title()}</h2></CardTitle>
+        <CardTitle level={2} class="text-sm font-semibold">{m.members_roster_title()}</CardTitle>
       </CardHeader>
       <CardContent>
         <ul class="divide-y divide-border/40">
@@ -345,7 +345,7 @@
     {#if org.isAdmin}
       <Card>
         <CardHeader class="border-b">
-          <CardTitle><h2 class="text-sm font-semibold">{m.members_invites_title()}</h2></CardTitle>
+          <CardTitle level={2} class="text-sm font-semibold">{m.members_invites_title()}</CardTitle>
         </CardHeader>
         <CardContent>
           {#if invites.length === 0}

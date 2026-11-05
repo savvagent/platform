@@ -28,14 +28,9 @@
 
 <Card class="gap-3 py-5">
   <CardHeader>
-    <CardTitle>
-      <svelte:element
-        this={`h${level}`}
-        class="text-lg font-semibold tracking-tight text-foreground"
-      >
-        {service.name}
-      </svelte:element>
-    </CardTitle>
+    <CardTitle {level} class="text-lg font-semibold tracking-tight text-foreground"
+      >{service.name}</CardTitle
+    >
   </CardHeader>
   <CardContent class="flex flex-1 flex-col gap-3">
     <p class="flex-1 text-sm text-muted-foreground">{service.copy.tagline()}</p>

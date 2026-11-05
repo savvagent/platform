@@ -237,7 +237,7 @@
 
       <Card>
         <CardHeader class="border-b">
-          <CardTitle><h2 class="text-sm font-semibold">{m.billing_card_title()}</h2></CardTitle>
+          <CardTitle level={2} class="text-sm font-semibold">{m.billing_card_title()}</CardTitle>
           <CardAction>
             <Button variant="outline" disabled={refreshing} onclick={refresh}>
               {#if refreshing}<Spinner />{/if}

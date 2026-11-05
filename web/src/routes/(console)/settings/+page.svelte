@@ -212,7 +212,7 @@
 
   <Card>
     <CardHeader class="border-b">
-      <CardTitle><h2 class="text-sm font-semibold">{m.settings_passkeys_title()}</h2></CardTitle>
+      <CardTitle level={2} class="text-sm font-semibold">{m.settings_passkeys_title()}</CardTitle>
       <CardDescription>{m.settings_passkeys_description()}</CardDescription>
     </CardHeader>
     <CardContent>
@@ -277,7 +277,7 @@
 
   <Card>
     <CardHeader class="border-b">
-      <CardTitle><h2 class="text-sm font-semibold">{m.settings_activity_title()}</h2></CardTitle>
+      <CardTitle level={2} class="text-sm font-semibold">{m.settings_activity_title()}</CardTitle>
       <CardDescription>{m.settings_activity_description()}</CardDescription>
     </CardHeader>
     <CardContent>
@@ -290,7 +290,7 @@
 
   <Card>
     <CardHeader class="border-b">
-      <CardTitle><h2 class="text-sm font-semibold">{m.settings_sso_title()}</h2></CardTitle>
+      <CardTitle level={2} class="text-sm font-semibold">{m.settings_sso_title()}</CardTitle>
       <CardDescription>{m.settings_sso_description()}</CardDescription>
     </CardHeader>
     <CardContent>
@@ -304,7 +304,7 @@
 
   <Card>
     <CardHeader class="border-b">
-      <CardTitle><h2 class="text-sm font-semibold">{m.settings_profile_title()}</h2></CardTitle>
+      <CardTitle level={2} class="text-sm font-semibold">{m.settings_profile_title()}</CardTitle>
       <CardDescription>{m.settings_profile_description()}</CardDescription>
     </CardHeader>
     <CardContent>
@@ -340,7 +340,7 @@
 
   <Card>
     <CardHeader class="border-b">
-      <CardTitle><h2 class="text-sm font-semibold">{m.settings_language_title()}</h2></CardTitle>
+      <CardTitle level={2} class="text-sm font-semibold">{m.settings_language_title()}</CardTitle>
       <CardDescription>{m.settings_language_description()}</CardDescription>
     </CardHeader>
     <CardContent>

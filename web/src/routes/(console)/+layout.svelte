@@ -12,7 +12,8 @@
   import { messageFor } from '#lib/errors.js';
   import { fullLoadGuard, gotoOrLoad } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
-  import { appRuntime, applyLocale, reconcile, resolveAtBoot, type Locale } from '#lib/locale.js';
+  import { overwriteGetLocale } from '#lib/paraglide/runtime.js';
+  import { applyLocale, reconcile, resolveAtBoot, type Locale } from '#lib/locale.js';
   import { guard } from '#lib/routing.js';
   import { session } from '#lib/session.svelte.js';
   import { APP_VERSION } from '#lib/version.js';
@@ -28,7 +29,7 @@
    * exist. It runs once, synchronously, ahead of the first paint, so no page
    * ever renders English and then snaps to Spanish.
    */
-  resolveAtBoot(appRuntime);
+  resolveAtBoot(overwriteGetLocale);
 
   /** The platform's origin for the shell; `shellOrigin` says why it is checked. */
   const origin = shellOrigin(location.origin);

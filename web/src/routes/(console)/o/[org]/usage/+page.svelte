@@ -113,8 +113,8 @@
       {#each report.usage.services as service (service.service)}
         <Card>
           <CardHeader class="border-b">
-            <CardTitle
-              ><h2 class="text-sm font-semibold">{serviceName(service.service)}</h2></CardTitle
+            <CardTitle level={2} class="text-sm font-semibold"
+              >{serviceName(service.service)}</CardTitle
             >
           </CardHeader>
           <CardContent>

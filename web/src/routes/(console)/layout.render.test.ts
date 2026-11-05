@@ -29,6 +29,7 @@ vi.mock('#lib/locale.js', async (original) => ({
 
 import { page } from '#lib/components/marketing/fake-app-state.svelte.js';
 import { beforeNavigate } from '$app/navigation';
+import { headerTrigger, nameOf } from '#lib/header-trigger.js';
 import { applyLocale } from '#lib/locale.js';
 import { fullLoadGuard } from '#lib/navigate.js';
 import { session } from '#lib/session.svelte.js';
@@ -105,7 +106,7 @@ async function settle() {
 
 /** Open the language picker and choose `name`, by keyboard. */
 async function pickLanguage(name: string) {
-  const trigger = container.querySelector<HTMLElement>('button[aria-label="Language"]');
+  const trigger = headerTrigger(container, 'Language');
   expect(trigger).not.toBeNull();
   trigger!.focus();
   trigger!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
@@ -123,8 +124,11 @@ describe('the console header', () => {
     const instance = render();
     await settle();
 
-    expect(container.querySelector('button[aria-label="Account"]')).not.toBeNull();
-    expect(container.querySelector('button[aria-label="Organization"]')).not.toBeNull();
+    expect(headerTrigger(container, 'Account')).not.toBeNull();
+    // Label in name: each trigger's name starts with its visible text.
+    expect(nameOf(headerTrigger(container, 'Organization'))).toBe('Acme Organization');
+    expect(nameOf(headerTrigger(container, 'Language'))).toBe('English Language');
+    expect(container.querySelector('header button[aria-label]')).toBeNull();
     const header = container.querySelector('header')!;
     const brand = header.querySelector('a');
     expect(brand?.getAttribute('href')).toBe('/home');
@@ -153,7 +157,8 @@ describe('the console header', () => {
 
     const signIn = header.querySelector('a[href="/login"]');
     expect(signIn?.textContent?.trim()).toBe('Sign in');
-    expect(container.querySelector('button[aria-label="Account"]')).toBeNull();
+    expect(headerTrigger(container, 'Language')).not.toBeNull();
+    expect(headerTrigger(container, 'Account')).toBeNull();
     expect(header.querySelector('a[href="/orgs/new"]')).toBeNull();
 
     unmount(instance);
@@ -225,9 +230,7 @@ describe('changing the language', () => {
     const alert = container.querySelector('main [role="alert"]');
     expect(alert?.textContent).toContain('Something went wrong on the server.');
     expect(unhandled).toHaveBeenCalledOnce();
-    expect(container.querySelector('button[aria-label="Language"]')?.textContent).toContain(
-      'English'
-    );
+    expect(nameOf(headerTrigger(container, 'Language'))).toBe('English Language');
 
     unmount(instance);
     process.off('unhandledRejection', unhandled);

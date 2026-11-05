@@ -20,7 +20,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('$app/state', async () => await import('./fake-app-state.svelte'));
 
-import { appRuntime, useLocale, type Locale } from '#lib/locale.js';
+import { headerTrigger, nameOf } from '#lib/header-trigger.js';
+import { useLocale, type Locale } from '#lib/locale.js';
 import { getLocale, overwriteGetLocale } from '#lib/paraglide/runtime.js';
 import { page } from './fake-app-state.svelte';
 import MarketingHeader from './MarketingHeader.svelte';
@@ -42,13 +43,13 @@ afterEach(() => {
   container.remove();
   vi.unstubAllGlobals();
   // `useLocale` pins both runtimes; put English and the app's own getter back.
-  useLocale('en', appRuntime);
+  useLocale('en', overwriteGetLocale);
   overwriteGetLocale(defaultGetLocale);
 });
 
 /** Mounts the header as the layout does: the locale pinned first. */
 function mountHeader(lang: Locale) {
-  useLocale(lang, appRuntime);
+  useLocale(lang, overwriteGetLocale);
   return mount(MarketingHeader, {
     target: container,
     props: { lang, platformUrl: 'http://localhost' }
@@ -122,7 +123,7 @@ describe('the marketing header on the shared shell', () => {
   it('renders the service switcher from the platform’s own list, fetching nothing', () => {
     const instance = mountHeader('en');
     flushSync();
-    expect(container.querySelector('header button[aria-label="Services"]')).not.toBeNull();
+    expect(headerTrigger(container, 'Services')).not.toBeNull();
     expect(fetch).not.toHaveBeenCalled();
     unmount(instance);
   });
@@ -167,7 +168,7 @@ describe('the marketing header on the shared shell', () => {
 
     expect(container.querySelector('header')?.textContent).toContain('Español');
     // And the shell's own messages (its Paraglide runtime), not just the name.
-    expect(container.querySelector('header button[aria-label="Idioma"]')).not.toBeNull();
+    expect(nameOf(headerTrigger(container, 'Idioma'))).toBe('Español Idioma');
     unmount(instance);
   });
 });
