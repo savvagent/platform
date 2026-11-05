@@ -7,11 +7,19 @@
   import { session } from '#lib/session.svelte.js';
   import * as webauthn from '#lib/webauthn.js';
   import type { Passkey } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Card from '#lib/components/Card.svelte';
-  import Field from '#lib/components/Field.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+  } from '@savvagent/console-ui/ui/card';
+  import { Field, FieldDescription, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
 
   /**
    * The account: its passkeys, and its profile.
@@ -21,6 +29,8 @@
    * is one lost device away from needing an admin — and the owner of a
    * single-person org has no admin above them.
    */
+
+  const id = $props.id();
 
   let keys = $state<Passkey[]>([]);
   let loading = $state(true);
@@ -191,119 +201,173 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.settings_heading()}</h1>
-    <p class="mt-0.5 text-sm text-faint">{m.settings_subtitle()}</p>
+    <p class="mt-0.5 text-sm text-muted-foreground">{m.settings_subtitle()}</p>
   </div>
 
-  {#if error}<Alert>{error}</Alert>{/if}
+  {#if error}<Alert variant="destructive">{error}</Alert>{/if}
 
   {#if keys.length === 1 && !loading}
-    <Alert tone="warn">{m.settings_one_passkey_warning()}</Alert>
+    <Alert variant="warning">{m.settings_one_passkey_warning()}</Alert>
   {/if}
 
-  <Card title={m.settings_passkeys_title()} description={m.settings_passkeys_description()}>
-    {#if loading}
-      <Loading what={m.settings_loading_passkeys()} />
-    {:else}
-      <ul class="divide-y divide-edge/50">
-        {#each keys as key (key.id)}
-          <li class="flex items-center gap-3 py-2.5">
-            <div class="min-w-0 flex-1">
-              <div class="text-sm text-ink">{key.nickname ?? m.settings_unnamed_passkey()}</div>
-              <p class="text-xs text-faint">
-                {m.settings_passkey_added({ when: relative(key.createdAt) })}
-                {#if key.lastUsedAt}·
-                  {m.settings_passkey_last_used({ when: relative(key.lastUsedAt) })}
-                {:else}·
-                  {m.settings_passkey_never_used()}
-                {/if}
-              </p>
-            </div>
+  <Card>
+    <CardHeader class="border-b">
+      <CardTitle><h2 class="text-sm font-semibold">{m.settings_passkeys_title()}</h2></CardTitle>
+      <CardDescription>{m.settings_passkeys_description()}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      {#if loading}
+        <Loading what={m.settings_loading_passkeys()} />
+      {:else}
+        <ul class="divide-y divide-border/50">
+          {#each keys as key (key.id)}
+            <li class="flex items-center gap-3 py-2.5">
+              <div class="min-w-0 flex-1">
+                <div class="text-sm text-foreground">
+                  {key.nickname ?? m.settings_unnamed_passkey()}
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  {m.settings_passkey_added({ when: relative(key.createdAt) })}
+                  {#if key.lastUsedAt}·
+                    {m.settings_passkey_last_used({ when: relative(key.lastUsedAt) })}
+                  {:else}·
+                    {m.settings_passkey_never_used()}
+                  {/if}
+                </p>
+              </div>
 
-            <Button
-              tone="quiet"
-              pending={busy === `${key.id}:rename`}
-              onclick={() => {
-                const nickname = prompt(m.settings_rename_prompt(), key.nickname ?? '');
-                if (nickname) act(`${key.id}:rename`, () => api.renamePasskey(key.id, nickname));
-              }}
-            >
-              {m.settings_rename()}
-            </Button>
+              <Button
+                variant="outline"
+                disabled={busy === `${key.id}:rename`}
+                onclick={() => {
+                  const nickname = prompt(m.settings_rename_prompt(), key.nickname ?? '');
+                  if (nickname) act(`${key.id}:rename`, () => api.renamePasskey(key.id, nickname));
+                }}
+              >
+                {#if busy === `${key.id}:rename`}<Spinner />{/if}
+                {m.settings_rename()}
+              </Button>
 
-            <!-- The server refuses to remove the last one; hiding the button
+              <!-- The server refuses to remove the last one; hiding the button
                  too means a person is not offered a click that would lock them
                  out and then be told no. -->
-            {#if keys.length > 1}
-              <Button
-                tone="danger"
-                pending={busy === `${key.id}:remove`}
-                onclick={() => act(`${key.id}:remove`, () => api.removePasskey(key.id))}
-              >
-                {m.settings_remove()}
-              </Button>
-            {/if}
-          </li>
-        {/each}
-      </ul>
+              {#if keys.length > 1}
+                <Button
+                  variant="destructive"
+                  disabled={busy === `${key.id}:remove`}
+                  onclick={() => act(`${key.id}:remove`, () => api.removePasskey(key.id))}
+                >
+                  {#if busy === `${key.id}:remove`}<Spinner />{/if}
+                  {m.settings_remove()}
+                </Button>
+              {/if}
+            </li>
+          {/each}
+        </ul>
 
-      <div class="mt-4 border-t border-edge/50 pt-3">
-        <Button pending={busy === 'add'} onclick={addPasskey}>{m.settings_add_passkey()}</Button>
-      </div>
-    {/if}
+        <div class="mt-4 border-t border-border/50 pt-3">
+          <Button disabled={busy === 'add'} onclick={addPasskey}>
+            {#if busy === 'add'}<Spinner />{/if}
+            {m.settings_add_passkey()}
+          </Button>
+        </div>
+      {/if}
+    </CardContent>
   </Card>
 
-  <Card title={m.settings_activity_title()} description={m.settings_activity_description()}>
-    <a class="text-sm text-muted underline hover:text-ink" href="/settings/activity"
-      >{m.settings_activity_link()}</a
-    >
+  <Card>
+    <CardHeader class="border-b">
+      <CardTitle><h2 class="text-sm font-semibold">{m.settings_activity_title()}</h2></CardTitle>
+      <CardDescription>{m.settings_activity_description()}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <a
+        class="text-sm text-muted-foreground underline hover:text-foreground"
+        href="/settings/activity">{m.settings_activity_link()}</a
+      >
+    </CardContent>
   </Card>
 
-  <Card title={m.settings_sso_title()} description={m.settings_sso_description()}>
-    {#if ssoError}<div class="mb-3"><Alert>{ssoError}</Alert></div>{/if}
-    <Button pending={ssoBusy} onclick={linkSso}>{m.settings_sso_link_button()}</Button>
+  <Card>
+    <CardHeader class="border-b">
+      <CardTitle><h2 class="text-sm font-semibold">{m.settings_sso_title()}</h2></CardTitle>
+      <CardDescription>{m.settings_sso_description()}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      {#if ssoError}<div class="mb-3"><Alert variant="destructive">{ssoError}</Alert></div>{/if}
+      <Button disabled={ssoBusy} onclick={linkSso}>
+        {#if ssoBusy}<Spinner />{/if}
+        {m.settings_sso_link_button()}
+      </Button>
+    </CardContent>
   </Card>
 
-  <Card title={m.settings_profile_title()} description={m.settings_profile_description()}>
-    <form class="max-w-sm space-y-4" onsubmit={saveProfile}>
-      <Field label={m.settings_email_label()} hint={m.settings_email_hint()}>
-        <input class="sav-input" type="email" autocomplete="username" required bind:value={email} />
-      </Field>
+  <Card>
+    <CardHeader class="border-b">
+      <CardTitle><h2 class="text-sm font-semibold">{m.settings_profile_title()}</h2></CardTitle>
+      <CardDescription>{m.settings_profile_description()}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <form class="max-w-sm space-y-4" onsubmit={saveProfile}>
+        <Field>
+          <FieldLabel for="{id}-email">{m.settings_email_label()}</FieldLabel>
+          <Input
+            id="{id}-email"
+            aria-describedby="{id}-email-hint"
+            type="email"
+            autocomplete="username"
+            required
+            bind:value={email}
+          />
+          <FieldDescription id="{id}-email-hint">{m.settings_email_hint()}</FieldDescription>
+        </Field>
 
-      <Field label={m.settings_name_label()}>
-        <input class="sav-input" type="text" autocomplete="name" bind:value={name} />
-      </Field>
+        <Field>
+          <FieldLabel for="{id}-name">{m.settings_name_label()}</FieldLabel>
+          <Input id="{id}-name" type="text" autocomplete="name" bind:value={name} />
+        </Field>
 
-      {#if profileError}<Alert>{profileError}</Alert>{/if}
-      {#if profileSaved}<Alert tone="ok">{m.settings_saved()}</Alert>{/if}
+        {#if profileError}<Alert variant="destructive">{profileError}</Alert>{/if}
+        {#if profileSaved}<Alert variant="success">{m.settings_saved()}</Alert>{/if}
 
-      <Button type="submit" pending={savingProfile}>{m.settings_save()}</Button>
-    </form>
+        <Button type="submit" disabled={savingProfile}>
+          {#if savingProfile}<Spinner />{/if}
+          {m.settings_save()}
+        </Button>
+      </form>
+    </CardContent>
   </Card>
 
-  <Card title={m.settings_language_title()} description={m.settings_language_description()}>
-    <div class="max-w-sm space-y-2">
-      <label class="block">
-        <span class="sr-only">{m.settings_language_title()}</span>
-        <!--
+  <Card>
+    <CardHeader class="border-b">
+      <CardTitle><h2 class="text-sm font-semibold">{m.settings_language_title()}</h2></CardTitle>
+      <CardDescription>{m.settings_language_description()}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <div class="max-w-sm space-y-2">
+        <label class="block">
+          <span class="sr-only">{m.settings_language_title()}</span>
+          <!--
           Every language names itself. Somebody who cannot read the language the
           console is currently in has to be able to find their own in this list,
           which they cannot do if the options say "German" rather than "Deutsch".
         -->
-        <select
-          class="sav-input w-full"
-          value={locale}
-          disabled={savingLocale}
-          onchange={(e) => changeLanguage(e.currentTarget.value as Locale | '')}
-        >
-          <option value="">{m.settings_language_match_browser()}</option>
-          {#each SUPPORTED as option (option)}
-            <option value={option}>{LOCALE_NAMES[option]}</option>
-          {/each}
-        </select>
-      </label>
+          <select
+            class="sav-select w-full"
+            value={locale}
+            disabled={savingLocale}
+            onchange={(e) => changeLanguage(e.currentTarget.value as Locale | '')}
+          >
+            <option value="">{m.settings_language_match_browser()}</option>
+            {#each SUPPORTED as option (option)}
+              <option value={option}>{LOCALE_NAMES[option]}</option>
+            {/each}
+          </select>
+        </label>
 
-      {#if localeError}<Alert>{localeError}</Alert>{/if}
-      <p class="text-xs text-faint">{m.settings_language_reload_note()}</p>
-    </div>
+        {#if localeError}<Alert variant="destructive">{localeError}</Alert>{/if}
+        <p class="text-xs text-muted-foreground">{m.settings_language_reload_note()}</p>
+      </div>
+    </CardContent>
   </Card>
 </div>

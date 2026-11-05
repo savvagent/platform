@@ -5,12 +5,14 @@
   import { useOrg } from '#lib/org.svelte.js';
   import { slugPreview, person } from '#lib/format.js';
   import type { OrgMember, Team, TeamMember } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Card from '#lib/components/Card.svelte';
   import Empty from '#lib/components/Empty.svelte';
-  import Field from '#lib/components/Field.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import { Card, CardContent, CardHeader, CardTitle } from '@savvagent/console-ui/ui/card';
+  import { Field, FieldDescription, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
 
   /**
    * Teams — a grouping of members inside an org.
@@ -21,6 +23,7 @@
    */
 
   const org = useOrg();
+  const id = $props.id();
 
   let teams = $state<Team[]>([]);
   let members = $state<OrgMember[]>([]);
@@ -113,31 +116,42 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.teams_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">
+    <p class="mt-0.5 text-sm text-muted-foreground">
       {m.teams_subtitle()}
     </p>
   </div>
 
-  {#if error}<Alert>{error}</Alert>{/if}
+  {#if error}<Alert variant="destructive">{error}</Alert>{/if}
 
   {#if org.isAdmin}
-    <Card title={m.teams_new_title()}>
-      <form class="flex flex-wrap items-end gap-3" onsubmit={create}>
-        <div class="w-44">
-          <Field label={m.teams_field_slug()}>
-            <input class="sav-input sav-mono" required bind:value={slug} />
-          </Field>
-        </div>
-        <div class="min-w-48 flex-1">
-          <Field label={m.teams_field_name()} hint={m.teams_field_name_hint()}>
-            <input class="sav-input" bind:value={name} />
-          </Field>
-        </div>
-        <div class="pb-0.5">
-          <Button type="submit" pending={creating}>{m.teams_create()}</Button>
-        </div>
-      </form>
-      {#if formError}<div class="mt-3"><Alert>{formError}</Alert></div>{/if}
+    <Card>
+      <CardHeader class="border-b">
+        <CardTitle><h2 class="text-sm font-semibold">{m.teams_new_title()}</h2></CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form class="flex flex-wrap items-end gap-3" onsubmit={create}>
+          <div class="w-44">
+            <Field>
+              <FieldLabel for="{id}-slug">{m.teams_field_slug()}</FieldLabel>
+              <Input id="{id}-slug" class="sav-mono" required bind:value={slug} />
+            </Field>
+          </div>
+          <div class="min-w-48 flex-1">
+            <Field>
+              <FieldLabel for="{id}-name">{m.teams_field_name()}</FieldLabel>
+              <Input id="{id}-name" aria-describedby="{id}-name-hint" bind:value={name} />
+              <FieldDescription id="{id}-name-hint">{m.teams_field_name_hint()}</FieldDescription>
+            </Field>
+          </div>
+          <div class="pb-0.5">
+            <Button type="submit" disabled={creating}>
+              {#if creating}<Spinner />{/if}
+              {m.teams_create()}
+            </Button>
+          </div>
+        </form>
+        {#if formError}<div class="mt-3"><Alert variant="destructive">{formError}</Alert></div>{/if}
+      </CardContent>
     </Card>
   {/if}
 
@@ -150,94 +164,99 @@
   {:else}
     <ul class="space-y-2">
       {#each teams as team (team.id)}
-        <li class="sav-card">
-          <div class="flex flex-wrap items-center gap-3 px-4 py-3">
-            <div class="min-w-0 flex-1">
-              <span class="sav-mono text-sm text-ink">{team.slug}</span>
-              <p class="text-xs text-faint">{team.name}</p>
-            </div>
+        <li>
+          <Card class="gap-0 py-0">
+            <div class="flex flex-wrap items-center gap-3 px-4 py-3">
+              <div class="min-w-0 flex-1">
+                <span class="sav-mono text-sm text-foreground">{team.slug}</span>
+                <p class="text-xs text-muted-foreground">{team.name}</p>
+              </div>
 
-            <button
-              class="text-xs text-muted underline hover:text-ink"
-              onclick={() => openTeam(team)}
-              aria-expanded={expanded === team.slug}
-            >
-              {expanded === team.slug ? m.teams_hide_members() : m.teams_show_members()}
-            </button>
-
-            {#if org.isAdmin}
-              <Button
-                tone="danger"
-                pending={busy === `${team.id}:delete`}
-                onclick={() => act(`${team.id}:delete`, () => api.deleteTeam(org.slug, team.slug))}
+              <button
+                class="text-xs text-muted-foreground underline hover:text-foreground"
+                onclick={() => openTeam(team)}
+                aria-expanded={expanded === team.slug}
               >
-                {m.teams_delete()}
-              </Button>
-            {/if}
-          </div>
+                {expanded === team.slug ? m.teams_hide_members() : m.teams_show_members()}
+              </button>
 
-          {#if expanded === team.slug}
-            {@const roster = rosters[team.slug]}
-            <div class="space-y-3 border-t border-edge/60 px-4 py-3">
-              {#if !roster}
-                <Loading what={m.teams_roster_loading()} />
-              {:else if roster.length === 0}
-                <p class="text-xs text-faint">{m.teams_roster_empty()}</p>
-              {:else}
-                <ul class="divide-y divide-edge/40">
-                  {#each roster as member (member.userId)}
-                    <li class="flex items-center gap-3 py-2 text-sm">
-                      <span class="min-w-0 flex-1 truncate text-muted">
-                        {person(member.name, member.email, member.label)}
-                      </span>
-                      {#if org.isAdmin}
-                        <Button
-                          tone="quiet"
-                          pending={busy === `${team.id}:${member.userId}`}
-                          onclick={() =>
-                            act(
-                              `${team.id}:${member.userId}`,
-                              () => api.removeTeamMember(org.slug, team.slug, member.userId),
-                              team.slug
-                            )}
-                        >
-                          {m.teams_remove_member()}
-                        </Button>
-                      {/if}
-                    </li>
-                  {/each}
-                </ul>
-              {/if}
-
-              {#if org.isAdmin && candidates(team.slug).length > 0}
-                <label class="flex items-end gap-2">
-                  <span class="sr-only">{m.teams_add_member_label({ team: team.slug })}</span>
-                  <select
-                    class="sav-input w-64"
-                    value=""
-                    onchange={(e) => {
-                      const user = e.currentTarget.value;
-                      e.currentTarget.value = '';
-                      if (user) {
-                        void act(
-                          `${team.id}:add`,
-                          () => api.addTeamMember(org.slug, team.slug, user),
-                          team.slug
-                        );
-                      }
-                    }}
-                  >
-                    <option value="">{m.teams_add_member_option()}</option>
-                    {#each candidates(team.slug) as member (member.id)}
-                      <option value={member.id}
-                        >{person(member.name, member.email, member.label)}</option
-                      >
-                    {/each}
-                  </select>
-                </label>
+              {#if org.isAdmin}
+                <Button
+                  variant="destructive"
+                  disabled={busy === `${team.id}:delete`}
+                  onclick={() =>
+                    act(`${team.id}:delete`, () => api.deleteTeam(org.slug, team.slug))}
+                >
+                  {#if busy === `${team.id}:delete`}<Spinner />{/if}
+                  {m.teams_delete()}
+                </Button>
               {/if}
             </div>
-          {/if}
+
+            {#if expanded === team.slug}
+              {@const roster = rosters[team.slug]}
+              <div class="space-y-3 border-t border-border/60 px-4 py-3">
+                {#if !roster}
+                  <Loading what={m.teams_roster_loading()} />
+                {:else if roster.length === 0}
+                  <p class="text-xs text-muted-foreground">{m.teams_roster_empty()}</p>
+                {:else}
+                  <ul class="divide-y divide-border/40">
+                    {#each roster as member (member.userId)}
+                      <li class="flex items-center gap-3 py-2 text-sm">
+                        <span class="min-w-0 flex-1 truncate text-muted-foreground">
+                          {person(member.name, member.email, member.label)}
+                        </span>
+                        {#if org.isAdmin}
+                          <Button
+                            variant="outline"
+                            disabled={busy === `${team.id}:${member.userId}`}
+                            onclick={() =>
+                              act(
+                                `${team.id}:${member.userId}`,
+                                () => api.removeTeamMember(org.slug, team.slug, member.userId),
+                                team.slug
+                              )}
+                          >
+                            {#if busy === `${team.id}:${member.userId}`}<Spinner />{/if}
+                            {m.teams_remove_member()}
+                          </Button>
+                        {/if}
+                      </li>
+                    {/each}
+                  </ul>
+                {/if}
+
+                {#if org.isAdmin && candidates(team.slug).length > 0}
+                  <label class="flex items-end gap-2">
+                    <span class="sr-only">{m.teams_add_member_label({ team: team.slug })}</span>
+                    <select
+                      class="sav-select w-64"
+                      value=""
+                      onchange={(e) => {
+                        const user = e.currentTarget.value;
+                        e.currentTarget.value = '';
+                        if (user) {
+                          void act(
+                            `${team.id}:add`,
+                            () => api.addTeamMember(org.slug, team.slug, user),
+                            team.slug
+                          );
+                        }
+                      }}
+                    >
+                      <option value="">{m.teams_add_member_option()}</option>
+                      {#each candidates(team.slug) as member (member.id)}
+                        <option value={member.id}
+                          >{person(member.name, member.email, member.label)}</option
+                        >
+                      {/each}
+                    </select>
+                  </label>
+                {/if}
+              </div>
+            {/if}
+          </Card>
         </li>
       {/each}
     </ul>

@@ -8,10 +8,17 @@
   import { m } from '#lib/paraglide/messages.js';
   import { useOrg } from '#lib/org.svelte.js';
   import type { BillingStatus, CardStatus } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Card from '#lib/components/Card.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle
+  } from '@savvagent/console-ui/ui/card';
   import { leaveForCheckout } from './checkout';
 
   /**
@@ -198,69 +205,78 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.billing_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">{m.billing_subtitle()}</p>
+    <p class="mt-0.5 text-sm text-muted-foreground">{m.billing_subtitle()}</p>
   </div>
 
   {#if org.role && !org.isOwner}
-    <Alert tone="info">{m.billing_owner_only()}</Alert>
+    <Alert>{m.billing_owner_only()}</Alert>
   {:else}
     {#if returned === 'success'}
-      <Alert tone="ok">
+      <Alert variant="success">
         {status?.cardStatus === 'active' ? m.billing_setup_confirmed() : m.billing_setup_success()}
       </Alert>
     {:else if returned === 'cancelled'}
-      <Alert tone="info">{m.billing_setup_cancelled()}</Alert>
+      <Alert>{m.billing_setup_cancelled()}</Alert>
     {/if}
 
     {#if loadError}
-      <Alert>{loadError}</Alert>
-      <Button tone="quiet" onclick={() => reloads++}>{m.billing_retry()}</Button>
+      <Alert variant="destructive">{loadError}</Alert>
+      <Button variant="outline" onclick={() => reloads++}>{m.billing_retry()}</Button>
     {:else if !status}
       <Loading what={m.billing_loading()} />
     {:else if !status.billingEnabled}
       <div bind:this={disabledBox} tabindex="-1" class="outline-none">
-        <Alert tone="info">{m.billing_disabled()}</Alert>
+        <Alert>{m.billing_disabled()}</Alert>
       </div>
     {:else}
       {#if status.billingStopped}
-        <Alert>{m.billing_stopped_alert()}</Alert>
+        <Alert variant="destructive">{m.billing_stopped_alert()}</Alert>
       {:else if status.cardStatus === 'failed'}
-        <Alert>{m.billing_payment_failed_alert()}</Alert>
+        <Alert variant="destructive">{m.billing_payment_failed_alert()}</Alert>
       {/if}
 
-      <Card title={m.billing_card_title()}>
-        {#snippet actions()}
-          <Button tone="quiet" pending={refreshing} onclick={refresh}>{m.billing_refresh()}</Button>
-        {/snippet}
-        <p class="text-sm text-ink">{cardLine(status.cardStatus)}</p>
+      <Card>
+        <CardHeader class="border-b">
+          <CardTitle><h2 class="text-sm font-semibold">{m.billing_card_title()}</h2></CardTitle>
+          <CardAction>
+            <Button variant="outline" disabled={refreshing} onclick={refresh}>
+              {#if refreshing}<Spinner />{/if}
+              {m.billing_refresh()}
+            </Button>
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <p class="text-sm text-foreground">{cardLine(status.cardStatus)}</p>
 
-        <dl class="mt-4 grid grid-cols-2 gap-y-2 text-sm">
-          <div>
-            <dt class="sav-label">{m.billing_subscription_label()}</dt>
-            <dd class="text-muted">
-              {#if status.subscriptionStatus === null}
-                {m.billing_subscription_none()}
-              {:else if SUBSCRIPTION[status.subscriptionStatus]}
-                {SUBSCRIPTION[status.subscriptionStatus]!()}
-              {:else}
-                <code class="sav-mono">{status.subscriptionStatus}</code>
-              {/if}
-            </dd>
-          </div>
-          <div>
-            <dt class="sav-label">{m.billing_invoicing_label()}</dt>
-            <dd class="text-muted">
-              {status.subscriptionLive ? m.billing_invoicing_live() : m.billing_invoicing_off()}
-            </dd>
-          </div>
-        </dl>
+          <dl class="mt-4 grid grid-cols-2 gap-y-2 text-sm">
+            <div>
+              <dt class="sav-kicker">{m.billing_subscription_label()}</dt>
+              <dd class="text-muted-foreground">
+                {#if status.subscriptionStatus === null}
+                  {m.billing_subscription_none()}
+                {:else if SUBSCRIPTION[status.subscriptionStatus]}
+                  {SUBSCRIPTION[status.subscriptionStatus]!()}
+                {:else}
+                  <code class="sav-mono">{status.subscriptionStatus}</code>
+                {/if}
+              </dd>
+            </div>
+            <div>
+              <dt class="sav-kicker">{m.billing_invoicing_label()}</dt>
+              <dd class="text-muted-foreground">
+                {status.subscriptionLive ? m.billing_invoicing_live() : m.billing_invoicing_off()}
+              </dd>
+            </div>
+          </dl>
 
-        <div class="mt-4 space-y-2">
-          <Button pending={starting} onclick={addCard}>
-            {status.cardStatus === 'active' ? m.billing_replace_card() : m.billing_add_card()}
-          </Button>
-          <p class="text-xs text-faint">{m.billing_add_card_hint()}</p>
-        </div>
+          <div class="mt-4 space-y-2">
+            <Button disabled={starting} onclick={addCard}>
+              {#if starting}<Spinner />{/if}
+              {status.cardStatus === 'active' ? m.billing_replace_card() : m.billing_add_card()}
+            </Button>
+            <p class="text-xs text-muted-foreground">{m.billing_add_card_hint()}</p>
+          </div>
+        </CardContent>
       </Card>
     {/if}
 
@@ -273,7 +289,7 @@
         bind:this={errorBox}
         tabindex="-1"
         data-setup-error
-        class="rounded-md border border-bad/50 bg-bad/10 px-3 py-2 text-sm text-bad outline-none"
+        class="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive outline-none"
       >
         {setupError}
       </div>

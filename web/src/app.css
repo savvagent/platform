@@ -1,34 +1,19 @@
 @import 'tailwindcss';
+@import '@savvagent/console-ui/theme.css';
 
 /*
-  The console's palette, declared once as theme variables so Tailwind generates
-  `bg-surface`, `text-muted`, and friends. Naming the roles rather than the
-  colours is what keeps a status pill and a card from drifting apart when one of
-  them is restyled.
+  Native controls (a <select>'s option list, checkboxes, scrollbars) follow
+  `color-scheme`, which the shared theme does not set: without it a dark page
+  can open a white option list under light text.
 */
-@theme {
-  --color-canvas: oklch(0.19 0.02 260);
-  --color-surface: oklch(0.24 0.02 260);
-  --color-raised: oklch(0.29 0.02 260);
-  --color-edge: oklch(0.36 0.02 260);
-  --color-ink: oklch(0.97 0.005 260);
-  --color-muted: oklch(0.72 0.02 260);
-  --color-faint: oklch(0.58 0.02 260);
-  --color-accent: oklch(0.75 0.14 220);
-  --color-accent-ink: oklch(0.2 0.05 240);
-
-  --color-ok: oklch(0.78 0.15 150);
-  --color-busy: oklch(0.8 0.14 90);
-  --color-warn: oklch(0.78 0.16 60);
-  --color-bad: oklch(0.7 0.19 25);
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
 }
 
 @layer base {
-  body {
-    background-color: var(--color-canvas);
-    color: var(--color-ink);
-  }
-
   /*
     A visible focus ring on everything focusable, always. The console is a tool
     people drive from the keyboard, and Tailwind's reset removes the browser's
@@ -36,23 +21,26 @@
     a mouse.
   */
   :where(a, button, input, select, textarea, summary):focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-ring);
     outline-offset: 2px;
     border-radius: 0.25rem;
   }
 }
 
 @layer components {
-  .sav-card {
-    @apply rounded-lg border border-edge/60 bg-surface/70;
+  /* Small uppercase heading over a block of content, labelling no control. */
+  .sav-kicker {
+    @apply mb-1 block text-xs font-medium tracking-wide text-muted-foreground uppercase;
   }
 
-  .sav-input {
-    @apply w-full rounded-md border border-edge bg-canvas px-3 py-2 text-sm text-ink placeholder:text-faint disabled:opacity-50;
-  }
-
-  .sav-label {
-    @apply mb-1 block text-xs font-medium tracking-wide text-muted uppercase;
+  /*
+    A native <select> styled as the package's Input: its class list, copied from
+    @savvagent/console-ui 0.2.0 `dist/components/ui/input/input.svelte`, plus the
+    native chevron. Re-copy it when bumping the package. The package's own
+    Select is a bits-ui listbox with a different keyboard model.
+  */
+  .sav-select {
+    @apply h-8 w-full min-w-0 appearance-auto rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
   }
 
   /* Tokens, provisioning keys, job ids — anything that is copied, not read. */

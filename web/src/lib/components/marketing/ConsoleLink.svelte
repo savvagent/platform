@@ -1,8 +1,7 @@
 <script lang="ts">
   import { m } from '#lib/paraglide/messages.js';
   import { consoleEntry, session } from '#lib/session.svelte.js';
-  import LinkButton from '#lib/components/LinkButton.svelte';
-  import type { ButtonSize, ButtonTone } from '#lib/components/button.js';
+  import { Button, type ButtonSize, type ButtonVariant } from '@savvagent/console-ui/ui/button';
 
   /**
    * The way into the console from a marketing page: "Create account" for a
@@ -27,17 +26,23 @@
    * sight, the short form is enough.
    */
   interface Props {
-    tone?: ButtonTone;
+    variant?: ButtonVariant;
     size?: ButtonSize;
     named?: boolean;
   }
 
-  let { tone = 'primary', size = 'lg', named = false }: Props = $props();
+  let { variant = 'default', size = 'lg', named = false }: Props = $props();
 
   const entry = $derived(consoleEntry(session));
 </script>
 
-<LinkButton href={entry.href} {tone} {size} data-sveltekit-reload>
+<Button
+  href={entry.href}
+  {variant}
+  {size}
+  class={size === 'lg' ? 'h-10 px-5' : undefined}
+  data-sveltekit-reload
+>
   {#if entry.kind === 'signup'}
     {m.marketing_create_account()}
   {:else if named}
@@ -45,4 +50,4 @@
   {:else}
     {m.marketing_open_console()}
   {/if}
-</LinkButton>
+</Button>

@@ -4,8 +4,7 @@
   import { serviceLink, type Service } from '#lib/services.js';
 
   /**
-   * A link to a Savvagent service from inside the console: the header's Services
-   * nav, and the org home's Services card.
+   * A link to a Savvagent service from inside the console: the org home's Services card.
    *
    * **Where it goes is `serviceLink`'s call, not this component's.** A service
    * with a web console is a plain external link to it, as it always was. One
@@ -25,26 +24,22 @@
    * reads as a phrase rather than the two words run together; the badge is
    * hidden from assistive technology, which already hears it in the name.
    * The name starts with the visible text, so a voice-control user can say
-   * what they see. The badge is `text-muted`, not `text-faint`: it is small
-   * text that carries meaning, and faint falls under 4.5:1 on the card and on
-   * the hover background.
+   * what they see. The badge is `text-muted-foreground`, the shared theme's
+   * secondary text colour, which holds 4.5:1 on the card and on the hover
+   * background: it is small text that carries meaning.
    */
   interface Props {
     service: Service;
-    /** `nav` for the header's quiet pills, `chip` for the org home's bordered ones. */
-    variant: 'nav' | 'chip';
   }
 
-  let { service, variant }: Props = $props();
+  let { service }: Props = $props();
 
   const link = $derived(serviceLink(service, currentLocale()));
 </script>
 
 <a
   href={link.href}
-  class={variant === 'nav'
-    ? 'group inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink'
-    : 'group flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 text-sm text-muted transition hover:bg-raised hover:text-ink'}
+  class="group flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
   aria-label={link.kind === 'connector'
     ? m.service_connector_label({ name: service.name })
     : undefined}
@@ -54,7 +49,7 @@
   {#if link.kind === 'connector'}
     <span
       aria-hidden="true"
-      class="rounded border border-edge px-1 text-[0.6875rem] leading-4 font-medium text-muted group-hover:text-ink"
+      class="rounded border border-border px-1 text-[0.6875rem] leading-4 font-medium text-muted-foreground group-hover:text-foreground"
     >
       {m.service_connector_badge()}
     </span>

@@ -162,7 +162,7 @@ function card(name: string): HTMLElement {
     (h) => h.textContent?.trim() === name
   );
   expect(heading, `a card headed "${name}"`).toBeDefined();
-  return heading!.closest('article') as HTMLElement;
+  return heading!.closest('[data-slot="card"]') as HTMLElement;
 }
 
 /** Let the mocked fetch settle and the page re-render. */
@@ -182,7 +182,7 @@ describe('the pricing page', () => {
     // It sits outside the busy region, which would otherwise mute it.
     expect(status().textContent?.trim()).toBe('Loading plans');
     expect(status().closest('[aria-busy]')).toBeNull();
-    const skeletons = region().querySelectorAll('.sav-card');
+    const skeletons = region().querySelectorAll('li');
     expect(skeletons).toHaveLength(4);
     expect(skeletons[0]?.closest('[aria-hidden="true"]')).not.toBeNull();
     expect(plans).toHaveBeenCalledTimes(1);
@@ -379,7 +379,7 @@ describe('the pricing page', () => {
     expect(container.querySelector('[role="alert"]')?.textContent).toContain(
       'Pricing could not be loaded.'
     );
-    expect(container.querySelectorAll('article')).toHaveLength(0);
+    expect(container.querySelectorAll('[data-slot="card"]')).toHaveLength(0);
     expect(consoleError).toHaveBeenCalledTimes(1);
     // The error object itself, not only its message, so its stack survives.
     const logged = consoleError.mock.calls[0]?.[1];
@@ -398,7 +398,7 @@ describe('the pricing page', () => {
     expect(container.querySelector('[role="alert"]')?.textContent).toContain(
       'Pricing could not be loaded.'
     );
-    expect(container.querySelectorAll('article')).toHaveLength(0);
+    expect(container.querySelectorAll('[data-slot="card"]')).toHaveLength(0);
     expect(container.textContent).not.toContain('NaN');
     expect(consoleError).toHaveBeenCalledTimes(1);
     expect((consoleError.mock.calls[0]?.[1] as Error).message).toContain('plans[1].monthlyCents');
@@ -515,7 +515,7 @@ describe('the pricing page', () => {
     expect(region().querySelector(MAILTO)).not.toBeNull();
     // Nothing to announce as loaded; the visible message says it.
     expect(status().textContent?.trim()).toBe('');
-    expect(container.querySelectorAll('article')).toHaveLength(0);
+    expect(container.querySelectorAll('[data-slot="card"]')).toHaveLength(0);
 
     unmount(instance);
   });

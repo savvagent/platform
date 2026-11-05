@@ -28,11 +28,11 @@ function render(role: Role) {
   return mount(Harness, { target: container, props: { slug: 'acme', role, page: Page } });
 }
 
-/** The card for one service, found by its heading. */
+/** The card for one service, found by its heading (the package marks its card root `data-slot="card"`). */
 function card(name: string): HTMLElement {
   const heading = Array.from(container.querySelectorAll('h2')).find((h) => h.textContent === name);
   if (!heading) throw new Error(`no card for ${name}`);
-  return heading.closest('section')!;
+  return heading.closest<HTMLElement>('[data-slot="card"]')!;
 }
 
 function type(input: HTMLInputElement, value: string) {

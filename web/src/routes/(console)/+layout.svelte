@@ -1,21 +1,23 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
+  import { ConsoleFooter, ConsoleHeader } from '@savvagent/console-ui';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
   import type { Snippet } from 'svelte';
 
   import { api } from '#lib/api.js';
+  import { toConsoleSession } from '#lib/console-session.js';
+  import { shellOrigin, shellServices } from '#lib/shell.js';
   import { messageFor } from '#lib/errors.js';
-  import { gotoOrLoad } from '#lib/navigate.js';
+  import { fullLoadGuard, gotoOrLoad } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
-  import { reconcile, resolveAtBoot } from '#lib/locale.js';
+  import { appRuntime, applyLocale, reconcile, resolveAtBoot, type Locale } from '#lib/locale.js';
   import { guard } from '#lib/routing.js';
   import { session } from '#lib/session.svelte.js';
-  import { SERVICES } from '#lib/services.js';
   import { APP_VERSION } from '#lib/version.js';
-  import Alert from '#lib/components/Alert.svelte';
   import Loading from '#lib/components/Loading.svelte';
   import Logo from '#lib/components/Logo.svelte';
-  import ServiceLink from '#lib/components/ServiceLink.svelte';
 
   /**
    * Decide the language before anything renders.
@@ -26,13 +28,29 @@
    * exist. It runs once, synchronously, ahead of the first paint, so no page
    * ever renders English and then snaps to Spanish.
    */
-  resolveAtBoot();
+  resolveAtBoot(appRuntime);
+
+  /** The platform's origin for the shell; `shellOrigin` says why it is checked. */
+  const origin = shellOrigin(location.origin);
+  const services = shellServices(origin);
 
   let { children }: { children: Snippet } = $props();
 
   /** A failure resolving the session that is *not* "signed out". */
   let fatal = $state<string | undefined>(undefined);
   let signingOut = $state(false);
+  /** A language pick the account refused to store. */
+  let localeError = $state<string | undefined>(undefined);
+
+  const releaseUrl = `https://github.com/savvagent/platform/releases/tag/v${APP_VERSION}`;
+
+  /**
+   * The session in the shell's shape. Derived, so one object is shared and
+   * rebuilt only when `session.me` or the route's org changes.
+   */
+  const shellSession = $derived(
+    session.me ? toConsoleSession(session.me, page.params.org, origin) : undefined
+  );
 
   /**
    * Pages reachable without a session.
@@ -119,6 +137,36 @@
     else if (move) void gotoOrLoad(move.to);
   });
 
+  /**
+   * Leaving for a marketing page, or arriving from one, is a full load.
+   *
+   * The shell's own links (a service's connect card, the footer's home link)
+   * are rendered by the package and cannot carry `data-sveltekit-reload`, so
+   * the crossing is caught here instead; `fullLoadGuard` says why it matters.
+   */
+  beforeNavigate(fullLoadGuard);
+
+  /**
+   * The header's language picker.
+   *
+   * Signed in, the pick is saved to the account first and applied only once
+   * the server has it, as the settings page does: applied unsaved, `reconcile`
+   * would put the stored language back on the next load. A refusal is shown
+   * and rethrown, so the picker keeps its previous value and nothing reloads.
+   */
+  async function changeLocale(next: Locale) {
+    if (session.signedIn) {
+      localeError = undefined;
+      try {
+        await api.setProfile({ locale: next });
+      } catch (error) {
+        localeError = messageFor(error, m.settings_language_failed());
+        throw error;
+      }
+    }
+    applyLocale(next);
+  }
+
   async function signOut() {
     signingOut = true;
     try {
@@ -146,78 +194,47 @@
 <svelte:head><meta name="robots" content="noindex, nofollow" /></svelte:head>
 
 <div class="flex min-h-full flex-col">
-  <header class="border-b border-edge/60 bg-surface/40">
-    <div class="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3">
-      <!-- `/home`, not `/`: inside the console the logo means "my org", and `/`
-           is the public marketing page. -->
-      <a href="/home" class="flex items-center gap-2" aria-label="Savvagent">
-        <Logo class="size-6 text-accent" />
-        <span class="text-sm font-semibold tracking-tight text-ink">Savvagent</span>
+  <ConsoleHeader
+    session={shellSession}
+    platformUrl={origin}
+    {services}
+    service="platform"
+    onSignOut={signOut}
+    onLocaleChange={changeLocale}
+  >
+    {#snippet brand()}
+      <!-- Overridden for its target: inside the console the logo means "my
+           org" (`/home`), while the package's default goes to `/`, the public
+           marketing page. -->
+      <a href="/home" class="flex items-center gap-2 px-2 text-sm font-semibold">
+        <Logo class="size-5 text-primary" />
+        <span>Savvagent</span>
       </a>
-
+    {/snippet}
+    {#snippet nav()}
       {#if session.signedIn}
-        <nav class="ml-2 hidden gap-1 text-sm sm:flex" aria-label={m.nav_organizations()}>
-          {#each session.orgs as membership (membership.orgId)}
-            <a
-              href="/o/{membership.orgSlug}"
-              class="rounded-md px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink"
-              class:bg-raised={page.url.pathname.startsWith(`/o/${membership.orgSlug}`)}
-              class:text-ink={page.url.pathname.startsWith(`/o/${membership.orgSlug}`)}
-            >
-              {membership.orgName}
-            </a>
-          {/each}
-          <a
-            href="/orgs/new"
-            class="rounded-md px-2.5 py-1 text-faint transition hover:bg-raised hover:text-ink"
-            title={m.nav_create_org()}
-          >
-            +
-          </a>
-        </nav>
+        <Button
+          href="/orgs/new"
+          variant="ghost"
+          size="sm"
+          title={m.nav_create_org()}
+          aria-label={m.nav_create_org()}>+</Button
+        >
       {/if}
-
-      <div class="ml-auto flex items-center gap-3 text-sm">
-        <!--
-          The Savvagent services. One with a web console is a plain external link:
-          each is its own origin with its own session, so following one is a
-          full navigation. One without goes to its product page's connect card,
-          badged as a connector; `ServiceLink` says why.
-        -->
-        {#if SERVICES.length > 0}
-          <nav class="hidden items-center gap-1 sm:flex" aria-label={m.nav_services()}>
-            <span class="sav-label">{m.nav_services()}</span>
-            {#each SERVICES as service (service.slug)}
-              <ServiceLink {service} variant="nav" />
-            {/each}
-          </nav>
-        {/if}
-        {#if session.me}
-          <span class="hidden text-faint sm:inline"
-            >{session.me.user.email ?? session.me.user.label}</span
-          >
-          <button
-            class="rounded-md border border-edge px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink disabled:opacity-50"
-            onclick={signOut}
-            disabled={signingOut}
-          >
-            {m.nav_sign_out()}
-          </button>
-        {:else if session.ready}
-          <a
-            href="/login"
-            class="rounded-md border border-edge px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink"
-          >
-            {m.nav_sign_in()}
-          </a>
-        {/if}
-      </div>
-    </div>
-  </header>
+    {/snippet}
+    {#snippet signedOut()}
+      {#if session.ready}
+        <Button href="/login" variant="ghost" size="sm">{m.nav_sign_in()}</Button>
+      {/if}
+    {/snippet}
+  </ConsoleHeader>
 
   <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+    {#if localeError}
+      <Alert variant="destructive" class="mb-4">{localeError}</Alert>
+    {/if}
     {#if fatal}
-      <Alert>
+      <Alert variant="destructive">
         {fatal}
         <button class="ml-2 underline" onclick={() => location.reload()}>{m.nav_try_again()}</button
         >
@@ -229,9 +246,11 @@
     {/if}
   </main>
 
-  <footer class="border-t border-edge/40 px-4 py-4 text-center text-xs text-faint">
-    <a class="hover:text-muted" href="/api/openapi.json">{m.nav_api_reference()}</a>
-    <span aria-hidden="true"> · </span>
-    <span>v{APP_VERSION}</span>
-  </footer>
+  <ConsoleFooter
+    platformUrl={origin}
+    links={[
+      { label: m.nav_api_reference(), href: '/api/openapi.json' },
+      { label: `v${APP_VERSION}`, href: releaseUrl }
+    ]}
+  />
 </div>

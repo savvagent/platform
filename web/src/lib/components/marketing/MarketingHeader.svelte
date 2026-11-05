@@ -1,17 +1,28 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { ConsoleHeader } from '@savvagent/console-ui';
 
-  import type { Locale } from '#lib/locale.js';
+  import { writeCached, type Locale } from '#lib/locale.js';
   import { m } from '#lib/paraglide/messages.js';
   import { SERVICES } from '#lib/services.js';
   import { session } from '#lib/session.svelte.js';
-  import { localizedPath } from '#lib/site.js';
+  import { shellServices } from '#lib/shell.js';
+  import { localizedPath, stripLocale } from '#lib/site.js';
   import Logo from '#lib/components/Logo.svelte';
   import ConsoleLink from './ConsoleLink.svelte';
 
   /**
    * The marketing pages' header: the logo, the products and pricing, and a
-   * way into the console.
+   * way into the console, in the slots of the shared `ConsoleHeader`.
+   *
+   * **No `session` is passed, ever.** Without one the shell renders no org
+   * switcher or account menu, whose links lead into the console; this
+   * header's own `signedOut` slot is shown instead, and it decides between
+   * "Create account" and "Open console" itself.
+   *
+   * `platformUrl` is where the shell fetches the service list from and where
+   * its default links point. The layout owns it (see there for why it starts
+   * as the production origin).
    *
    * **The console links are unprefixed and carry `data-sveltekit-reload`.**
    * The console has one URL per page whatever the language (it reads the
@@ -27,9 +38,21 @@
    */
   interface Props {
     lang: Locale;
+    platformUrl: string;
   }
 
-  let { lang }: Props = $props();
+  let { lang, platformUrl }: Props = $props();
+
+  /**
+   * The shell's language picker. A marketing page's language is its URL, so
+   * a pick is this page under the other prefix, loaded in full: the shell's
+   * strings and this app's change only with a new document. The cache is
+   * written first, so the console opens in the same language later.
+   */
+  function changeLocale(next: Locale) {
+    writeCached(next);
+    location.assign(localizedPath(next, stripLocale(page.url.pathname).path));
+  }
 
   const products = $derived(
     SERVICES.map((service) => ({
@@ -78,18 +101,22 @@
   // The current page is underlined as well as brighter: colour alone is not
   // a cue everyone can see (WCAG 1.4.1).
   const link =
-    'rounded-md px-2.5 py-1.5 text-muted transition hover:bg-raised hover:text-ink aria-[current=page]:text-ink aria-[current=page]:underline aria-[current=page]:decoration-accent aria-[current=page]:underline-offset-4';
+    'rounded-md px-2.5 py-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground aria-[current=page]:text-foreground aria-[current=page]:underline aria-[current=page]:decoration-primary aria-[current=page]:underline-offset-4';
+  // The platform's own list, handed over rather than fetched (see `shellServices`).
+  const services = $derived(shellServices(platformUrl));
 </script>
 
 <svelte:window onkeydown={onMenuKeydown} />
 
-<header class="border-b border-edge/60 bg-surface/40">
-  <div class="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-3 sm:gap-4">
-    <a href={localizedPath(lang, '/')} class="flex items-center gap-2" aria-label="Savvagent">
-      <Logo class="size-6 text-accent" />
-      <span class="text-sm font-semibold tracking-tight text-ink">Savvagent</span>
+<ConsoleHeader {platformUrl} {services} service="platform" onLocaleChange={changeLocale}>
+  {#snippet brand()}
+    <a href={localizedPath(lang, '/')} class="flex items-center gap-2 px-2" aria-label="Savvagent">
+      <Logo class="size-6 text-primary" />
+      <span class="text-sm font-semibold tracking-tight text-foreground">Savvagent</span>
     </a>
+  {/snippet}
 
+  {#snippet nav()}
     <nav
       class="ml-2 hidden items-center gap-1 text-sm md:flex"
       aria-label={m.marketing_nav_label()}
@@ -101,45 +128,47 @@
       <a href={cli} class={link} aria-current={current(cli)}>{m.marketing_nav_cli()}</a>
     </nav>
 
-    <div class="ml-auto flex items-center gap-2 text-sm">
+    <!--
+      The small-screen menu. A `<details>` rather than a scripted toggle, so
+      it opens and closes without JavaScript and announces its state for
+      free. "Sign in" lives in here below `sm`, so the bar never has to fit
+      three buttons in 360px.
+    -->
+    <details class="relative text-sm md:hidden" bind:open={menuOpen}>
+      <summary
+        bind:this={menuToggle}
+        class="cursor-pointer list-none rounded-md border border-border px-2.5 py-1.5 text-muted-foreground transition select-none hover:bg-muted hover:text-foreground [&::-webkit-details-marker]:hidden"
+      >
+        {m.marketing_nav_menu()}
+      </summary>
+      <nav
+        class="absolute left-0 z-10 mt-2 flex w-56 flex-col gap-1 rounded-md border border-border bg-popover p-2 text-popover-foreground shadow-lg"
+        aria-label={m.marketing_nav_label()}
+      >
+        <span class="sav-kicker px-2.5 pt-1">{m.marketing_nav_products()}</span>
+        {#each products as item (item.href)}
+          <a href={item.href} class={link} aria-current={current(item.href)}>{item.label}</a>
+        {/each}
+        <hr class="my-1 border-border" />
+        <a href={pricing} class={link} aria-current={current(pricing)}>
+          {m.marketing_nav_pricing()}
+        </a>
+        <a href={cli} class={link} aria-current={current(cli)}>{m.marketing_nav_cli()}</a>
+        {#if !session.signedIn}
+          <a href="/login" data-sveltekit-reload class="sm:hidden {link}">{m.nav_sign_in()}</a>
+        {/if}
+      </nav>
+    </details>
+  {/snippet}
+
+  {#snippet signedOut()}
+    <div class="flex items-center gap-2 text-sm">
       {#if !session.signedIn}
         <a href="/login" data-sveltekit-reload class="hidden sm:inline-block {link}">
           {m.nav_sign_in()}
         </a>
       {/if}
       <ConsoleLink size="sm" />
-
-      <!--
-        The small-screen menu. A `<details>` rather than a scripted toggle, so
-        it opens and closes without JavaScript and announces its state for
-        free. "Sign in" lives in here below `sm`, so the bar never has to fit
-        three buttons in 360px.
-      -->
-      <details class="relative md:hidden" bind:open={menuOpen}>
-        <summary
-          bind:this={menuToggle}
-          class="cursor-pointer list-none rounded-md border border-edge px-2.5 py-1.5 text-muted transition select-none hover:bg-raised hover:text-ink [&::-webkit-details-marker]:hidden"
-        >
-          {m.marketing_nav_menu()}
-        </summary>
-        <nav
-          class="sav-card absolute right-0 z-10 mt-2 flex w-56 flex-col gap-1 bg-surface p-2 shadow-lg"
-          aria-label={m.marketing_nav_label()}
-        >
-          <span class="sav-label px-2.5 pt-1">{m.marketing_nav_products()}</span>
-          {#each products as item (item.href)}
-            <a href={item.href} class={link} aria-current={current(item.href)}>{item.label}</a>
-          {/each}
-          <hr class="my-1 border-edge/60" />
-          <a href={pricing} class={link} aria-current={current(pricing)}>
-            {m.marketing_nav_pricing()}
-          </a>
-          <a href={cli} class={link} aria-current={current(cli)}>{m.marketing_nav_cli()}</a>
-          {#if !session.signedIn}
-            <a href="/login" data-sveltekit-reload class="sm:hidden {link}">{m.nav_sign_in()}</a>
-          {/if}
-        </nav>
-      </details>
     </div>
-  </div>
-</header>
+  {/snippet}
+</ConsoleHeader>

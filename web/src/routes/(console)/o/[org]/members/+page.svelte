@@ -7,13 +7,21 @@
   import { session } from '#lib/session.svelte.js';
   import { relative, person } from '#lib/format.js';
   import type { ClaimCode, CreatedInvite, Invite, OrgMember, Role } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Card from '#lib/components/Card.svelte';
   import CopyField from '#lib/components/CopyField.svelte';
   import Empty from '#lib/components/Empty.svelte';
-  import Field from '#lib/components/Field.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+  } from '@savvagent/console-ui/ui/card';
+  import { Field, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
 
   /**
    * Members and outstanding invitations.
@@ -30,6 +38,7 @@
    */
 
   const org = useOrg();
+  const id = $props.id();
 
   let members = $state<OrgMember[]>([]);
   let invites = $state<Invite[]>([]);
@@ -140,200 +149,233 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.members_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">
+    <p class="mt-0.5 text-sm text-muted-foreground">
       {m.members_subtitle({ org: org.title })}
     </p>
   </div>
 
-  {#if error}<Alert>{error}</Alert>{/if}
+  {#if error}<Alert variant="destructive">{error}</Alert>{/if}
 
   {#if claim}
-    <div class="space-y-3 rounded-lg border border-warn/40 bg-warn/5 p-4">
-      <p class="text-sm text-ink">
+    <div class="space-y-3 rounded-lg border border-warning/40 bg-warning/5 p-4">
+      <p class="text-sm text-foreground">
         {m.members_claim_headline()}
-        <span class="text-muted">{m.members_claim_caveat()}</span>
+        <span class="text-muted-foreground">{m.members_claim_caveat()}</span>
       </p>
       <CopyField label={m.members_copy_link()} value={claim.link} />
       <CopyField label={m.members_copy_code()} value={claim.code} />
-      <p class="text-xs text-faint">
+      <p class="text-xs text-muted-foreground">
         {m.members_claim_note()}
       </p>
-      <Button tone="quiet" onclick={() => (claim = undefined)}>{m.members_claim_done()}</Button>
+      <Button variant="outline" onclick={() => (claim = undefined)}>{m.members_claim_done()}</Button
+      >
     </div>
   {/if}
 
   {#if org.isAdmin}
-    <Card title={m.members_invite_title()} description={m.members_invite_description()}>
-      <form class="flex flex-wrap items-end gap-3" onsubmit={invite}>
-        <div class="min-w-56 flex-1">
-          <Field label={m.members_field_email()}>
-            <input class="sav-input" type="email" required bind:value={inviteEmail} />
-          </Field>
-        </div>
-        <div class="w-36">
-          <Field label={m.members_field_role()}>
-            <select class="sav-input" bind:value={inviteRole}>
-              <option value="member">{m.members_role_member()}</option>
-              <option value="admin">{m.members_role_admin()}</option>
-              {#if org.isOwner}<option value="owner">{m.members_role_owner()}</option>{/if}
-            </select>
-          </Field>
-        </div>
-        <div class="pb-0.5">
-          <Button type="submit" pending={inviting}>{m.members_invite_submit()}</Button>
-        </div>
-      </form>
+    <Card>
+      <CardHeader class="border-b">
+        <CardTitle><h2 class="text-sm font-semibold">{m.members_invite_title()}</h2></CardTitle>
+        <CardDescription>{m.members_invite_description()}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form class="flex flex-wrap items-end gap-3" onsubmit={invite}>
+          <div class="min-w-56 flex-1">
+            <Field>
+              <FieldLabel for="{id}-invite-email">{m.members_field_email()}</FieldLabel>
+              <Input id="{id}-invite-email" type="email" required bind:value={inviteEmail} />
+            </Field>
+          </div>
+          <div class="w-36">
+            <Field>
+              <FieldLabel for="{id}-invite-role">{m.members_field_role()}</FieldLabel>
+              <select id="{id}-invite-role" class="sav-select" bind:value={inviteRole}>
+                <option value="member">{m.members_role_member()}</option>
+                <option value="admin">{m.members_role_admin()}</option>
+                {#if org.isOwner}<option value="owner">{m.members_role_owner()}</option>{/if}
+              </select>
+            </Field>
+          </div>
+          <div class="pb-0.5">
+            <Button type="submit" disabled={inviting}>
+              {#if inviting}<Spinner />{/if}
+              {m.members_invite_submit()}
+            </Button>
+          </div>
+        </form>
 
-      {#if inviteError}<div class="mt-3"><Alert>{inviteError}</Alert></div>{/if}
-      {#if minted}
-        <div class="mt-4 space-y-3 rounded-lg border border-ok/40 bg-ok/5 p-4">
-          <p class="text-sm text-ink">
-            {m.members_invite_minted_headline({ email: minted.email })}
-            <span class="text-muted">{m.members_invite_minted_caveat()}</span>
-          </p>
-          <CopyField label={m.members_copy_link()} value={minted.link} />
-          <CopyField label={m.members_copy_code()} value={minted.code} />
-          <p class="text-xs text-faint">
-            {m.members_invite_minted_note({ email: minted.email })}
-          </p>
-        </div>
-      {/if}
+        {#if inviteError}<div class="mt-3">
+            <Alert variant="destructive">{inviteError}</Alert>
+          </div>{/if}
+        {#if minted}
+          <div class="mt-4 space-y-3 rounded-lg border border-success/40 bg-success/5 p-4">
+            <p class="text-sm text-foreground">
+              {m.members_invite_minted_headline({ email: minted.email })}
+              <span class="text-muted-foreground">{m.members_invite_minted_caveat()}</span>
+            </p>
+            <CopyField label={m.members_copy_link()} value={minted.link} />
+            <CopyField label={m.members_copy_code()} value={minted.code} />
+            <p class="text-xs text-muted-foreground">
+              {m.members_invite_minted_note({ email: minted.email })}
+            </p>
+          </div>
+        {/if}
+      </CardContent>
     </Card>
   {/if}
 
   {#if loading && members.length === 0}
     <Loading what={m.members_loading()} />
   {:else}
-    <Card title={m.members_roster_title()}>
-      <ul class="divide-y divide-edge/40">
-        {#each members as member (member.id)}
-          {@const isMe = member.id === session.me?.user.id}
-          <li class="flex flex-wrap items-center gap-3 py-2.5">
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-2 text-sm">
-                <span class="text-ink">{person(member.name, member.email, member.label)}</span>
-                {#if isMe}<span class="text-xs text-faint">{m.members_you()}</span>{/if}
-                {#if member.disabledAt}
-                  <span class="rounded-full border border-bad/50 px-2 py-0.5 text-xs text-bad">
-                    {m.members_badge_disabled()}
-                  </span>
-                {/if}
+    <Card>
+      <CardHeader class="border-b">
+        <CardTitle><h2 class="text-sm font-semibold">{m.members_roster_title()}</h2></CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ul class="divide-y divide-border/40">
+          {#each members as member (member.id)}
+            {@const isMe = member.id === session.me?.user.id}
+            <li class="flex flex-wrap items-center gap-3 py-2.5">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="text-foreground"
+                    >{person(member.name, member.email, member.label)}</span
+                  >
+                  {#if isMe}<span class="text-xs text-muted-foreground">{m.members_you()}</span
+                    >{/if}
+                  {#if member.disabledAt}
+                    <span
+                      class="rounded-full border border-destructive/50 px-2 py-0.5 text-xs text-destructive"
+                    >
+                      {m.members_badge_disabled()}
+                    </span>
+                  {/if}
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  {m.members_row_meta({
+                    email: member.email ?? member.label,
+                    when: relative(member.joinedAt)
+                  })}
+                </p>
               </div>
-              <p class="text-xs text-faint">
-                {m.members_row_meta({
-                  email: member.email ?? member.label,
-                  when: relative(member.joinedAt)
-                })}
-              </p>
-            </div>
 
-            {#if org.isAdmin}
-              <select
-                class="sav-input w-28"
-                value={member.role}
-                disabled={busy === member.id}
-                onchange={(e) =>
-                  act(member.id, () =>
-                    api.setMemberRole(org.slug, member.id, e.currentTarget.value as Role)
-                  )}
-              >
-                {#each roles as role (role)}
-                  <!-- Only an owner may create or demote an owner; the server
+              {#if org.isAdmin}
+                <select
+                  class="sav-select w-28"
+                  value={member.role}
+                  disabled={busy === member.id}
+                  onchange={(e) =>
+                    act(member.id, () =>
+                      api.setMemberRole(org.slug, member.id, e.currentTarget.value as Role)
+                    )}
+                >
+                  {#each roles as role (role)}
+                    <!-- Only an owner may create or demote an owner; the server
                        refuses otherwise, and offering the option would be a
                        button that exists only to fail. -->
-                  <option
-                    value={role}
-                    disabled={!org.isOwner && (role === 'owner' || member.role === 'owner')}
-                  >
-                    {roleLabel(role)}
-                  </option>
-                {/each}
-              </select>
+                    <option
+                      value={role}
+                      disabled={!org.isOwner && (role === 'owner' || member.role === 'owner')}
+                    >
+                      {roleLabel(role)}
+                    </option>
+                  {/each}
+                </select>
 
-              <Button
-                tone="quiet"
-                pending={busy === `${member.id}:logout`}
-                title={m.members_force_logout_title()}
-                onclick={() =>
-                  act(`${member.id}:logout`, () => api.forceLogout(org.slug, member.id))}
-              >
-                {m.members_force_logout()}
-              </Button>
+                <Button
+                  variant="outline"
+                  disabled={busy === `${member.id}:logout`}
+                  title={m.members_force_logout_title()}
+                  onclick={() =>
+                    act(`${member.id}:logout`, () => api.forceLogout(org.slug, member.id))}
+                >
+                  {#if busy === `${member.id}:logout`}<Spinner />{/if}
+                  {m.members_force_logout()}
+                </Button>
 
-              <!-- The only assisted account recovery there is. No email means
+                <!-- The only assisted account recovery there is. No email means
                    no recovery link, so an admin is the last resort for someone
                    who has lost every device they registered. The code it
                    returns is what stops the emptied account being claimable by
                    whoever reaches registration first. -->
-              {#if org.isOwner || member.role !== 'owner'}
+                {#if org.isOwner || member.role !== 'owner'}
+                  <Button
+                    variant="outline"
+                    disabled={busy === `${member.id}:reset`}
+                    title={m.members_reset_title()}
+                    onclick={() => {
+                      if (
+                        confirm(
+                          m.members_reset_confirm({
+                            who: member.email ?? member.label
+                          })
+                        )
+                      ) {
+                        resetPasskeys(member.id);
+                      }
+                    }}
+                  >
+                    {#if busy === `${member.id}:reset`}<Spinner />{/if}
+                    {m.members_reset_button()}
+                  </Button>
+                {/if}
+              {/if}
+
+              {#if org.isAdmin || isMe}
                 <Button
-                  tone="quiet"
-                  pending={busy === `${member.id}:reset`}
-                  title={m.members_reset_title()}
-                  onclick={() => {
-                    if (
-                      confirm(
-                        m.members_reset_confirm({
-                          who: member.email ?? member.label
-                        })
-                      )
-                    ) {
-                      resetPasskeys(member.id);
-                    }
-                  }}
+                  variant="destructive"
+                  disabled={busy === `${member.id}:remove`}
+                  onclick={() =>
+                    act(`${member.id}:remove`, () => api.removeMember(org.slug, member.id))}
                 >
-                  {m.members_reset_button()}
+                  {#if busy === `${member.id}:remove`}<Spinner />{/if}
+                  {isMe ? m.members_leave() : m.members_remove()}
                 </Button>
               {/if}
-            {/if}
+            </li>
+          {/each}
+        </ul>
 
-            {#if org.isAdmin || isMe}
-              <Button
-                tone="danger"
-                pending={busy === `${member.id}:remove`}
-                onclick={() =>
-                  act(`${member.id}:remove`, () => api.removeMember(org.slug, member.id))}
-              >
-                {isMe ? m.members_leave() : m.members_remove()}
-              </Button>
-            {/if}
-          </li>
-        {/each}
-      </ul>
-
-      <p class="mt-3 text-xs text-faint">
-        {m.members_roster_note()}
-      </p>
+        <p class="mt-3 text-xs text-muted-foreground">
+          {m.members_roster_note()}
+        </p>
+      </CardContent>
     </Card>
 
     {#if org.isAdmin}
-      <Card title={m.members_invites_title()}>
-        {#if invites.length === 0}
-          <Empty title={m.members_invites_empty()} />
-        {:else}
-          <ul class="divide-y divide-edge/40">
-            {#each invites as pending (pending.id)}
-              <li class="flex items-center gap-3 py-2.5 text-sm">
-                <div class="min-w-0 flex-1">
-                  <span class="text-ink">{pending.email}</span>
-                  <p class="text-xs text-faint">
-                    {m.members_invite_row_meta({
-                      role: roleLabel(pending.role),
-                      when: relative(pending.expiresAt)
-                    })}
-                  </p>
-                </div>
-                <Button
-                  tone="quiet"
-                  pending={busy === pending.id}
-                  onclick={() => act(pending.id, () => api.revokeInvite(org.slug, pending.id))}
-                >
-                  {m.members_withdraw()}
-                </Button>
-              </li>
-            {/each}
-          </ul>
-        {/if}
+      <Card>
+        <CardHeader class="border-b">
+          <CardTitle><h2 class="text-sm font-semibold">{m.members_invites_title()}</h2></CardTitle>
+        </CardHeader>
+        <CardContent>
+          {#if invites.length === 0}
+            <Empty title={m.members_invites_empty()} />
+          {:else}
+            <ul class="divide-y divide-border/40">
+              {#each invites as pending (pending.id)}
+                <li class="flex items-center gap-3 py-2.5 text-sm">
+                  <div class="min-w-0 flex-1">
+                    <span class="text-foreground">{pending.email}</span>
+                    <p class="text-xs text-muted-foreground">
+                      {m.members_invite_row_meta({
+                        role: roleLabel(pending.role),
+                        when: relative(pending.expiresAt)
+                      })}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    disabled={busy === pending.id}
+                    onclick={() => act(pending.id, () => api.revokeInvite(org.slug, pending.id))}
+                  >
+                    {#if busy === pending.id}<Spinner />{/if}
+                    {m.members_withdraw()}
+                  </Button>
+                </li>
+              {/each}
+            </ul>
+          {/if}
+        </CardContent>
       </Card>
     {/if}
   {/if}

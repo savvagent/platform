@@ -10,6 +10,10 @@ account's own security activity, and, per organization, members, invitations, te
 the usage meter and the audit log. Both talk to `savvagent-platform-server`'s API
 (`crates/savvagent-web`; the contract is `GET /api/openapi.json`).
 
+The header, footer, theme and UI components come from `@savvagent/console-ui`, the shared shell
+for Savvagent's web consoles. It is pinned to an exact version in `package.json`; bumping it is a
+reviewed change. Dark mode follows the operating system, on both halves.
+
 What it does **not** hold is any product's own domain: queues, repositories, trackers and
 agent connection live in each service, which signs in here with OAuth, and are used through
 its own web console (Savvagent Tower's, for one) or, for an agent-only service such as Savvagent Flags
@@ -20,6 +24,7 @@ as `/services/v1.json` for the other consoles' headers to read cross-origin; its
 contract, documented in [`docs/service-directory.md`](../docs/service-directory.md).
 
 ```bash
+export NODE_AUTH_TOKEN=$(gh auth token)   # a GitHub token with read:packages
 npm install
 npm run dev      # Vite on :5173, proxying /api /oauth /sso /.well-known to SAVVAGENT_API_ORIGIN
 npm run check    # compile messages, check completeness, then svelte-check + tsc (incl. worker/)
@@ -29,6 +34,12 @@ npm run build    # static bundle in build/, then check:build on it
 npm run check:build  # the build check alone: every marketing page exists, in its language, indexable
 npm run deploy   # build, then deploy the production Worker — docs/deploy/cloudflare.md
 ```
+
+`@savvagent/console-ui` is published to GitHub Packages, and `web/.npmrc` reads the token from
+`NODE_AUTH_TOKEN`, so `npm install` needs one with `read:packages`. Every build and check needs
+the installed package, not just the dev server.
+
+The package is **private** to the `savvagent` GitHub org today, so the token must belong to an account (or workflow) that has been given read access to it; a `read:packages` token from anyone else gets a 404. Until the package is made public, building `web/` (and so the image) from source is limited to the savvagent org.
 
 `npm run dev` needs a server behind it. Set `SAVVAGENT_API_ORIGIN` if it is not on
 `http://127.0.0.1:8080`, and start that server with `SAVVAGENT_PUBLIC_URL=http://localhost:5173`:
@@ -60,7 +71,7 @@ any failure leaves the signed-out link, which still works. `/pricing` also fetch
 
 **Language lives in different places.** A marketing page's language is its URL: English
 unprefixed (`/pricing`), every other locale under its code (`/es/pricing`, matched by
-`src/params/lang.ts`, which refuses `/en/…` so English has one URL). Each page declares
+`src/params.ts`, which refuses `/en/…` so English has one URL). Each page declares
 itself canonical and lists every language version as an `hreflang` alternate, with
 `x-default` on English; the sitemap repeats the set. `src/hooks.server.ts` writes the
 locale into `<html lang>` of each file as it is built. The console has one URL per page
@@ -68,13 +79,18 @@ whatever the language, and keeps reading it from the account and the browser (se
 "Messages" below).
 
 **Every link that crosses between the halves, or changes language, is a full document
-load** (`data-sveltekit-reload`). The marketing layout pins Paraglide's locale to the URL
-and never puts back the console's getter, and the console resolves its locale once, at
-boot. A client-side link from one half to the other would carry the wrong getter across:
-the console speaking the URL's language, or a marketing page the account's. A full load
-lets each half boot as if its URL had been typed. A language switch reloads for the same
-reason the console's does: `m.*()` are plain calls Svelte cannot invalidate. Any new link
-across that line needs the attribute too.
+load** (`data-sveltekit-reload`). The marketing layout pins the locale to the URL (`useLocale`,
+from `@savvagent/console-ui`) and never puts back the console's getter, and the console
+resolves its locale once, at boot (`resolveAtBoot`). A client-side link from one half to the
+other would carry the wrong getter across: the console speaking the URL's language, or a
+marketing page the account's. A full load lets each half boot as if its URL had been typed. A
+language switch reloads for the same reason the console's does: `m.*()` are plain calls Svelte
+cannot invalidate. Any new link across that line needs the attribute too.
+
+The shared shell's own links (its header and footer, and a service's connect card) are rendered
+by the package, which cannot put the attribute on them. So both layouts also register
+`fullLoadGuard` (`src/lib/navigate.ts`) in `beforeNavigate`, which makes the same crossings a
+full load.
 
 ## What holds across the app
 
@@ -148,7 +164,7 @@ compiled, not looked up at runtime: [Paraglide JS](https://inlang.com/m/gerre34r
 project.inlang/settings.json         the six locales and the base locale
 messages/{en,es,de,fr,it,hi}.json    the catalogs
 scripts/check-messages.mjs           the completeness gate, wired into `npm run check`
-src/lib/locale.ts                    which language this document is in, and how it got there
+src/lib/locale.ts                    re-exports the shared locale module, with this app's runtime
 src/lib/errors.ts                    ApiError.code / WebauthnError.code -> a sentence
 src/lib/paraglide/**                 generated; git-ignored, prettier-ignored, never edited
 ```
@@ -196,12 +212,12 @@ is stored; an English page only offers a link to the visitor's apparent language
 | `src/lib/pricing.ts`            | A plan from `GET /api/plans` put into words, in the page's language, not the console's.       |
 | `src/lib/routing.ts`            | The console's routing guard, as a pure decision.                                              |
 | `src/lib/next.ts`               | The safe reading of an attacker-supplied `next`, and `CONSOLE_HOME` (`/home`).                |
-| `src/params/lang.ts`            | The `[[lang=lang]]` matcher: every locale but English.                                        |
+| `src/params.ts`                 | The `[[lang=lang]]` matcher: every locale but English.                                        |
 | `src/hooks.server.ts`           | Writes each prerendered page's `<html lang>`. Runs at build time only.                        |
 | `src/routes/(console)`          | The console: `ssr = false`, the session guard, `noindex`.                                     |
 | `src/routes/(marketing)`        | The public pages: prerendered, the locale pinned to the URL.                                  |
 | `src/lib/components/Seo.svelte` | A marketing page's head: canonical, `hreflang` alternates, Open Graph.                        |
-| `src/lib/components/marketing/` | The marketing header, footer, product and plan cards, and `ConsoleLink`, the way in.          |
+| `src/lib/components/marketing/` | Marketing header and footer (over the shared shell), product and plan cards, `ConsoleLink`.   |
 | `scripts/check-build.mjs`       | The build check, chained into `npm run build`.                                                |
 | `worker/index.ts`               | The Cloudflare Worker: serves this bundle, proxies the API.                                   |
 | `wrangler.jsonc`                | That Worker's config. `worker/tsconfig.json` type-checks it separately.                       |

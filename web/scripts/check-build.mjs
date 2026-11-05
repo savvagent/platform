@@ -87,8 +87,11 @@ function decode(text) {
 
 /**
  * The first and the last string the marketing layout renders: the skip link
- * at the top of `<body>`, and the footer's language-switcher label at the
- * bottom. Each is a key, a pattern that finds it in the HTML, and a name.
+ * at the top of `<body>`, and the label of the language nav just above the
+ * shared footer at the bottom (`data-languages`, since the shared footer has
+ * links of its own). Svelte's server render writes the bare attribute as
+ * `data-languages=""`; both spellings are accepted. Each is a key, a pattern
+ * that finds it in the HTML, and a name.
  *
  * **Why the body is checked, not only `<html lang>`.** The `lang` attribute
  * comes from the URL, in a hook; the words come from Paraglide's
@@ -106,8 +109,8 @@ const LOCALE_MARKERS = [
   },
   {
     key: 'marketing_footer_language',
-    pattern: /<footer[\s\S]*?<nav aria-label="([^"]*)"/,
-    where: 'footer language label'
+    pattern: /<nav data-languages(?:="")? aria-label="([^"]*)"/,
+    where: 'language nav label'
   }
 ];
 

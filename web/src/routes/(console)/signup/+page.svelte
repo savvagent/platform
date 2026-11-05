@@ -8,9 +8,13 @@
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';
   import * as webauthn from '#lib/webauthn.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Field from '#lib/components/Field.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import { Field, FieldDescription, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
+
+  const id = $props.id();
 
   const next = $derived(page.url.searchParams.get('next'));
 
@@ -104,14 +108,14 @@
 <div class="mx-auto max-w-sm py-8">
   {#if step === 'intro'}
     <h1 class="text-lg font-semibold">{m.signup_heading()}</h1>
-    <p class="mt-1 text-sm text-faint">{m.signup_intro()}</p>
+    <p class="mt-1 text-sm text-muted-foreground">{m.signup_intro()}</p>
 
     {#if !supported}
       <div class="mt-4">
-        <Alert>{m.signup_unsupported()}</Alert>
+        <Alert variant="destructive">{m.signup_unsupported()}</Alert>
       </div>
     {:else}
-      <p class="mt-4 text-xs text-faint">
+      <p class="mt-4 text-xs text-muted-foreground">
         {#if platform}
           {m.signup_platform_hint()}
         {:else}
@@ -119,37 +123,60 @@
         {/if}
       </p>
 
-      {#if error}<div class="mt-4"><Alert>{error}</Alert></div>{/if}
+      {#if error}<div class="mt-4"><Alert variant="destructive">{error}</Alert></div>{/if}
 
       <div class="mt-5">
-        <Button {pending} onclick={createAccount}>{m.signup_create_passkey()}</Button>
+        <Button disabled={pending} onclick={createAccount}>
+          {#if pending}<Spinner />{/if}
+          {m.signup_create_passkey()}
+        </Button>
       </div>
     {/if}
 
-    <p class="mt-6 text-xs text-faint">
+    <p class="mt-6 text-xs text-muted-foreground">
       {m.signup_have_account()}
       <a
-        class="text-muted underline hover:text-ink"
+        class="text-muted-foreground underline hover:text-foreground"
         href={next ? `/login?next=${encodeURIComponent(next)}` : '/login'}
         >{m.signup_sign_in_link()}</a
       >
     </p>
   {:else}
     <h1 class="text-lg font-semibold">{m.signup_ready_heading()}</h1>
-    <p class="mt-1 text-sm text-faint">{m.signup_ready_intro()}</p>
+    <p class="mt-1 text-sm text-muted-foreground">{m.signup_ready_intro()}</p>
 
     <form class="mt-6 space-y-4" onsubmit={saveProfile}>
-      <Field label={m.signup_email_label()} hint={m.signup_email_hint()}>
-        <input class="sav-input" type="email" autocomplete="username" required bind:value={email} />
+      <Field>
+        <FieldLabel for="{id}-email">{m.signup_email_label()}</FieldLabel>
+        <Input
+          id="{id}-email"
+          aria-describedby="{id}-email-hint"
+          type="email"
+          autocomplete="username"
+          required
+          bind:value={email}
+        />
+        <FieldDescription id="{id}-email-hint">{m.signup_email_hint()}</FieldDescription>
       </Field>
 
-      <Field label={m.signup_name_label()} hint={m.signup_name_hint()}>
-        <input class="sav-input" type="text" autocomplete="name" bind:value={name} />
+      <Field>
+        <FieldLabel for="{id}-name">{m.signup_name_label()}</FieldLabel>
+        <Input
+          id="{id}-name"
+          aria-describedby="{id}-name-hint"
+          type="text"
+          autocomplete="name"
+          bind:value={name}
+        />
+        <FieldDescription id="{id}-name-hint">{m.signup_name_hint()}</FieldDescription>
       </Field>
 
-      {#if error}<Alert>{error}</Alert>{/if}
+      {#if error}<Alert variant="destructive">{error}</Alert>{/if}
 
-      <Button type="submit" {pending}>{m.signup_save()}</Button>
+      <Button type="submit" disabled={pending}>
+        {#if pending}<Spinner />{/if}
+        {m.signup_save()}
+      </Button>
     </form>
 
     <!--
@@ -157,8 +184,8 @@
       of the middle of one: a sentence cut around an anchor cannot be reordered
       into a language that puts the verb somewhere else.
     -->
-    <p class="mt-6 text-xs text-faint">
-      <a class="text-muted underline hover:text-ink" href="/settings"
+    <p class="mt-6 text-xs text-muted-foreground">
+      <a class="text-muted-foreground underline hover:text-foreground" href="/settings"
         >{m.signup_second_passkey_link()}</a
       >
       {m.signup_second_passkey_hint()}

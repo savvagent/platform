@@ -36,9 +36,11 @@
       href="%sveltekit.assets%/favicon-512x512.png"
     />
     <link rel="apple-touch-icon" sizes="180x180" href="%sveltekit.assets%/apple-touch-icon.png" />
+    <!-- Sets the dark class before first paint; see static/theme.js. -->
+    <script src="%sveltekit.assets%/theme.js"></script>
     %sveltekit.head%
   </head>
-  <body data-sveltekit-preload-data="hover" class="h-full bg-canvas text-ink antialiased">
+  <body data-sveltekit-preload-data="hover" class="h-full antialiased">
     <div style="display: contents" class="h-full">%sveltekit.body%</div>
   </body>
 </html>

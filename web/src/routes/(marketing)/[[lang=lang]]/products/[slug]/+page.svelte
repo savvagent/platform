@@ -6,7 +6,7 @@
   import { consoleEntry, session } from '#lib/session.svelte.js';
   import { localizedPath } from '#lib/site.js';
   import CopyField from '#lib/components/CopyField.svelte';
-  import LinkButton from '#lib/components/LinkButton.svelte';
+  import { Button } from '@savvagent/console-ui/ui/button';
   import Seo from '#lib/components/Seo.svelte';
   import ConsoleLink from '#lib/components/marketing/ConsoleLink.svelte';
   import ProductCard from '#lib/components/marketing/ProductCard.svelte';
@@ -126,35 +126,35 @@
 
   <div class="flex flex-col gap-20 pb-10 sm:gap-24">
     <section aria-labelledby="product-title" class="max-w-3xl pt-6">
-      <p class="sav-label text-accent">{m.product_eyebrow()}</p>
+      <p class="sav-kicker text-primary">{m.product_eyebrow()}</p>
       <h1
         id="product-title"
-        class="mt-3 text-4xl font-semibold tracking-tight text-ink sm:text-5xl"
+        class="mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
       >
         {service.name}
       </h1>
-      <p class="mt-4 text-xl text-pretty text-ink">{service.copy.tagline()}</p>
-      <p class="mt-4 text-lg text-pretty text-muted">{service.copy.summary()}</p>
+      <p class="mt-4 text-xl text-pretty text-foreground">{service.copy.tagline()}</p>
+      <p class="mt-4 text-lg text-pretty text-muted-foreground">{service.copy.summary()}</p>
       <div class="mt-8 flex flex-wrap items-center gap-3">
         {#if link?.kind === 'console'}
-          <LinkButton href={link.href} size="lg">
+          <Button href={link.href} size="lg" class="h-10 px-5">
             {m.product_open_console({ name: service.name })}
             <span aria-hidden="true">↗</span>
-          </LinkButton>
+          </Button>
         {:else if agentOnly}
-          <LinkButton href="#connect" size="lg" onclick={onAddClick}>
+          <Button href="#connect" size="lg" class="h-10 px-5" onclick={onAddClick}>
             {m.product_add_to_assistant()}
-          </LinkButton>
+          </Button>
         {/if}
-        <ConsoleLink tone="quiet" named />
+        <ConsoleLink variant="outline" named />
       </div>
       {#if agentOnly}
         <!-- Underlined at rest: inside a sentence, colour alone would not mark it as a link. -->
-        <p class="mt-4 text-sm text-pretty text-muted">
+        <p class="mt-4 text-sm text-pretty text-muted-foreground">
           {m.product_agent_only_note({ name: service.name })}
           {billing[0] ?? ''}<a
             href={savvagentConsole.href}
-            class="font-medium text-accent underline underline-offset-2 hover:decoration-2"
+            class="font-medium text-primary underline underline-offset-4 hover:decoration-2"
             data-sveltekit-reload>{m.product_savvagent_console()}</a
           >{billing[1] ?? ''}
         </p>
@@ -163,13 +163,14 @@
 
     <div class="grid gap-12 lg:grid-cols-2">
       <section aria-labelledby="features-title">
-        <h2 id="features-title" class="text-2xl font-semibold tracking-tight text-ink">
+        <h2 id="features-title" class="text-2xl font-semibold tracking-tight text-foreground">
           {m.product_features_heading()}
         </h2>
         <ul role="list" class="mt-6 flex flex-col gap-4">
           {#each service.copy.features() as feature, i (i)}
-            <li class="flex gap-3 text-muted">
-              <span class="mt-2 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+            <li class="flex gap-3 text-muted-foreground">
+              <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"
+              ></span>
               <span>{feature}</span>
             </li>
           {/each}
@@ -188,37 +189,37 @@
           tabindex="-1"
           bind:this={connect}
           aria-labelledby="connect-title"
-          class="connect sav-card scroll-mt-6 self-start p-6"
+          class="connect scroll-mt-6 self-start rounded-xl bg-card p-6 text-card-foreground ring-1 ring-foreground/10"
           class:arrived
           onblur={() => (arrived = false)}
           onanimationend={(event) => {
             if (event.target === event.currentTarget) arrived = false;
           }}
         >
-          <h2 id="connect-title" class="text-2xl font-semibold tracking-tight text-ink">
+          <h2 id="connect-title" class="text-2xl font-semibold tracking-tight text-foreground">
             {m.product_connect_heading()}
           </h2>
-          <p class="mt-2 text-sm text-muted">{m.product_connect_body()}</p>
+          <p class="mt-2 text-sm text-muted-foreground">{m.product_connect_body()}</p>
           <div class="mt-5">
             <CopyField value={service.mcpUrl} label={m.product_connector_address_label()} />
           </div>
 
           <div class="mt-6 flex flex-col gap-5 text-sm">
             <div>
-              <h3 class="font-semibold text-ink">{m.product_setup_claude_heading()}</h3>
-              <p class="mt-1 text-muted">{m.product_setup_claude()}</p>
+              <h3 class="font-semibold text-foreground">{m.product_setup_claude_heading()}</h3>
+              <p class="mt-1 text-muted-foreground">{m.product_setup_claude()}</p>
             </div>
             <div>
-              <h3 class="font-semibold text-ink">ChatGPT</h3>
-              <p class="mt-1 text-muted">{m.product_setup_chatgpt()}</p>
+              <h3 class="font-semibold text-foreground">ChatGPT</h3>
+              <p class="mt-1 text-muted-foreground">{m.product_setup_chatgpt()}</p>
             </div>
             {#if command}
               <div>
-                <h3 class="font-semibold text-ink">Claude Code</h3>
+                <h3 class="font-semibold text-foreground">Claude Code</h3>
                 <div class="mt-2">
                   <CopyField value={command} label={m.product_setup_claude_code_label()} />
                 </div>
-                <p class="mt-2 text-muted">{m.product_setup_claude_code()}</p>
+                <p class="mt-2 text-muted-foreground">{m.product_setup_claude_code()}</p>
               </div>
             {/if}
           </div>
@@ -229,7 +230,7 @@
     <p>
       <a
         href={localizedPath(data.lang, '/pricing')}
-        class="font-medium text-accent hover:underline"
+        class="font-medium text-primary hover:underline"
       >
         {m.product_pricing_link()} <span aria-hidden="true">→</span>
       </a>
@@ -237,7 +238,7 @@
 
     {#if others.length > 0}
       <section aria-labelledby="others-title">
-        <h2 id="others-title" class="text-2xl font-semibold tracking-tight text-ink">
+        <h2 id="others-title" class="text-2xl font-semibold tracking-tight text-foreground">
           {m.product_others_heading()}
         </h2>
         <ul role="list" class="mt-6 grid gap-4 sm:grid-cols-2">
@@ -268,7 +269,7 @@
   }
 
   .connect.arrived {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-ring);
     outline-offset: 4px;
     animation: connect-arrival 2.4s ease-out forwards;
   }
@@ -276,7 +277,7 @@
   @keyframes connect-arrival {
     0%,
     50% {
-      outline-color: var(--color-accent);
+      outline-color: var(--color-ring);
     }
     100% {
       outline-color: transparent;

@@ -78,6 +78,11 @@ jobs:
   web:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # packages: read lets the job's token install @savvagent/console-ui from
+    # GitHub Packages (web/.npmrc). The package grants this repo Read access.
+    permissions:
+      contents: read
+      packages: read
     defaults:
       run:
         working-directory: web
@@ -91,6 +96,8 @@ jobs:
           cache-dependency-path: web/package-lock.json
 
       - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - run: npm run check
 
@@ -105,6 +112,10 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # The console stage's `npm ci` reads @savvagent/console-ui from GitHub Packages.
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v4
 
@@ -133,6 +144,10 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # A BuildKit secret, mounted for the console stage's `npm ci` only:
+          # never a build arg, so it is in no layer and no image history.
+          secrets: |
+            npm_token=${{ secrets.GITHUB_TOKEN }}
 
   # Migrations are append-only. sqlx stores each applied migration's checksum
   # and refuses to start against a database whose files no longer match, so
@@ -430,14 +445,19 @@ jobs:
       github.ref == 'refs/heads/main' &&
       needs.release-please.outputs.release_created == 'true'
     timeout-minutes: 15
+    # packages: read for the image's `npm ci` (see docker-build).
     permissions:
       contents: read
+      packages: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # v1
 
       - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only -a otto-platform
+        # The remote builder gets the job's own token as the Dockerfile's
+        # npm_token BuildKit secret: short-lived, read-only, and never in a layer.
+        run: flyctl deploy --remote-only -a otto-platform --build-secret "npm_token=$NPM_TOKEN"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}

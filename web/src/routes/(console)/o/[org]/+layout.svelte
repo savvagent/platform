@@ -7,8 +7,8 @@
   import { m } from '#lib/paraglide/messages.js';
   import { OrgContext, provideOrg } from '#lib/org.svelte.js';
   import { session } from '#lib/session.svelte.js';
-  import Alert from '#lib/components/Alert.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
 
   let { children }: { children: Snippet } = $props();
 
@@ -87,10 +87,10 @@
       `<code>`. The slug sits mid-sentence in English and does not in every
       language, and a sentence assembled from two fragments cannot be moved.
     -->
-    <p class="mt-2 text-sm text-faint">{m.orgnav_missing_body({ slug })}</p>
+    <p class="mt-2 text-sm text-muted-foreground">{m.orgnav_missing_body({ slug })}</p>
   </div>
 {:else if error}
-  <Alert>{error}</Alert>
+  <Alert variant="destructive">{error}</Alert>
 {:else}
   <div class="flex flex-col gap-6 sm:flex-row">
     <nav
@@ -102,9 +102,9 @@
           <li>
             <a
               href={item.href}
-              class="block rounded-md px-2.5 py-1.5 text-sm whitespace-nowrap text-muted transition hover:bg-raised hover:text-ink"
-              class:bg-raised={active(item.href, item.exact)}
-              class:text-ink={active(item.href, item.exact)}
+              class="block rounded-md px-2.5 py-1.5 text-sm whitespace-nowrap text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              class:bg-muted={active(item.href, item.exact)}
+              class:text-foreground={active(item.href, item.exact)}
               aria-current={active(item.href, item.exact) ? 'page' : undefined}
             >
               {item.label}

@@ -36,6 +36,13 @@ function render(role: Role) {
   return mount(Harness, { target: container, props: { slug: 'acme', role, page: Page } });
 }
 
+/** The card for one service, found by its heading (the package marks its card root `data-slot="card"`). */
+function cardFor(name: string): HTMLElement {
+  const heading = Array.from(container.querySelectorAll('h2')).find((h) => h.textContent === name);
+  if (!heading) throw new Error(`no card for ${name}`);
+  return heading.closest<HTMLElement>('[data-slot="card"]')!;
+}
+
 const healthy = () =>
   serve({
     'GET /api/orgs/acme/usage': () => json(USAGE),
@@ -82,7 +89,7 @@ describe('the usage page', () => {
       expect(container.textContent).toContain('$82.50 this month');
 
       // Unknown spend is unknown, not free.
-      const cxp = container.querySelectorAll('section')[2]!;
+      const cxp = cardFor('Savvagent CXP');
       expect(cxp.textContent).toContain('Spend unavailable');
       expect(cxp.textContent).not.toContain('$0');
       expect(cxp.querySelector('[role="meter"]')).toBeNull();
@@ -162,14 +169,8 @@ describe('the usage page when a service needs a card', () => {
     });
 
   const notices = () => container.querySelector('section[aria-label="Payment needed"]');
-  const flagsCard = () =>
-    Array.from(container.querySelectorAll('section')).find(
-      (s) => s.querySelector('h2')?.textContent === 'Savvagent Flags'
-    )!;
-  const cxpCard = () =>
-    Array.from(container.querySelectorAll('section')).find(
-      (s) => s.querySelector('h2')?.textContent === 'Savvagent CXP'
-    )!;
+  const flagsCard = () => cardFor('Savvagent Flags');
+  const cxpCard = () => cardFor('Savvagent CXP');
 
   it('tells an owner paid usage is paused, links to billing, and marks the meter', async () => {
     vi.stubGlobal('fetch', routes(USAGE_PAYMENT_REQUIRED));

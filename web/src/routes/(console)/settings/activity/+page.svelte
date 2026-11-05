@@ -4,9 +4,10 @@
   import { m } from '#lib/paraglide/messages.js';
   import { absolute, relative } from '#lib/format.js';
   import type { AuditEvent } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
   import Empty from '#lib/components/Empty.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Card } from '@savvagent/console-ui/ui/card';
 
   /**
    * The account's own security activity: `GET /api/me/audit`.
@@ -53,21 +54,23 @@
 
 <div class="space-y-5">
   <div>
-    <a class="text-xs text-faint hover:text-muted" href="/settings">← {m.activity_back()}</a>
+    <a class="text-xs text-muted-foreground hover:text-foreground" href="/settings"
+      >← {m.activity_back()}</a
+    >
     <h1 class="mt-1 text-lg font-semibold">{m.activity_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">{m.activity_subtitle()}</p>
+    <p class="mt-0.5 text-sm text-muted-foreground">{m.activity_subtitle()}</p>
   </div>
 
   {#if error}
-    <Alert>{error}</Alert>
+    <Alert variant="destructive">{error}</Alert>
   {:else if loading}
     <Loading what={m.activity_loading()} />
   {:else if events.length === 0}
     <Empty title={m.activity_empty()} />
   {:else}
-    <div class="sav-card overflow-x-auto">
+    <Card class="overflow-x-auto py-0">
       <table class="w-full text-sm">
-        <thead class="border-b border-edge/60 text-left text-xs text-faint">
+        <thead class="border-b border-border/60 text-left text-xs text-muted-foreground">
           <tr>
             <th class="px-4 py-2 font-medium">{m.audit_col_when()}</th>
             <th class="px-4 py-2 font-medium">{m.audit_col_action()}</th>
@@ -76,26 +79,34 @@
             <th class="px-4 py-2 font-medium">{m.audit_col_detail()}</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-edge/40">
+        <tbody class="divide-y divide-border/40">
           {#each events as event (event.id)}
-            <tr class="hover:bg-raised/40">
-              <td class="px-4 py-2 whitespace-nowrap text-faint" title={absolute(event.createdAt)}>
+            <tr class="hover:bg-muted/40">
+              <td
+                class="px-4 py-2 whitespace-nowrap text-muted-foreground"
+                title={absolute(event.createdAt)}
+              >
                 {relative(event.createdAt)}
               </td>
-              <td class="sav-mono px-4 py-2 whitespace-nowrap text-ink">{event.action}</td>
-              <td class="px-4 py-2 text-muted">
+              <td class="sav-mono px-4 py-2 whitespace-nowrap text-foreground">{event.action}</td>
+              <td class="px-4 py-2 text-muted-foreground">
                 {event.targetType ? `${event.targetType} ${event.targetId ?? ''}` : '—'}
               </td>
-              <td class="sav-mono px-4 py-2 whitespace-nowrap text-muted">{event.ip ?? '—'}</td>
-              <td class="sav-mono max-w-64 truncate px-4 py-2 text-faint" title={detail(event)}>
+              <td class="sav-mono px-4 py-2 whitespace-nowrap text-muted-foreground"
+                >{event.ip ?? '—'}</td
+              >
+              <td
+                class="sav-mono max-w-64 truncate px-4 py-2 text-muted-foreground"
+                title={detail(event)}
+              >
                 {detail(event)}
               </td>
             </tr>
           {/each}
         </tbody>
       </table>
-    </div>
+    </Card>
   {/if}
 
-  <p class="text-xs text-faint">{m.activity_scope_note()}</p>
+  <p class="text-xs text-muted-foreground">{m.activity_scope_note()}</p>
 </div>

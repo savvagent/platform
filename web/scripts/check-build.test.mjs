@@ -86,7 +86,9 @@ describe('checkPage', () => {
     '<link rel="canonical" href="https://savvagent.com/de"/></head>';
   const body = (skip, language) =>
     `<body><a href="#main" class="sr-only">${skip}</a><main></main>` +
-    `<footer><nav aria-label="${language}"></nav></footer></body></html>`;
+    // The shape Svelte's server render gives the language nav: a boolean-ish
+    // `data-languages` becomes `data-languages=""`, ahead of the label.
+    `<nav data-languages="" aria-label="${language}"></nav><footer></footer></body></html>`;
   const good = head + body('Zum Inhalt springen', 'Sprache');
 
   it('passes a correct page', () => {
@@ -105,6 +107,29 @@ describe('checkPage', () => {
     expect(checkPage(englishTop, expected, messages).join('\n')).toMatch(/Zum Inhalt springen/);
     const englishBottom = head + body('Zum Inhalt springen', 'Language');
     expect(checkPage(englishBottom, expected, messages).join('\n')).toMatch(/Sprache/);
+  });
+
+  /**
+   * The shared footer has navigation of its own, so the marker is the
+   * `data-languages` nav, not "the first nav in the footer": a wrongly
+   * labelled language nav must be reported even beside a correct-looking one.
+   */
+  it('reports a language nav whose label is in another language', () => {
+    const wrong =
+      head +
+      '<body><a href="#main" class="sr-only">Zum Inhalt springen</a><main></main>' +
+      '<nav data-languages="" aria-label="Language"></nav>' +
+      '<footer><nav aria-label="Sprache"></nav></footer></body></html>';
+    const errors = checkPage(wrong, expected, messages);
+    expect(errors).toEqual(['de.html: language nav label is "Language", expected "Sprache" (de)']);
+  });
+
+  it('reports a page with no language nav at all', () => {
+    const none =
+      head +
+      '<body><a href="#main" class="sr-only">Zum Inhalt springen</a><main></main>' +
+      '<footer><nav aria-label="Sprache"></nav></footer></body></html>';
+    expect(checkPage(none, expected, messages)).toEqual(['de.html: no language nav label found']);
   });
 
   it('compares text as the browser reads it, entities decoded', () => {
@@ -211,7 +236,8 @@ describe('checkBuild', () => {
     `<html lang="${lang}"><head><meta name="robots" content="index, follow"/>` +
     `<link rel="canonical" href="${canonical}"/></head>` +
     `<body><a href="#main">${catalogs[lang].marketing_skip_to_content}</a>` +
-    `<footer><nav aria-label="${catalogs[lang].marketing_footer_language}"></nav></footer></body></html>`;
+    `<nav data-languages="" aria-label="${catalogs[lang].marketing_footer_language}"></nav>` +
+    `<footer></footer></body></html>`;
 
   let dirs = [];
   afterEach(() => {

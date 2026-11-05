@@ -8,9 +8,11 @@
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';
   import * as webauthn from '#lib/webauthn.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Field from '#lib/components/Field.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import { Field, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
 
   /**
    * Sign in.
@@ -30,6 +32,8 @@
    * never whether any specific address has an account. See that endpoint's
    * own design-spec section for why this narrower disclosure is accepted.
    */
+
+  const id = $props.id();
 
   const next = $derived(page.url.searchParams.get('next'));
 
@@ -126,7 +130,7 @@
 
 <div class="mx-auto max-w-sm py-8">
   <h1 class="text-lg font-semibold">{m.login_heading()}</h1>
-  <p class="mt-1 text-sm text-faint">
+  <p class="mt-1 text-sm text-muted-foreground">
     {#if next}
       {m.login_continue_hint()}
     {:else}
@@ -136,13 +140,16 @@
 
   {#if !supported}
     <div class="mt-4">
-      <Alert>{m.login_unsupported()}</Alert>
+      <Alert variant="destructive">{m.login_unsupported()}</Alert>
     </div>
   {:else}
-    {#if error}<div class="mt-4"><Alert>{error}</Alert></div>{/if}
+    {#if error}<div class="mt-4"><Alert variant="destructive">{error}</Alert></div>{/if}
 
     <div class="mt-5">
-      <Button {pending} onclick={signIn}>{m.login_submit()}</Button>
+      <Button disabled={pending} onclick={signIn}>
+        {#if pending}<Spinner />{/if}
+        {m.login_submit()}
+      </Button>
     </div>
   {/if}
 
@@ -156,7 +163,7 @@
   <div class="mt-4">
     <button
       type="button"
-      class="text-xs text-muted underline hover:text-ink"
+      class="text-xs text-muted-foreground underline hover:text-foreground"
       onclick={() => (ssoOpen = !ssoOpen)}
       aria-expanded={ssoOpen}
     >
@@ -165,9 +172,10 @@
 
     {#if ssoOpen}
       <form class="mt-3 space-y-3" onsubmit={signInWithSso}>
-        <Field label={m.login_sso_email_label()}>
-          <input
-            class="sav-input"
+        <Field>
+          <FieldLabel for="{id}-sso-email">{m.login_sso_email_label()}</FieldLabel>
+          <Input
+            id="{id}-sso-email"
             type="email"
             required
             autocomplete="email"
@@ -175,14 +183,17 @@
           />
         </Field>
 
-        {#if ssoError}<Alert>{ssoError}</Alert>{/if}
+        {#if ssoError}<Alert variant="destructive">{ssoError}</Alert>{/if}
 
-        <Button type="submit" pending={ssoPending}>{m.login_sso_submit()}</Button>
+        <Button type="submit" disabled={ssoPending}>
+          {#if ssoPending}<Spinner />{/if}
+          {m.login_sso_submit()}
+        </Button>
       </form>
     {/if}
   </div>
 
-  <div class="mt-6 space-y-2 border-t border-edge/50 pt-4 text-xs text-faint">
+  <div class="mt-6 space-y-2 border-t border-border/50 pt-4 text-xs text-muted-foreground">
     <!--
       Two complete sentences, and the link is one of them. A sentence split
       around an anchor is a sentence no translator can reorder — and word order
@@ -190,12 +201,14 @@
     -->
     <p>
       {m.login_recovery_hint()}
-      <a class="text-muted underline hover:text-ink" href="/claim">{m.login_recovery_link()}</a>
+      <a class="text-muted-foreground underline hover:text-foreground" href="/claim"
+        >{m.login_recovery_link()}</a
+      >
     </p>
     <p class="pt-2">
       {m.login_no_account()}
       <a
-        class="text-muted underline hover:text-ink"
+        class="text-muted-foreground underline hover:text-foreground"
         href={next ? `/signup?next=${encodeURIComponent(next)}` : '/signup'}
         >{m.login_create_account()}</a
       >
