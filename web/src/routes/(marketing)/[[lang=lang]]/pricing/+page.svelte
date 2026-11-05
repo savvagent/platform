@@ -6,8 +6,8 @@
   import { parseCatalog, usageByService } from '#lib/pricing.js';
   import { CONTACT_EMAIL } from '#lib/site.js';
   import type { PlansResponse } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
   import Seo from '#lib/components/Seo.svelte';
   import PlanCard from '#lib/components/marketing/PlanCard.svelte';
   import ServiceUsage from '#lib/components/marketing/ServiceUsage.svelte';
@@ -161,7 +161,7 @@
 
 <div class="flex flex-col gap-20 pb-10 sm:gap-24">
   <section aria-labelledby="pricing-title" class="max-w-3xl pt-6">
-    <p class="sav-label text-primary">{m.pricing_eyebrow()}</p>
+    <p class="sav-kicker text-primary">{m.pricing_eyebrow()}</p>
     <h1
       id="pricing-title"
       class="mt-3 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl"
@@ -195,7 +195,9 @@
       {:else if plans.status === 'loading'}
         <ul role="list" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-hidden="true">
           {#each [0, 1, 2, 3] as i (i)}
-            <li class="sav-card flex animate-pulse flex-col gap-4 p-5">
+            <li
+              class="flex animate-pulse flex-col gap-4 rounded-xl bg-card p-5 text-card-foreground ring-1 ring-foreground/10"
+            >
               <span class="h-5 w-24 rounded bg-border/60"></span>
               <span class="h-8 w-20 rounded bg-border/60"></span>
               <span class="h-4 w-full rounded bg-border/40"></span>
@@ -206,8 +208,8 @@
         </ul>
       {:else if plans.status === 'error'}
         <div class="flex flex-col items-start gap-3">
-          <Alert>{m.pricing_error()}</Alert>
-          <Button tone="quiet" onclick={() => void load({ focus: true })}>
+          <Alert variant="destructive">{m.pricing_error()}</Alert>
+          <Button variant="outline" onclick={() => void load({ focus: true })}>
             {m.pricing_retry()}
           </Button>
         </div>
@@ -245,7 +247,9 @@
       {:else if plans.status === 'loading'}
         <ul role="list" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
           {#each [0, 1, 2] as i (i)}
-            <li class="sav-card flex animate-pulse flex-col gap-4 p-5">
+            <li
+              class="flex animate-pulse flex-col gap-4 rounded-xl bg-card p-5 text-card-foreground ring-1 ring-foreground/10"
+            >
               <span class="h-5 w-28 rounded bg-border/60"></span>
               <span class="h-4 w-full rounded bg-border/40"></span>
               <span class="h-4 w-2/3 rounded bg-border/40"></span>
@@ -253,7 +257,11 @@
           {/each}
         </ul>
       {:else if plans.meters.length === 0}
-        <p class="sav-card p-5 text-muted-foreground">{m.pricing_usage_empty()}</p>
+        <p
+          class="rounded-xl bg-card p-5 text-card-foreground text-muted-foreground ring-1 ring-foreground/10"
+        >
+          {m.pricing_usage_empty()}
+        </p>
       {:else if usage}
         <ul role="list" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {#each usage as service (service.service)}

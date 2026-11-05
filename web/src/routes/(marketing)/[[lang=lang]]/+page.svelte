@@ -5,7 +5,7 @@
   import Seo from '#lib/components/Seo.svelte';
   import AccountActions from '#lib/components/marketing/AccountActions.svelte';
   import ProductCard from '#lib/components/marketing/ProductCard.svelte';
-  import LinkButton from '#lib/components/LinkButton.svelte';
+  import { Button } from '@savvagent/console-ui/ui/button';
   import { localizedPath } from '#lib/site.js';
 
   import type { PageData } from './$types';
@@ -60,7 +60,7 @@
     class="grid items-center gap-12 pt-6 lg:grid-cols-[3fr_2fr]"
   >
     <div>
-      <p class="sav-label text-primary">{m.landing_hero_eyebrow()}</p>
+      <p class="sav-kicker text-primary">{m.landing_hero_eyebrow()}</p>
       <h1
         id="hero-title"
         class="mt-3 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl"
@@ -83,7 +83,10 @@
       a copy button — so hidden from assistive technology rather than read
       out twice.
     -->
-    <div class="sav-card relative overflow-hidden p-5" aria-hidden="true">
+    <div
+      class="relative overflow-hidden rounded-xl bg-card p-5 text-card-foreground ring-1 ring-foreground/10"
+      aria-hidden="true"
+    >
       <Logo class="absolute -right-8 -bottom-10 size-40 text-primary/10" />
       <div class="flex gap-1.5">
         <span class="size-2.5 rounded-full bg-border"></span>
@@ -138,7 +141,9 @@
     </h2>
     <ol role="list" class="mt-8 grid gap-4 md:grid-cols-3">
       {#each steps as step, i (i)}
-        <li class="sav-card flex flex-col gap-3 p-5">
+        <li
+          class="flex flex-col gap-3 rounded-xl bg-card p-5 text-card-foreground ring-1 ring-foreground/10"
+        >
           <span
             class="flex size-8 items-center justify-center rounded-full border border-primary/60 font-mono text-sm text-primary"
             aria-hidden="true">{i + 1}</span
@@ -152,20 +157,28 @@
 
   <section aria-labelledby="cli-title" class="grid items-center gap-10 lg:grid-cols-[3fr_2fr]">
     <div>
-      <p class="sav-label text-primary">{m.landing_cli_eyebrow()}</p>
+      <p class="sav-kicker text-primary">{m.landing_cli_eyebrow()}</p>
       <h2 id="cli-title" class="mt-3 text-2xl font-semibold tracking-tight text-foreground">
         {m.landing_cli_heading()}
       </h2>
       <p class="mt-3 max-w-2xl text-muted-foreground">{m.landing_cli_body()}</p>
       <div class="mt-6 flex flex-wrap items-center gap-3">
-        <LinkButton href={RELEASES} size="lg">{m.landing_cli_download()}</LinkButton>
-        <LinkButton href={localizedPath(data.lang, '/cli')} tone="quiet" size="lg">
+        <Button href={RELEASES} size="lg" class="h-10 px-5">{m.landing_cli_download()}</Button>
+        <Button
+          href={localizedPath(data.lang, '/cli')}
+          variant="outline"
+          size="lg"
+          class="h-10 px-5"
+        >
           {m.landing_cli_learn_more()}
-        </LinkButton>
+        </Button>
       </div>
     </div>
     <!-- The one command a visitor runs; decorative, the full steps are on /cli. -->
-    <div class="sav-card p-5" aria-hidden="true">
+    <div
+      class="rounded-xl bg-card p-5 text-card-foreground ring-1 ring-foreground/10"
+      aria-hidden="true"
+    >
       <p class="sav-mono text-xs break-all text-muted-foreground sm:text-sm">
         <span class="text-primary">$</span> savctl login
       </p>
@@ -174,7 +187,7 @@
 
   <section
     aria-labelledby="cta-title"
-    class="sav-card flex flex-col gap-6 bg-muted/40 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between"
+    class="flex flex-col gap-6 rounded-xl bg-card bg-muted/40 p-8 text-card-foreground ring-1 ring-foreground/10 sm:p-10 lg:flex-row lg:items-center lg:justify-between"
   >
     <div class="max-w-xl">
       <h2 id="cta-title" class="text-2xl font-semibold tracking-tight text-foreground">

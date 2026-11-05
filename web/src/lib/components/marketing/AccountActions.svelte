@@ -2,7 +2,7 @@
   import type { Locale } from '#lib/locale.js';
   import { m } from '#lib/paraglide/messages.js';
   import { localizedPath } from '#lib/site.js';
-  import LinkButton from '#lib/components/LinkButton.svelte';
+  import { Button } from '@savvagent/console-ui/ui/button';
   import ConsoleLink from './ConsoleLink.svelte';
 
   /**
@@ -21,7 +21,7 @@
 
 <div class="flex flex-wrap items-center gap-3">
   <ConsoleLink />
-  <LinkButton href={localizedPath(lang, '/pricing')} tone="quiet" size="lg">
+  <Button href={localizedPath(lang, '/pricing')} variant="outline" size="lg" class="h-10 px-5">
     {m.landing_see_pricing()}
-  </LinkButton>
+  </Button>
 </div>

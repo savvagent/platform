@@ -28,7 +28,10 @@
    * no `/api` at build time, and a 404 fails the build. The shared footer
    * cannot carry `rel="external"`, which is how this link used to say so; an
    * absolute URL on the production origin is not the prerender's origin, so
-   * the crawler leaves it alone.
+   * the crawler leaves it alone. That holds only while `kit.prerender.origin`
+   * is unset, which makes `https://savvagent.com` a foreign origin at build
+   * time; setting `prerender.origin` to the site origin would make the
+   * crawler follow this link into `/api` and fail the build.
    *
    * The contact link reads "Contact: sales@…" rather than the bare address,
    * so it still says what the address is for among the shared footer's

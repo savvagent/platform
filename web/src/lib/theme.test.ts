@@ -16,18 +16,6 @@ const SRC = join(__dirname, '..');
 const SELF = join(__dirname, 'theme.test.ts');
 const SKIP = join(SRC, 'lib', 'paraglide');
 
-// Task 6b removes these.
-const UNMIGRATED = [
-  'lib/components/marketing/',
-  'routes/(marketing)/',
-  'lib/components/Alert.svelte',
-  'lib/components/Button.svelte',
-  'lib/components/LinkButton.svelte',
-  'lib/components/Card.svelte',
-  'lib/components/Field.svelte',
-  'lib/components/button.ts'
-];
-
 function sources(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
@@ -90,7 +78,7 @@ describe('theme', () => {
     const found: string[] = [];
     for (const file of sources(SRC)) {
       const rel = relative(SRC, file).split(sep).join('/');
-      if (!/\.(svelte|ts)$/.test(rel) || UNMIGRATED.some((p) => rel.startsWith(p))) continue;
+      if (!/\.(svelte|ts)$/.test(rel)) continue;
       const text = readFileSync(file, 'utf8');
       for (const match of text.matchAll(OLD_COMPONENT)) found.push(`${rel}: ${match[0]}`);
       for (const match of text.matchAll(OLD_CLASS)) found.push(`${rel}: ${match[0]}`);

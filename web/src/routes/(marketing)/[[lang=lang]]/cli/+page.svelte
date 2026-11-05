@@ -75,7 +75,7 @@
 
 <div class="flex flex-col gap-20 pb-10 sm:gap-24">
   <section aria-labelledby="cli-title" class="max-w-3xl pt-6">
-    <p class="sav-label text-primary">{m.cli_eyebrow()}</p>
+    <p class="sav-kicker text-primary">{m.cli_eyebrow()}</p>
     <h1
       id="cli-title"
       class="mt-3 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl"
@@ -106,7 +106,7 @@
     <p class="mt-3 text-muted-foreground">{m.cli_download_intro()}</p>
     <ul role="list" aria-label={m.cli_download_list_label()} class="mt-6 grid gap-3 sm:grid-cols-2">
       {#each PLATFORMS as platform (platform.archive)}
-        <li class="sav-card p-4">
+        <li class="rounded-xl bg-card p-4 text-card-foreground ring-1 ring-foreground/10">
           <a href="{DOWNLOAD}/{platform.archive}" class="block {ext}">{platform.name}</a>
           <span class="sav-mono mt-1 block text-xs text-muted-foreground">{platform.archive}</span>
         </li>

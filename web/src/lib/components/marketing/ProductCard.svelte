@@ -3,6 +3,7 @@
   import { m } from '#lib/paraglide/messages.js';
   import type { Service } from '#lib/services.js';
   import { localizedPath } from '#lib/site.js';
+  import { Card, CardContent, CardHeader, CardTitle } from '@savvagent/console-ui/ui/card';
 
   /**
    * One product, as a card that links to its page in the current language.
@@ -25,16 +26,25 @@
   let { service, lang, level = 3 }: Props = $props();
 </script>
 
-<article class="sav-card flex flex-col gap-3 p-5">
-  <svelte:element this={`h${level}`} class="text-lg font-semibold tracking-tight text-foreground">
-    {service.name}
-  </svelte:element>
-  <p class="flex-1 text-sm text-muted-foreground">{service.copy.tagline()}</p>
-  <a
-    href={localizedPath(lang, `/products/${service.slug}`)}
-    class="text-sm font-medium text-primary hover:underline"
-  >
-    {m.marketing_product_more({ name: service.name })}
-    <span aria-hidden="true">→</span>
-  </a>
-</article>
+<Card class="gap-3 py-5">
+  <CardHeader>
+    <CardTitle>
+      <svelte:element
+        this={`h${level}`}
+        class="text-lg font-semibold tracking-tight text-foreground"
+      >
+        {service.name}
+      </svelte:element>
+    </CardTitle>
+  </CardHeader>
+  <CardContent class="flex flex-1 flex-col gap-3">
+    <p class="flex-1 text-sm text-muted-foreground">{service.copy.tagline()}</p>
+    <a
+      href={localizedPath(lang, `/products/${service.slug}`)}
+      class="text-sm font-medium text-primary hover:underline"
+    >
+      {m.marketing_product_more({ name: service.name })}
+      <span aria-hidden="true">→</span>
+    </a>
+  </CardContent>
+</Card>

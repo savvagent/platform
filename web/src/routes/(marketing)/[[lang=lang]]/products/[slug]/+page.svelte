@@ -6,7 +6,7 @@
   import { consoleEntry, session } from '#lib/session.svelte.js';
   import { localizedPath } from '#lib/site.js';
   import CopyField from '#lib/components/CopyField.svelte';
-  import LinkButton from '#lib/components/LinkButton.svelte';
+  import { Button } from '@savvagent/console-ui/ui/button';
   import Seo from '#lib/components/Seo.svelte';
   import ConsoleLink from '#lib/components/marketing/ConsoleLink.svelte';
   import ProductCard from '#lib/components/marketing/ProductCard.svelte';
@@ -126,7 +126,7 @@
 
   <div class="flex flex-col gap-20 pb-10 sm:gap-24">
     <section aria-labelledby="product-title" class="max-w-3xl pt-6">
-      <p class="sav-label text-primary">{m.product_eyebrow()}</p>
+      <p class="sav-kicker text-primary">{m.product_eyebrow()}</p>
       <h1
         id="product-title"
         class="mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
@@ -137,16 +137,16 @@
       <p class="mt-4 text-lg text-pretty text-muted-foreground">{service.copy.summary()}</p>
       <div class="mt-8 flex flex-wrap items-center gap-3">
         {#if link?.kind === 'console'}
-          <LinkButton href={link.href} size="lg">
+          <Button href={link.href} size="lg" class="h-10 px-5">
             {m.product_open_console({ name: service.name })}
             <span aria-hidden="true">↗</span>
-          </LinkButton>
+          </Button>
         {:else if agentOnly}
-          <LinkButton href="#connect" size="lg" onclick={onAddClick}>
+          <Button href="#connect" size="lg" class="h-10 px-5" onclick={onAddClick}>
             {m.product_add_to_assistant()}
-          </LinkButton>
+          </Button>
         {/if}
-        <ConsoleLink tone="quiet" named />
+        <ConsoleLink variant="outline" named />
       </div>
       {#if agentOnly}
         <!-- Underlined at rest: inside a sentence, colour alone would not mark it as a link. -->
@@ -189,7 +189,7 @@
           tabindex="-1"
           bind:this={connect}
           aria-labelledby="connect-title"
-          class="connect sav-card scroll-mt-6 self-start p-6"
+          class="connect scroll-mt-6 self-start rounded-xl bg-card p-6 text-card-foreground ring-1 ring-foreground/10"
           class:arrived
           onblur={() => (arrived = false)}
           onanimationend={(event) => {
