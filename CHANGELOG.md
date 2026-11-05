@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/savvagent/platform/compare/v0.19.0...v0.20.0) (2026-11-05)
+
+
+### Features
+
+* **web:** move the console onto @savvagent/console-ui ([#163](https://github.com/savvagent/platform/issues/163)) ([2414520](https://github.com/savvagent/platform/commit/2414520de1c10013795cc648bc98ec1aa3b66038))
+
 ## [0.19.0](https://github.com/savvagent/platform/compare/v0.18.2...v0.19.0) (2026-11-03)
 
 
