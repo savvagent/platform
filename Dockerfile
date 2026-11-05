@@ -21,7 +21,8 @@ COPY web/package.json web/package-lock.json web/.npmrc ./
 # image history, while a secret mount is never written to a layer, and the
 # variable exists only for this one command. CI passes the job's token
 # (`secrets: npm_token=...`, `flyctl deploy --build-secret npm_token=...`); a
-# local build passes `--secret id=npm_token,env=NODE_AUTH_TOKEN`.
+# local build passes `--secret id=npm_token,env=NODE_AUTH_TOKEN`, with a token that can
+# read the package (private to the savvagent org; see docs/deploy/fly.md).
 RUN --mount=type=secret,id=npm_token,required=true \
     NODE_AUTH_TOKEN="$(cat /run/secrets/npm_token)" npm ci
 

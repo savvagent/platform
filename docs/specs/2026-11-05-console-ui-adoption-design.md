@@ -218,8 +218,9 @@ the generated label when there is neither name nor email, as the old header did.
 
 ```svelte
 <ConsoleHeader
-  session={session.me ? toConsoleSession(session.me, page.params.org, location.origin) : undefined}
-  platformUrl={location.origin}
+  session={session.me ? toConsoleSession(session.me, page.params.org, origin) : undefined}
+  platformUrl={origin}
+  {services}
   service="platform"
   onSignOut={signOut}
   onLocaleChange={changeLocale}
@@ -229,9 +230,14 @@ the generated label when there is neither name nor email, as the old header did.
   {#snippet signedOut()}{#if session.ready}<Button href="/login" variant="ghost" size="sm">{m.nav_sign_in()}</Button>{/if}{/snippet}
 </ConsoleHeader>
 …
-<ConsoleFooter platformUrl={location.origin} links={[{ label: m.nav_api_reference(), href: '/api/openapi.json' }, { label: `v${APP_VERSION}`, href: releaseUrl }]} />
+<ConsoleFooter platformUrl={origin} links={[{ label: m.nav_api_reference(), href: '/api/openapi.json' }, { label: `v${APP_VERSION}`, href: releaseUrl }]} />
 ```
 
+- `origin` is `shellOrigin(location.origin)` and `services` is `shellServices(origin)`, both in
+  `#lib/shell.ts`. The first falls back to the production origin when the shell would refuse the
+  page's (plain http off loopback). The second hands the header the platform's own service list
+  instead of letting it fetch `/services/v1.json`; the marketing header does the same, so the
+  prerendered pages carry the real switcher.
 - `brand` keeps `/home` as the logo's target. The package's default goes to `/`, which is the
   marketing landing page.
 - `changeLocale(next)`: signed in, `PATCH /api/me { locale: next }` first and then
@@ -241,8 +247,9 @@ the generated label when there is neither name nor email, as the old header did.
   `applyLocale(next)`. This is the same save-then-reload rule the settings page follows.
 - **Crossing between the halves.** Shell links are rendered by the package and cannot carry
   `data-sveltekit-reload`: the service switcher's connect cards (`/products/flags#connect`) and
-  the footer's copyright link (`/`). A `beforeNavigate` in each layout cancels a client-side
-  navigation whose target route belongs to the other group and does `location.assign` instead.
+  the footer's copyright link (`/`). Both layouts register `fullLoadGuard` (`#lib/navigate.ts`),
+  which cancels a client-side navigation into the other group, or between two marketing
+  languages (those shell links are unprefixed), and does `location.assign` instead.
   The rule is `crossesHalves(fromRouteId, toRouteId)` in `#lib/navigate.ts`, which is tested. The
   existing `data-sveltekit-reload` links stay.
 - `releaseUrl` is `https://github.com/savvagent/platform/releases/tag/v${APP_VERSION}`.
@@ -293,9 +300,12 @@ None.
 ## Out-of-band
 
 - Package Actions access for `savvagent/platform`: done by Rob before this run.
-- A self-hoster building the image now needs a GitHub token with `read:packages`
-  (`docker build --secret id=npm_token,env=NODE_AUTH_TOKEN .`). Documented in
-  `docs/deploy/fly.md`.
+- Building `web/` or the image now needs a GitHub token that can read `@savvagent/console-ui`
+  (`docker build --secret id=npm_token,env=NODE_AUTH_TOKEN .`). The package is private to the
+  `savvagent` org and `"license": "UNLICENSED"`, while this repo is public and AGPL-3.0, so until
+  the package is made public under a compatible licence nobody outside the org can build the
+  console from source. That is Rob's decision (package visibility and licence), handed off; the
+  docs (`web/README.md`, `docs/deploy/fly.md`, `docs/deploy/cloudflare.md`) say so meanwhile.
 - No new secret: `GITHUB_TOKEN` is the workflow's own.
 - Recurring cost: none expected. Installs inside Actions are free. The Fly remote builder pulls
   the package from outside Actions about once per release, and that transfer counts against the

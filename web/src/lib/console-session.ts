@@ -7,9 +7,8 @@
  * route. The platform is its own `platformUrl`.
  */
 
-import { checkPlatformUrl, type ConsoleSession } from '@savvagent/console-ui';
+import type { ConsoleSession } from '@savvagent/console-ui';
 
-import { SITE_ORIGIN } from './site';
 import type { Me } from './types';
 
 export function toConsoleSession(
@@ -33,22 +32,4 @@ export function toConsoleSession(
     currentOrg: orgs.find((o) => o.slug === orgSlug) ?? null,
     platformUrl
   };
-}
-
-/**
- * The origin to hand the shared shell as `platformUrl`: this page's own, or
- * the production origin when the shell would refuse it.
- *
- * The shell accepts https, or http on loopback, and throws on anything else,
- * which would leave a self-hosted copy served over plain http with a blank
- * page rather than a working one. (Such a copy cannot sign anyone in either,
- * since the session cookie and passkeys need a secure context, but it should
- * still render and say so.)
- */
-export function shellOrigin(origin: string): string {
-  try {
-    return checkPlatformUrl(origin).origin;
-  } catch {
-    return SITE_ORIGIN;
-  }
 }

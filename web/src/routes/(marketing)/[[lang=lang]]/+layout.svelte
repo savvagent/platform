@@ -12,7 +12,7 @@
     useLocale,
     type Locale
   } from '#lib/locale.js';
-  import { shellOrigin } from '#lib/console-session.js';
+  import { shellOrigin } from '#lib/shell.js';
   import { fullLoadGuard } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';

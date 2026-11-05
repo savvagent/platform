@@ -6,6 +6,7 @@
   import { m } from '#lib/paraglide/messages.js';
   import { SERVICES } from '#lib/services.js';
   import { session } from '#lib/session.svelte.js';
+  import { shellServices } from '#lib/shell.js';
   import { localizedPath, stripLocale } from '#lib/site.js';
   import Logo from '#lib/components/Logo.svelte';
   import ConsoleLink from './ConsoleLink.svelte';
@@ -101,11 +102,13 @@
   // a cue everyone can see (WCAG 1.4.1).
   const link =
     'rounded-md px-2.5 py-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground aria-[current=page]:text-foreground aria-[current=page]:underline aria-[current=page]:decoration-primary aria-[current=page]:underline-offset-4';
+  // The platform's own list, handed over rather than fetched (see `shellServices`).
+  const services = $derived(shellServices(platformUrl));
 </script>
 
 <svelte:window onkeydown={onMenuKeydown} />
 
-<ConsoleHeader {platformUrl} service="platform" onLocaleChange={changeLocale}>
+<ConsoleHeader {platformUrl} {services} service="platform" onLocaleChange={changeLocale}>
   {#snippet brand()}
     <a href={localizedPath(lang, '/')} class="flex items-center gap-2 px-2" aria-label="Savvagent">
       <Logo class="size-6 text-primary" />

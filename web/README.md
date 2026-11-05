@@ -39,6 +39,8 @@ npm run deploy   # build, then deploy the production Worker — docs/deploy/clou
 `NODE_AUTH_TOKEN`, so `npm install` needs one with `read:packages`. Every build and check needs
 the installed package, not just the dev server.
 
+The package is **private** to the `savvagent` GitHub org today, so the token must belong to an account (or workflow) that has been given read access to it; a `read:packages` token from anyone else gets a 404. Until the package is made public, building `web/` (and so the image) from source is limited to the savvagent org.
+
 `npm run dev` needs a server behind it. Set `SAVVAGENT_API_ORIGIN` if it is not on
 `http://127.0.0.1:8080`, and start that server with `SAVVAGENT_PUBLIC_URL=http://localhost:5173`:
 the server's CSRF guard compares the browser's `Origin` with the public URL, and its

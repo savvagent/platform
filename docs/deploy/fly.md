@@ -519,7 +519,10 @@ That stage installs `@savvagent/console-ui` from GitHub Packages, so the build n
 that can read packages. It arrives as the BuildKit secret `npm_token`, never as a build arg, so
 it is in no layer and no image history. CI passes the job's own `GITHUB_TOKEN` (the deploy job
 has `packages: read`) with `flyctl deploy --remote-only -a otto-platform --build-secret npm_token=...`.
-A local or self-hosted build passes a token with `read:packages` instead:
+A local build passes a token with `read:packages` instead. The package is private to the
+`savvagent` org, so that token must belong to an account with read access to it; anyone else,
+including a self-hoster outside the org, cannot build the image from source until the package is
+made public:
 
 ```bash
 export NODE_AUTH_TOKEN=$(gh auth token)   # a token with read:packages

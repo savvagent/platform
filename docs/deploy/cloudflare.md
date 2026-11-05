@@ -74,8 +74,9 @@ one is a change to both.
 ## Deploying
 
 `@savvagent/console-ui` comes from GitHub Packages, so `npm install` needs `NODE_AUTH_TOKEN` set to
-a GitHub token with `read:packages`, and `npm run deploy`, which builds with the installed
-packages, needs that install first. See [`web/README.md`](../../web/README.md).
+a GitHub token with `read:packages` from an account that can read the package (it is private to
+the `savvagent` org), and `npm run deploy`, which builds with the installed packages, needs that
+install first. See [`web/README.md`](../../web/README.md).
 
 ```bash
 cd web

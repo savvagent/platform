@@ -10,8 +10,9 @@
  * navigation from one of its links leaves the new page under an open menu,
  * and nothing about Escape closes one. Both are this component's job.
  *
- * The shell fetches the service list from `platformUrl`; `fetch` is stubbed
- * so no test reaches the network.
+ * The platform hands the shell its own service list (`shellServices`), so
+ * the header fetches nothing; `fetch` is stubbed to fail, and one test checks
+ * it is never called.
  */
 
 import { flushSync, mount, unmount } from 'svelte';
@@ -24,19 +25,6 @@ import { getLocale, overwriteGetLocale } from '#lib/paraglide/runtime.js';
 import { page } from './fake-app-state.svelte';
 import MarketingHeader from './MarketingHeader.svelte';
 
-const SERVICES = {
-  version: 1,
-  services: [
-    {
-      slug: 'tower',
-      name: 'Savvagent Tower',
-      consoleUrl: 'https://tower.savvagent.com',
-      mcpUrl: 'https://tower.savvagent.com/mcp',
-      connectPath: '/products/tower#connect'
-    }
-  ]
-};
-
 const defaultGetLocale = getLocale;
 let container: HTMLElement;
 
@@ -46,11 +34,7 @@ beforeEach(() => {
   page.url = new URL('http://localhost/');
   vi.stubGlobal(
     'fetch',
-    vi.fn(async (input: RequestInfo | URL) =>
-      new URL(String(input), location.origin).pathname === '/services/v1.json'
-        ? Response.json(SERVICES)
-        : new Response(null, { status: 404 })
-    )
+    vi.fn(() => Promise.reject(new Error('the header should fetch nothing')))
   );
 });
 
@@ -134,6 +118,15 @@ describe('the marketing header menu', () => {
 });
 
 describe('the marketing header on the shared shell', () => {
+  // A prerendered page carries the real switcher, not a loading skeleton.
+  it('renders the service switcher from the platform’s own list, fetching nothing', () => {
+    const instance = mountHeader('en');
+    flushSync();
+    expect(container.querySelector('header button[aria-label="Services"]')).not.toBeNull();
+    expect(fetch).not.toHaveBeenCalled();
+    unmount(instance);
+  });
+
   it('links the brand, products, pricing and CLI in the page’s language', () => {
     page.url = new URL('http://localhost/es/pricing');
     const instance = mountHeader('es');

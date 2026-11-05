@@ -7,7 +7,8 @@
   import type { Snippet } from 'svelte';
 
   import { api } from '#lib/api.js';
-  import { shellOrigin, toConsoleSession } from '#lib/console-session.js';
+  import { toConsoleSession } from '#lib/console-session.js';
+  import { shellOrigin, shellServices } from '#lib/shell.js';
   import { messageFor } from '#lib/errors.js';
   import { fullLoadGuard, gotoOrLoad } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
@@ -31,6 +32,7 @@
 
   /** The platform's origin for the shell; `shellOrigin` says why it is checked. */
   const origin = shellOrigin(location.origin);
+  const services = shellServices(origin);
 
   let { children }: { children: Snippet } = $props();
 
@@ -195,6 +197,7 @@
   <ConsoleHeader
     session={shellSession}
     platformUrl={origin}
+    {services}
     service="platform"
     onSignOut={signOut}
     onLocaleChange={changeLocale}
