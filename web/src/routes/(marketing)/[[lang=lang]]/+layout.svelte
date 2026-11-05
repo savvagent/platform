@@ -2,6 +2,7 @@
   import { onMount, untrack, type Snippet } from 'svelte';
 
   import { beforeNavigate } from '$app/navigation';
+  import { checkPlatformUrl } from '@savvagent/console-ui';
   import { page } from '$app/state';
 
   import {
@@ -12,7 +13,7 @@
     useLocale,
     type Locale
   } from '#lib/locale.js';
-  import { crossesHalves } from '#lib/navigate.js';
+  import { fullLoadGuard } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';
   import { SITE_ORIGIN, localizedPath, stripLocale } from '#lib/site.js';
@@ -41,11 +42,12 @@
    * stay off (see `vite.config.ts`): with it, an `await` in one page's render
    * would let another page pin its own locale part-way through.
    *
-   * In the browser a language change is a full document load (the picker
-   * assigns the new URL, and every other link that changes it carries
-   * `data-sveltekit-reload`), so the pinned value is always this page's:
-   * `data.lang` is read once, untracked, because no language change happens
-   * under a mounted layout.
+   * In the browser a language change is a full document load: the picker
+   * assigns the new URL, the app's own links that change it carry
+   * `data-sveltekit-reload`, and the `beforeNavigate` guard below turns any
+   * other one (the shell's unprefixed links) into a full load. So the pinned
+   * value is always this page's, and `data.lang` is read once, untracked,
+   * because no language change happens under a mounted layout.
    *
    * **This replaces the getter `resolveAtBoot` installed, and never puts it
    * back.** That is safe only because nothing crosses between the console and
@@ -73,24 +75,27 @@
   let platformUrl = $state(SITE_ORIGIN);
 
   /**
-   * Arriving at the console from here is a full load, as leaving it is.
+   * Arriving at the console from here is a full load, as leaving it is, and
+   * so is any change of language.
    *
    * The shell's own links (a service's connect card, the footer's home link)
-   * are rendered by the package and cannot carry `data-sveltekit-reload`;
-   * `crossesHalves` says why it matters.
+   * are rendered by the package, unprefixed, and cannot carry
+   * `data-sveltekit-reload`; `fullLoadGuard` says why it matters.
    */
-  beforeNavigate(({ from, to, cancel, willUnload }) => {
-    if (!willUnload && to && crossesHalves(from?.route.id ?? null, to.route.id)) {
-      cancel();
-      location.assign(to.url.href);
-    }
-  });
+  beforeNavigate(fullLoadGuard);
 
   /** A language this visitor seems to prefer over English, if any. */
   let hint = $state<Locale | undefined>(undefined);
 
   onMount(() => {
-    platformUrl = location.origin;
+    // Only an origin the shell accepts (https, or http on loopback): it throws
+    // on any other, and a page served over plain http elsewhere still renders
+    // with the production origin rather than not at all.
+    try {
+      platformUrl = checkPlatformUrl(location.origin).origin;
+    } catch {
+      // Keep SITE_ORIGIN.
+    }
 
     /**
      * Signed in? Asked only in the browser, after the prerendered page is

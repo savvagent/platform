@@ -1,4 +1,6 @@
-import { goto } from '$app/navigation';
+import { goto, type BeforeNavigate } from '$app/navigation';
+
+import { baseLocale } from '#lib/paraglide/runtime.js';
 
 /**
  * Go to a same-origin path through the client router, or load it fully if the
@@ -46,4 +48,32 @@ export function crossesHalves(from: string | null, to: string | null): boolean {
   const a = half(from);
   const b = half(to);
   return a !== undefined && b !== undefined && a !== b;
+}
+
+/**
+ * The `beforeNavigate` both layouts register: a client-side navigation that
+ * would carry the wrong locale getter becomes a full document load.
+ *
+ * Two cases. Crossing between the console and the marketing pages
+ * ([`crossesHalves`]). And, between two marketing pages, a change of language:
+ * a marketing page pins its locale to its URL once, at the top of its layout,
+ * and that layout stays mounted across a client-side navigation, so `/es`
+ * followed to `/pricing` would render English URLs in Spanish. The app's own
+ * links that change language carry `data-sveltekit-reload`; the shared
+ * shell's (the footer's home link, a service's connect card, both unprefixed)
+ * cannot, so this catches them.
+ *
+ * `willUnload` means the browser is already loading a new document, so there
+ * is nothing to do.
+ */
+export function fullLoadGuard({ from, to, cancel, willUnload }: BeforeNavigate): void {
+  if (willUnload || !from || !to) return;
+  const crossing = crossesHalves(from.route.id, to.route.id);
+  const relanguage =
+    half(from.route.id) === 'marketing' &&
+    half(to.route.id) === 'marketing' &&
+    (from.params?.lang ?? baseLocale) !== (to.params?.lang ?? baseLocale);
+  if (!crossing && !relanguage) return;
+  cancel();
+  location.assign(to.url.href);
 }

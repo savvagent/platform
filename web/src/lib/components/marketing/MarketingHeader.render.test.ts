@@ -166,13 +166,15 @@ describe('the marketing header on the shared shell', () => {
   /**
    * The shell's picker reads the package's own current locale, not the
    * app's Paraglide runtime. Showing "Español" proves `useLocale` reached it,
-   * so a Spanish page's header is Spanish too.
+   * and the trigger's Spanish label proves the shell's messages followed.
    */
   it('shows the page’s language in the shell’s language picker', () => {
     const instance = mountHeader('es');
     flushSync();
 
     expect(container.querySelector('header')?.textContent).toContain('Español');
+    // And the shell's own messages (its Paraglide runtime), not just the name.
+    expect(container.querySelector('header button[aria-label="Idioma"]')).not.toBeNull();
     unmount(instance);
   });
 });

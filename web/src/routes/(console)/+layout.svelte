@@ -9,7 +9,7 @@
   import { api } from '#lib/api.js';
   import { toConsoleSession } from '#lib/console-session.js';
   import { messageFor } from '#lib/errors.js';
-  import { crossesHalves, gotoOrLoad } from '#lib/navigate.js';
+  import { fullLoadGuard, gotoOrLoad } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
   import { appRuntime, applyLocale, reconcile, resolveAtBoot, type Locale } from '#lib/locale.js';
   import { guard } from '#lib/routing.js';
@@ -137,14 +137,9 @@
    *
    * The shell's own links (a service's connect card, the footer's home link)
    * are rendered by the package and cannot carry `data-sveltekit-reload`, so
-   * the crossing is caught here instead; `crossesHalves` says why it matters.
+   * the crossing is caught here instead; `fullLoadGuard` says why it matters.
    */
-  beforeNavigate(({ from, to, cancel, willUnload }) => {
-    if (!willUnload && to && crossesHalves(from?.route.id ?? null, to.route.id)) {
-      cancel();
-      location.assign(to.url.href);
-    }
-  });
+  beforeNavigate(fullLoadGuard);
 
   /**
    * The header's language picker.

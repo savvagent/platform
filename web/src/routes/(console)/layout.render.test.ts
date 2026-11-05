@@ -28,7 +28,9 @@ vi.mock('#lib/locale.js', async (original) => ({
 }));
 
 import { page } from '#lib/components/marketing/fake-app-state.svelte.js';
+import { beforeNavigate } from '$app/navigation';
 import { applyLocale } from '#lib/locale.js';
+import { fullLoadGuard } from '#lib/navigate.js';
 import { session } from '#lib/session.svelte.js';
 import type { Me } from '#lib/types.js';
 import { APP_VERSION } from '#lib/version.js';
@@ -154,6 +156,21 @@ describe('the console header', () => {
     expect(container.querySelector('button[aria-label="Account"]')).toBeNull();
     expect(header.querySelector('a[href="/orgs/new"]')).toBeNull();
 
+    unmount(instance);
+  });
+});
+
+// The shell's links to marketing pages cannot carry `data-sveltekit-reload`;
+// the guard (tested in `navigate.test.ts`) is what makes them full loads.
+describe('navigation', () => {
+  it('registers the full-load guard', () => {
+    session.me = undefined;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => {}))
+    );
+    const instance = render();
+    expect(beforeNavigate).toHaveBeenCalledWith(fullLoadGuard);
     unmount(instance);
   });
 });
