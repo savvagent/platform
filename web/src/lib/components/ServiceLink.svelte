@@ -25,9 +25,9 @@
    * reads as a phrase rather than the two words run together; the badge is
    * hidden from assistive technology, which already hears it in the name.
    * The name starts with the visible text, so a voice-control user can say
-   * what they see. The badge is `text-muted-foreground`, not `text-muted-foreground`: it is small
-   * text that carries meaning, and faint falls under 4.5:1 on the card and on
-   * the hover background.
+   * what they see. The badge is `text-muted-foreground`, the shared theme's
+   * secondary text colour, which holds 4.5:1 on the card and on the hover
+   * background: it is small text that carries meaning.
    */
   interface Props {
     service: Service;

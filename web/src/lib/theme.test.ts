@@ -21,12 +21,13 @@ function sources(dir: string): string[] {
     const path = join(dir, entry.name);
     if (path === SKIP || path === SELF) return [];
     if (entry.isDirectory()) return sources(path);
-    return /\.(svelte|ts)$/.test(entry.name) ? [path] : [];
+    return /\.(svelte|ts|css)$/.test(entry.name) ? [path] : [];
   });
 }
 
+// `border` with an optional side (`border-l-accent`), and every other colour utility.
 const PREFIX =
-  '(?:bg|text|border|divide|ring|decoration|outline|from|to|fill|stroke|accent|placeholder:text)';
+  '(?:bg|text|border(?:-[trblxyse])?|divide|ring|ring-offset|decoration|outline|from|via|to|fill|stroke|shadow|caret|accent|placeholder:text)';
 // `accent` is old for every prefix; `muted` only as text (`bg-muted` is a valid new token,
 // `text-muted-foreground` is the new text grey).
 const NAME = '(?:canvas|surface|raised|edge|ink|faint|accent-ink|ok|busy|warn|bad|accent)';
@@ -39,6 +40,22 @@ const OLD = new RegExp(
 );
 
 describe('theme', () => {
+  it('recognises every form of an old utility', () => {
+    const old = [
+      'border-l-accent/60',
+      'border-t-edge',
+      'via-surface',
+      'shadow-canvas',
+      'ring-offset-canvas',
+      'caret-accent',
+      'hover:text-muted',
+      'var(--color-faint)'
+    ];
+    for (const sample of old) expect(sample.match(OLD), sample).not.toBeNull();
+    const current = ['text-muted-foreground', 'bg-muted', 'border-border/60', 'bg-primary'];
+    for (const sample of current) expect(sample.match(OLD), sample).toBeNull();
+  });
+
   it('uses no utility from the old platform palette', () => {
     const found: string[] = [];
     for (const file of sources(SRC)) {

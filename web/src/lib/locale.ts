@@ -7,8 +7,8 @@
  * "current locale" the shared header's picker reads. A second copy here would
  * hold a second current locale, and the picker would disagree with the page.
  *
- * The console calls `resolveAtBoot(overwriteGetLocale)` and the marketing pages
- * `useLocale(lang, overwriteGetLocale)`, passing this app's Paraglide runtime
+ * The console calls `resolveAtBoot(appRuntime)` and the marketing pages
+ * `useLocale(lang, appRuntime)`, passing this app's Paraglide runtime (below)
  * so its messages follow the same locale as the shell's. `locale.test.ts` pins
  * that the package ships exactly this app's locales.
  */

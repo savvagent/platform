@@ -53,7 +53,7 @@
 
 <div class="space-y-5">
   <div>
-    <a class="text-xs text-muted-foreground hover:text-muted-foreground" href="/settings"
+    <a class="text-xs text-muted-foreground hover:text-foreground" href="/settings"
       >← {m.activity_back()}</a
     >
     <h1 class="mt-1 text-lg font-semibold">{m.activity_title()}</h1>
