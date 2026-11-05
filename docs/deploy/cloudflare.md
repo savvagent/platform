@@ -73,8 +73,13 @@ one is a change to both.
 
 ## Deploying
 
+`@savvagent/console-ui` comes from GitHub Packages, so `npm install` needs `NODE_AUTH_TOKEN` set to
+a GitHub token with `read:packages`, and `npm run deploy`, which builds with the installed
+packages, needs that install first. See [`web/README.md`](../../web/README.md).
+
 ```bash
 cd web
+npm install                            # needs NODE_AUTH_TOKEN with read:packages
 npm run build                          # adapter-static -> web/build, then check:build
 npx wrangler deploy --env production   # or: npm run deploy, which does both
 ```

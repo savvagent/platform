@@ -515,6 +515,17 @@ Deploys run from CI on a release (`flyctl deploy --remote-only -a otto-platform`
 image builds the console in its own stage, so one commit ships the server and the bundle
 together and they cannot drift.
 
+That stage installs `@savvagent/console-ui` from GitHub Packages, so the build needs a token
+that can read packages. It arrives as the BuildKit secret `npm_token`, never as a build arg, so
+it is in no layer and no image history. CI passes the job's own `GITHUB_TOKEN` (the deploy job
+has `packages: read`) with `flyctl deploy --remote-only -a otto-platform --build-secret npm_token=...`.
+A local or self-hosted build passes a token with `read:packages` instead:
+
+```bash
+export NODE_AUTH_TOKEN=$(gh auth token)   # a token with read:packages
+docker build --secret id=npm_token,env=NODE_AUTH_TOKEN .
+```
+
 ## Savvagent cutover
 
 The one-time move of the console and the OAuth issuer from `otto.savvagent.com` to
