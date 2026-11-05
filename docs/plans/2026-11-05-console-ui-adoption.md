@@ -70,25 +70,25 @@ Model: sonnet
 **Files:** `web/.npmrc`, `web/package.json`, `web/package-lock.json`, `.github/workflows/ci.yml`,
 `Dockerfile`
 
-- [ ] `web/.npmrc` holds exactly the two lines in the spec. Pin `"@savvagent/console-ui":
+- [x] `web/.npmrc` holds exactly the two lines in the spec. Pin `"@savvagent/console-ui":
 "0.2.0"`, and `tailwindcss` and `@tailwindcss/vite` to `^4.3.4`. Run `npm install`, and check
       that `package-lock.json` resolves the package from `npm.pkg.github.com`.
-- [ ] `ci.yml` `web` job: `permissions: { contents: read, packages: read }`, and `env:
+- [x] `ci.yml` `web` job: `permissions: { contents: read, packages: read }`, and `env:
 NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` on the `npm ci` step.
-- [ ] `ci.yml` `docker-build`: `permissions: { contents: read, packages: read }`, and `secrets: |
+- [x] `ci.yml` `docker-build`: `permissions: { contents: read, packages: read }`, and `secrets: |
 npm_token=${{ secrets.GITHUB_TOKEN }}` on `docker/build-push-action`.
-- [ ] `ci.yml` `deploy`: `packages: read`, and `flyctl deploy --remote-only -a otto-platform
+- [x] `ci.yml` `deploy`: `packages: read`, and `flyctl deploy --remote-only -a otto-platform
 --build-secret npm_token=${{ secrets.GITHUB_TOKEN }}`. A comment says the token is the job's own
       short-lived read-only one.
-- [ ] `Dockerfile` `console` stage: `COPY web/package.json web/package-lock.json web/.npmrc ./`,
+- [x] `Dockerfile` `console` stage: `COPY web/package.json web/package-lock.json web/.npmrc ./`,
       then `RUN --mount=type=secret,id=npm_token,required=true NODE_AUTH_TOKEN="$(cat
 /run/secrets/npm_token)" npm ci`. Explain in a comment why it is a secret mount, not an ARG.
-- [ ] Verify: `docker build --secret id=npm_token,env=NODE_AUTH_TOKEN --target console -t
+- [x] Verify: `docker build --secret id=npm_token,env=NODE_AUTH_TOKEN --target console -t
 platform158-console .` succeeds. `docker history --no-trunc platform158-console | grep -c
 "$NODE_AUTH_TOKEN"` prints 0. `docker run --rm platform158-console sh -c 'cat
 /web/.npmrc; ls /run/secrets 2>&1'` shows only the placeholder and no secret.
-- [ ] Gates: `npm run check && npm run lint && npm test && npm run build`.
-- [ ] Commit `build(web): install @savvagent/console-ui from GitHub Packages`.
+- [x] Gates: `npm run check && npm run lint && npm test && npm run build`.
+- [x] Commit `build(web): install @savvagent/console-ui from GitHub Packages`.
 
 ### Task 2: The shared theme and the token sweep
 
@@ -97,23 +97,23 @@ Model: sonnet
 **Files:** `web/src/app.css`, `web/src/app.html`, `web/static/theme.js`, every `.svelte` and
 `.ts` under `web/src` that uses an old palette utility or `sav-card`, `sav-input` or `sav-label`
 
-- [ ] `app.css` as the spec's Theme section: the two imports, the focus rule on
+- [x] `app.css` as the spec's Theme section: the two imports, the focus rule on
       `var(--color-ring)`, `.sav-mono`, `.sav-kicker`, and `.sav-select`. `.sav-select` uses the
       `Input` classes from `node_modules/@savvagent/console-ui/dist/components/ui/input/input.svelte`
       plus `appearance-auto`.
-- [ ] `static/theme.js`, as in the spec. `app.html` loads it in `<head>`, before
+- [x] `static/theme.js`, as in the spec. `app.html` loads it in `<head>`, before
       `%sveltekit.head%`, and `<body>` loses `bg-canvas text-ink`.
-- [ ] Rewrite every utility with the spec's table. Check with `grep -rnE
+- [x] Rewrite every utility with the spec's table. Check with `grep -rnE
 "\b(bg|text|border|divide|ring|decoration|placeholder:text)-(canvas|surface|raised|edge|ink|faint|accent-ink|ok|busy|warn|bad)\b|\btext-muted\b(?!-)|\b(text|bg|border|decoration)-accent\b"
 web/src` (use `grep -P`) and expect no match outside `node_modules` and `paraglide`. An inline
       text link that was `text-accent` gets `text-primary underline underline-offset-4`.
       `.sav-card` becomes `rounded-xl bg-card ring-1 ring-foreground/10`, which is the `Card` look,
       until Task 6 replaces it. `.sav-label` on a label stays until Task 6, renamed to the
       `FieldLabel` classes. Elsewhere it becomes `.sav-kicker`.
-- [ ] A test that searches for the old utilities: `web/src/lib/theme.test.ts` reads every
+- [x] A test that searches for the old utilities: `web/src/lib/theme.test.ts` reads every
       `.svelte` and `.ts` file under `src` (excluding `paraglide`) and fails on any old palette
       utility, naming the file. Write it first and see it fail.
-- [ ] Gates. Commit `feat(web): adopt the shared console theme`.
+- [x] Gates. Commit `feat(web): adopt the shared console theme`.
 
 ### Task 3: Locale, session mapping, and the cross-half rule
 
@@ -122,16 +122,16 @@ Model: sonnet
 **Files:** `web/src/lib/locale.ts`, `locale.test.ts`, `console-session.ts`,
 `console-session.test.ts`, `navigate.ts`, `navigate.test.ts`
 
-- [ ] Tests first, and see them fail (`npm test`): `toConsoleSession` (org mapping; `currentOrg` from the slug and `null` for an
+- [x] Tests first, and see them fail (`npm test`): `toConsoleSession` (org mapping; `currentOrg` from the slug and `null` for an
       unknown or missing slug; the user name falls back to the label only when there is neither name
       nor email; `platformUrl` passed through). `crossesHalves(from, to)` is true from
       `/(console)/…` to `/(marketing)/…` and back, false within a group, and false when either id is
       `null`. Locale: the package's `SUPPORTED` equals the platform runtime's `locales`.
-- [ ] `locale.ts` re-exports from `@savvagent/console-ui`, per the spec. Delete the duplicated
+- [x] `locale.ts` re-exports from `@savvagent/console-ui`, per the spec. Delete the duplicated
       tests in `locale.test.ts` and keep the equality test. Every importer of `#lib/locale.js` still
       compiles. `resolveAtBoot` now takes runtimes: the console layout calls
       `resolveAtBoot(overwriteGetLocale)`.
-- [ ] Gates. Commit `refactor(web): take the locale module from console-ui`.
+- [x] Gates. Commit `refactor(web): take the locale module from console-ui`.
 
 ### Task 4: The console layout on the shared header and footer
 
@@ -139,17 +139,17 @@ Model: opus
 
 **Files:** `web/src/routes/(console)/+layout.svelte`, `layout.render.test.ts`
 
-- [ ] Update `layout.render.test.ts` first, and see it fail. Add `beforeNavigate` to its
+- [x] Update `layout.render.test.ts` first, and see it fail. Add `beforeNavigate` to its
       `$app/navigation` mock, and stub `fetch` for `/services/v1.json` (or the header fetches for
       real). Replace the test of the removed `ServiceLink` nav variant. Signed in: there is an account menu button
       (`aria-label` is the package's `cui_account_label`), an org switcher, and a brand link to
       `/home`. Signed out on `/login`: a "Sign in" link once the session resolves. The footer
       contains the API reference link and `v<version>`. A `PATCH /api/me` failure in `changeLocale`
       shows an alert. Keep the existing guard, fatal and loading tests.
-- [ ] Implement as in the spec's "Console layout" section: `ConsoleHeader` with snippets,
+- [x] Implement as in the spec's "Console layout" section: `ConsoleHeader` with snippets,
       `ConsoleFooter`, `changeLocale`, `localeError`, and a `beforeNavigate` that uses
       `crossesHalves` (`cancel()` then `location.assign(to.url.href)`).
-- [ ] Gates. Commit `feat(web): render the console in the shared shell`.
+- [x] Gates. Commit `feat(web): render the console in the shared shell`.
 
 ### Task 5: The marketing layout on the shared header and footer
 
@@ -160,18 +160,18 @@ Model: opus
 `*.render.test.ts`, `web/scripts/check-build.mjs`, `check-build.test.mjs`, `web/vite.config.ts`
 (the comment only)
 
-- [ ] Tests first, and see them fail. Stub `fetch` for `/services/v1.json`. Header in `es`: the brand links to `/es`, the product, pricing and CLI links
+- [x] Tests first, and see them fail. Stub `fetch` for `/services/v1.json`. Header in `es`: the brand links to `/es`, the product, pricing and CLI links
       are there, "Sign in" and "Create account" show while signed out, and the language trigger shows
       "Español". Footer: the language nav has `data-languages` and links every locale to this page,
       and the shared footer carries the API reference, contact and version links.
       `check-build.test.mjs`: a page whose language nav label is wrong is reported.
-- [ ] Implement as in the spec's "Marketing layout" section. `useLocale(data.lang,
+- [x] Implement as in the spec's "Marketing layout" section. `useLocale(data.lang,
 overwriteGetLocale)` replaces `overwriteGetLocale(() => data.lang)` at the top of the layout
       script, and the comment above it is updated. Add the `beforeNavigate` cross-half guard. The
       marker in `check-build.mjs` becomes `/<nav data-languages(?:="")? aria-label="([^"]*)"/`
       (Svelte's server render writes the bare attribute as `data-languages=""`; the test fixture
       copies that real output).
-- [ ] Gates, including `npm run build`, whose `check:build` must report `36 pages, all good`.
+- [x] Gates, including `npm run build`, whose `check:build` must report `36 pages, all good`.
       Commit `feat(web): render the marketing pages in the shared shell`.
 
 ### Task 6: Replace the hand-written components
@@ -182,20 +182,20 @@ Model: sonnet
 files for `Alert` alone; `grep -rlE "components/(Alert|Button|LinkButton|Card|Field)\.svelte|components/button\.js" web/src`),
 the `.sav-*` users, `Spinner.svelte`, `Loading.svelte`, `CopyField.svelte`, the marketing cards
 
-- [ ] First extend `theme.test.ts` to fail on `sav-card`, `sav-input` and `sav-label` and on
+- [x] First extend `theme.test.ts` to fail on `sav-card`, `sav-input` and `sav-label` and on
       any import of the deleted components, and see it fail.
-- [ ] Remove `ServiceLink`'s `nav` variant (only the old console header used it) and update
+- [x] Remove `ServiceLink`'s `nav` variant (only the old console header used it) and update
       `ServiceLink.render.test.ts`.
-- [ ] Follow the spec's component table. Import from `@savvagent/console-ui/ui/<name>`.
+- [x] Follow the spec's component table. Import from `@savvagent/console-ui/ui/<name>`.
       `Spinner.svelte` is the spinner `<span aria-hidden>` from `Loading.svelte`. `Loading` uses it,
       and so does every button with `pending`.
-- [ ] Each `Field` gets ids from `$props.id()`. Inside an `{#each}`, append the item's key.
+- [x] Each `Field` gets ids from `$props.id()`. Inside an `{#each}`, append the item's key.
       `FieldDescription` gets an id, and the control's `aria-describedby` points at it.
-- [ ] Update render tests that query old markup so they query roles, names and labels. A test
+- [x] Update render tests that query old markup so they query roles, names and labels. A test
       that relied on the wrapping `<label>` now relies on `for`/`id`; `getByLabelText` still works.
-- [ ] Delete `Alert.svelte`, `Button.svelte`, `button.ts`, `Card.svelte`, `Field.svelte` and
+- [x] Delete `Alert.svelte`, `Button.svelte`, `button.ts`, `Card.svelte`, `Field.svelte` and
       `LinkButton.svelte`. `grep` shows no importer and no `sav-card`, `sav-input` or `sav-label`.
-  - [ ] Gates. Commit `feat(web): use the console-ui components`.
+  - [x] Gates. Commit `feat(web): use the console-ui components`.
 
 ### Task 7: Screenshot comparison and fixes
 
@@ -206,7 +206,7 @@ The harness lives outside the repo, in the session scratchpad
 `$S/platform158-harness/{serve.mjs,shoot.mjs,diff.mjs}`, with the `main` build's shots in
 `$S/platform158-shots-before`.
 
-- [ ] `npm run build`, then `node $S/platform158-harness/serve.mjs web/build 4918 &`,
+- [x] `npm run build`, then `node $S/platform158-harness/serve.mjs web/build 4918 &`,
       `node $S/platform158-harness/shoot.mjs http://localhost:4918 $S/platform158-shots-after`, and
       `node $S/platform158-harness/diff.mjs $S/platform158-shots-before $S/platform158-shots-after
 $S/platform158-shots-diff`. Compare each side-by-side pair and diff each `.txt` dump. Fix any
@@ -219,11 +219,11 @@ Model: haiku
 
 **Files:** `web/README.md`, `docs/deploy/fly.md`, `docs/deploy/cloudflare.md`
 
-- [ ] `web/README.md`: installing needs `NODE_AUTH_TOKEN` with `read:packages`. The shell comes
+- [x] `web/README.md`: installing needs `NODE_AUTH_TOKEN` with `read:packages`. The shell comes
       from `@savvagent/console-ui`. Dark mode follows the OS. Update the paragraph about the locale
       override (now `useLocale`) and about the `data-sveltekit-reload` rule (plus the guard).
-- [ ] `docs/deploy/fly.md` "Deploying": the image build needs the `npm_token` BuildKit secret,
+- [x] `docs/deploy/fly.md` "Deploying": the image build needs the `npm_token` BuildKit secret,
       CI passes the job token, and a local build uses `docker build --secret
 id=npm_token,env=NODE_AUTH_TOKEN .`.
-- [ ] `docs/deploy/cloudflare.md`: `npm ci` before `npm run deploy` needs `NODE_AUTH_TOKEN`.
-- [ ] `npm run lint`. Commit `docs: install and build the console with console-ui`.
+- [x] `docs/deploy/cloudflare.md`: `npm ci` before `npm run deploy` needs `NODE_AUTH_TOKEN`.
+- [x] `npm run lint`. Commit `docs: install and build the console with console-ui`.

@@ -1,6 +1,6 @@
 # The platform console on `@savvagent/console-ui`
 
-> **Status:** IN PROGRESS
+> **Status:** IMPLEMENTED (#163)
 > **Issue:** savvagent/platform#158, part of #154
 
 ## Brief
