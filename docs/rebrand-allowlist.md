@@ -29,7 +29,7 @@ fails on any "otto" in a user-visible surface that no pattern accounts for.
 | The Fly app `otto-platform` and its `otto-platform.fly.dev` host | `fly.toml`, the Worker's origin | Renaming a Fly app means a new app. | Never (a #128 non-goal) |
 | Retired token prefixes `otto_at_`, `otto_rt_`, `otto_ac_`, `otto_ss_`, `otto_pat_`, and kept secret prefixes `otto_rs_`, `otto_whsec_`, `otto_client_`, `otto_inv_`, `otto_sst_`, `otto_ssb_` | `savvagent-auth` `crypto.rs`, `savvagent-resource` `types.rs` | The rejection list must name the old prefixes to refuse them. Kept secrets were issued to services and customers and stay valid. | Until no secret with the old prefix is in use |
 | The consent-seal key label `otto-web/consent-request-seal` | `savvagent-web` `consent_seal.rs` | The sealing key is derived from this label. A new label would invalidate every consent request in flight during a deploy, and nobody sees it. | Never |
-| The `otto.locale` browser storage key | `web/src/lib/locale.ts` | A visitor's saved language would be forgotten. Nobody sees the key. | Never |
+| The `otto.locale` browser storage key | `@savvagent/console-ui` `locale.ts` (the platform console re-exports it) | A visitor's saved language would be forgotten. Nobody sees the key. | Never |
 | `CHANGELOG.md`, and dated docs in `docs/specs` and `docs/plans` | Docs | They record what was true at the time. | Never |
 
 Code comments, log lines and test fixtures say "otto" only where they name one

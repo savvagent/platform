@@ -7,7 +7,7 @@
   import { messageFor } from '#lib/errors.js';
   import { gotoOrLoad } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
-  import { reconcile, resolveAtBoot } from '#lib/locale.js';
+  import { appRuntime, reconcile, resolveAtBoot } from '#lib/locale.js';
   import { guard } from '#lib/routing.js';
   import { session } from '#lib/session.svelte.js';
   import { SERVICES } from '#lib/services.js';
@@ -26,7 +26,7 @@
    * exist. It runs once, synchronously, ahead of the first paint, so no page
    * ever renders English and then snaps to Spanish.
    */
-  resolveAtBoot();
+  resolveAtBoot(appRuntime);
 
   let { children }: { children: Snippet } = $props();
 
