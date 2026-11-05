@@ -64,7 +64,10 @@ export function crossesHalves(from: string | null, to: string | null): boolean {
  * cannot, so this catches them.
  *
  * `willUnload` means the browser is already loading a new document, so there
- * is nothing to do.
+ * is nothing to do. The full load always adds a history entry: `BeforeNavigate`
+ * does not say whether the cancelled navigation would have replaced one, so a
+ * redirect that crosses (a `?next=` pointing at a marketing page) leaves the
+ * redirecting page in the history.
  */
 export function fullLoadGuard({ from, to, cancel, willUnload }: BeforeNavigate): void {
   if (willUnload || !from || !to) return;

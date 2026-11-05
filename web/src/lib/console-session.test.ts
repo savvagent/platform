@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { toConsoleSession } from './console-session';
+import { shellOrigin, toConsoleSession } from './console-session';
 import type { Me, Membership, User } from './types';
 
 function user(overrides: Partial<User> = {}): User {
@@ -81,5 +81,16 @@ describe('toConsoleSession', () => {
   it('falls back to the generated label only with neither name nor email', () => {
     const s = toConsoleSession(me(user({ name: null, email: null })), undefined, 'https://x.test');
     expect(s.user).toEqual({ id: 'u1', email: null, name: 'brisk-harbor-42' });
+  });
+});
+
+describe('shellOrigin', () => {
+  it('keeps an origin the shell accepts', () => {
+    expect(shellOrigin('https://console.example.com')).toBe('https://console.example.com');
+    expect(shellOrigin('http://localhost:5173')).toBe('http://localhost:5173');
+  });
+
+  it('falls back to the production origin for one it would refuse', () => {
+    expect(shellOrigin('http://10.0.0.5:8080')).toBe('https://savvagent.com');
   });
 });

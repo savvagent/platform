@@ -2,7 +2,6 @@
   import { onMount, untrack, type Snippet } from 'svelte';
 
   import { beforeNavigate } from '$app/navigation';
-  import { checkPlatformUrl } from '@savvagent/console-ui';
   import { page } from '$app/state';
 
   import {
@@ -13,6 +12,7 @@
     useLocale,
     type Locale
   } from '#lib/locale.js';
+  import { shellOrigin } from '#lib/console-session.js';
   import { fullLoadGuard } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';
@@ -88,14 +88,7 @@
   let hint = $state<Locale | undefined>(undefined);
 
   onMount(() => {
-    // Only an origin the shell accepts (https, or http on loopback): it throws
-    // on any other, and a page served over plain http elsewhere still renders
-    // with the production origin rather than not at all.
-    try {
-      platformUrl = checkPlatformUrl(location.origin).origin;
-    } catch {
-      // Keep SITE_ORIGIN.
-    }
+    platformUrl = shellOrigin(location.origin);
 
     /**
      * Signed in? Asked only in the browser, after the prerendered page is

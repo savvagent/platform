@@ -7,7 +7,7 @@
   import type { Snippet } from 'svelte';
 
   import { api } from '#lib/api.js';
-  import { toConsoleSession } from '#lib/console-session.js';
+  import { shellOrigin, toConsoleSession } from '#lib/console-session.js';
   import { messageFor } from '#lib/errors.js';
   import { fullLoadGuard, gotoOrLoad } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
@@ -29,6 +29,9 @@
    */
   resolveAtBoot(appRuntime);
 
+  /** The platform's origin for the shell; `shellOrigin` says why it is checked. */
+  const origin = shellOrigin(location.origin);
+
   let { children }: { children: Snippet } = $props();
 
   /** A failure resolving the session that is *not* "signed out". */
@@ -44,7 +47,7 @@
    * rebuilt only when `session.me` or the route's org changes.
    */
   const shellSession = $derived(
-    session.me ? toConsoleSession(session.me, page.params.org, location.origin) : undefined
+    session.me ? toConsoleSession(session.me, page.params.org, origin) : undefined
   );
 
   /**
@@ -191,7 +194,7 @@
 <div class="flex min-h-full flex-col">
   <ConsoleHeader
     session={shellSession}
-    platformUrl={location.origin}
+    platformUrl={origin}
     service="platform"
     onSignOut={signOut}
     onLocaleChange={changeLocale}
@@ -241,7 +244,7 @@
   </main>
 
   <ConsoleFooter
-    platformUrl={location.origin}
+    platformUrl={origin}
     links={[
       { label: m.nav_api_reference(), href: '/api/openapi.json' },
       { label: `v${APP_VERSION}`, href: releaseUrl }

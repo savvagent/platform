@@ -1,6 +1,18 @@
 @import 'tailwindcss';
 @import '@savvagent/console-ui/theme.css';
 
+/*
+  Native controls (a <select>'s option list, checkboxes, scrollbars) follow
+  `color-scheme`, which the shared theme does not set: without it a dark page
+  can open a white option list under light text.
+*/
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
 @layer base {
   /*
     A visible focus ring on everything focusable, always. The console is a tool
@@ -21,7 +33,12 @@
     @apply mb-1 block text-xs font-medium tracking-wide text-muted-foreground uppercase;
   }
 
-  /* The package Input classes, plus the native chevron a <select> loses without an appearance. */
+  /*
+    A native <select> styled as the package's Input: its class list, copied from
+    @savvagent/console-ui 0.2.0 `dist/components/ui/input/input.svelte`, plus the
+    native chevron. Re-copy it when bumping the package. The package's own
+    Select is a bits-ui listbox with a different keyboard model.
+  */
   .sav-select {
     @apply h-8 w-full min-w-0 appearance-auto rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
   }
