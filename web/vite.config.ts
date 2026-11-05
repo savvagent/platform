@@ -85,6 +85,12 @@ const paraglide = paraglideVitePlugin({
  * `version.pollInterval` is 0, as it was by default before SvelteKit 3 (which
  * polls hourly). Nothing here reads `updated` from `$app/state`, so polling
  * would only add a request an hour for every open tab.
+ *
+ * **`compilerOptions.experimental.async` must stay off.** The marketing
+ * layout's `useLocale` pins the locale process-wide for each prerendered
+ * page, which is sound only because each page renders synchronously: with
+ * async rendering, pages could interleave and one would render in another's
+ * language.
  */
 const kit = sveltekit({
   preprocess: vitePreprocess(),
