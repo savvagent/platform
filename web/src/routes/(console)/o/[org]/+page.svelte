@@ -94,7 +94,7 @@
 <div class="space-y-6">
   <div>
     <h1 class="text-lg font-semibold">{org.title}</h1>
-    <p class="mt-0.5 text-sm text-faint">
+    <p class="mt-0.5 text-sm text-muted-foreground">
       <code class="sav-mono">{org.slug}</code> · {m.overview_role_and_plan({
         role: org.role ? roleLabel(org.role) : '—',
         plan: org.org?.plan ?? '—'
@@ -116,16 +116,16 @@
     {#if overview.budgets}
       <BudgetAlerts services={overview.budgets.services} />
     {:else}
-      <p class="text-xs text-faint">{m.usage_alerts_unavailable()}</p>
+      <p class="text-xs text-muted-foreground">{m.usage_alerts_unavailable()}</p>
     {/if}
 
     <div class="grid grid-cols-2 gap-3">
       {#each tiles as tile (tile.href)}
-        <a class="sav-card px-4 py-3 transition hover:bg-raised" href="/o/{org.slug}/{tile.href}">
-          <div class="text-2xl font-semibold text-ink">
+        <a class="sav-card px-4 py-3 transition hover:bg-muted" href="/o/{org.slug}/{tile.href}">
+          <div class="text-2xl font-semibold text-foreground">
             {tile.value.toLocaleString(currentLocale())}
           </div>
-          <div class="mt-0.5 text-xs text-faint">{tile.label}</div>
+          <div class="mt-0.5 text-xs text-muted-foreground">{tile.label}</div>
         </a>
       {/each}
     </div>
@@ -133,12 +133,15 @@
     <div class="grid gap-6 lg:grid-cols-2">
       <Card title={m.overview_period_title()} description={m.overview_period_description()}>
         {#snippet actions()}
-          <a class="text-xs text-muted underline hover:text-ink" href="/o/{org.slug}/usage">
+          <a
+            class="text-xs text-muted-foreground underline hover:text-foreground"
+            href="/o/{org.slug}/usage"
+          >
             {m.overview_period_details()}
           </a>
         {/snippet}
         {#if overview.usage.services.length === 0}
-          <p class="text-sm text-faint">{m.overview_spend_empty()}</p>
+          <p class="text-sm text-muted-foreground">{m.overview_spend_empty()}</p>
         {:else}
           <ul class="space-y-3">
             {#each overview.usage.services as service (service.service)}

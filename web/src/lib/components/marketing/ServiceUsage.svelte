@@ -49,27 +49,29 @@
 {/snippet}
 
 <article class="sav-card flex flex-col gap-5 p-5">
-  <svelte:element this={`h${level}`} class="text-lg font-semibold tracking-tight text-ink">
+  <svelte:element this={`h${level}`} class="text-lg font-semibold tracking-tight text-foreground">
     {usage.name}
   </svelte:element>
 
   {#if meters.length === 0}
-    <p class="text-sm text-muted">{m.pricing_usage_service_none()}</p>
+    <p class="text-sm text-muted-foreground">{m.pricing_usage_service_none()}</p>
   {:else}
     {#each meters as { meter, tiers } (meter.meter)}
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <caption class="pb-2 text-left">
-            <span class="block font-medium text-ink">{meter.displayName}</span>
-            <span class="block text-muted">{m.pricing_usage_unit({ unit: meter.unit })}</span>
+            <span class="block font-medium text-foreground">{meter.displayName}</span>
+            <span class="block text-muted-foreground"
+              >{m.pricing_usage_unit({ unit: meter.unit })}</span
+            >
             {#if tiers.freeAllowance}
-              <span class="block text-muted">
+              <span class="block text-muted-foreground">
                 {m.pricing_usage_free_allowance(tiers.freeAllowance)}
               </span>
             {/if}
           </caption>
           <thead>
-            <tr class="border-b border-edge/60 text-left text-xs text-muted">
+            <tr class="border-b border-border/60 text-left text-xs text-muted-foreground">
               <th scope="col" class="py-1.5 pr-3 font-medium">{m.pricing_usage_col_units()}</th>
               <th scope="col" class="py-1.5 text-right font-medium"
                 >{m.pricing_usage_col_price()}</th
@@ -78,9 +80,9 @@
           </thead>
           <tbody>
             {#each tiers.rows as row, i (i)}
-              <tr class="border-b border-edge/40 last:border-b-0">
-                <td class="py-1.5 pr-3 text-muted">{@render range(row.range)}</td>
-                <td class="py-1.5 text-right font-medium text-ink tabular-nums">
+              <tr class="border-b border-border/40 last:border-b-0">
+                <td class="py-1.5 pr-3 text-muted-foreground">{@render range(row.range)}</td>
+                <td class="py-1.5 text-right font-medium text-foreground tabular-nums">
                   {row.price.kind === 'free' ? m.pricing_free() : row.price.amount}
                 </td>
               </tr>

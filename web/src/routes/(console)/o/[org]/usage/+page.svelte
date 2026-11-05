@@ -76,9 +76,12 @@
   <div class="flex items-start justify-between gap-4">
     <div>
       <h1 class="text-lg font-semibold">{m.usage_title()}</h1>
-      <p class="mt-0.5 text-sm text-faint">{m.usage_subtitle()}</p>
+      <p class="mt-0.5 text-sm text-muted-foreground">{m.usage_subtitle()}</p>
     </div>
-    <a class="shrink-0 text-xs text-muted underline hover:text-ink" href="/o/{org.slug}/budgets">
+    <a
+      class="shrink-0 text-xs text-muted-foreground underline hover:text-foreground"
+      href="/o/{org.slug}/budgets"
+    >
       {m.usage_budgets_link()}
     </a>
   </div>
@@ -97,10 +100,10 @@
     {#if report.budgets}
       <BudgetAlerts services={report.budgets.services} />
     {:else}
-      <p class="text-xs text-faint">{m.usage_alerts_unavailable()}</p>
+      <p class="text-xs text-muted-foreground">{m.usage_alerts_unavailable()}</p>
     {/if}
 
-    <p class="text-xs text-faint">
+    <p class="text-xs text-muted-foreground">
       {m.usage_period_since({ date: day(report.usage.periodStart) })}
     </p>
 
@@ -114,18 +117,18 @@
               <div class="sav-label">{m.usage_spend_label()}</div>
               <Meter usage={service} />
               {#if service.spendError}
-                <p class="mt-1 text-xs text-faint">{m.usage_spend_unavailable_hint()}</p>
+                <p class="mt-1 text-xs text-muted-foreground">{m.usage_spend_unavailable_hint()}</p>
               {/if}
             </div>
 
             {#if service.meters.length === 0}
-              <p class="text-sm text-faint">{m.usage_no_meters()}</p>
+              <p class="text-sm text-muted-foreground">{m.usage_no_meters()}</p>
             {:else}
               <table class="w-full text-left text-sm">
                 <caption class="sr-only">
                   {m.usage_meters_caption({ service: serviceName(service.service) })}
                 </caption>
-                <thead class="text-xs text-faint">
+                <thead class="text-xs text-muted-foreground">
                   <tr>
                     <th scope="col" class="py-1 font-medium">{m.usage_col_meter()}</th>
                     <th scope="col" class="py-1 font-medium">{m.usage_col_unit()}</th>
@@ -136,10 +139,12 @@
                 </thead>
                 <tbody>
                   {#each service.meters as meter (meter.meter)}
-                    <tr class="border-t border-edge/60">
-                      <th scope="row" class="py-1.5 font-normal text-ink">{meter.displayName}</th>
-                      <td class="py-1.5 text-muted">{meter.unit}</td>
-                      <td class="py-1.5 text-right text-ink tabular-nums">
+                    <tr class="border-t border-border/60">
+                      <th scope="row" class="py-1.5 font-normal text-foreground"
+                        >{meter.displayName}</th
+                      >
+                      <td class="py-1.5 text-muted-foreground">{meter.unit}</td>
+                      <td class="py-1.5 text-right text-foreground tabular-nums">
                         {count(meter.quantity)}
                       </td>
                     </tr>
@@ -152,6 +157,6 @@
       {/each}
     {/if}
 
-    <p class="text-xs text-faint">{m.usage_prices_note()}</p>
+    <p class="text-xs text-muted-foreground">{m.usage_prices_note()}</p>
   {/if}
 </div>

@@ -76,7 +76,7 @@
 <div class="flex min-h-full flex-col" class:pb-14={hint !== undefined}>
   <a
     href="#main"
-    class="sr-only z-20 rounded-md bg-accent px-3 py-2 text-sm font-medium text-accent-ink focus:not-sr-only focus:absolute focus:top-2 focus:left-2"
+    class="sr-only z-20 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground focus:not-sr-only focus:absolute focus:top-2 focus:left-2"
   >
     {m.marketing_skip_to_content()}
   </a>
@@ -84,7 +84,7 @@
   {#if hint}
     <!-- In the suggested language, since it is addressed to someone who reads it. -->
     <div
-      class="fixed inset-x-0 bottom-0 z-30 border-t border-edge/60 bg-raised px-4 py-3 text-sm shadow-lg"
+      class="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-muted px-4 py-3 text-sm shadow-lg"
       lang={hint}
     >
       <div class="mx-auto flex w-full max-w-6xl items-center gap-3">
@@ -92,13 +92,13 @@
           href={localizedPath(hint, basePath)}
           hreflang={hint}
           data-sveltekit-reload
-          class="text-accent hover:underline"
+          class="text-primary underline underline-offset-4"
         >
           {m.marketing_locale_hint({ language: LOCALE_NAMES[hint] }, { locale: hint })}
         </a>
         <button
           type="button"
-          class="ml-auto text-muted hover:text-ink"
+          class="ml-auto text-muted-foreground hover:text-foreground"
           onclick={() => (hint = undefined)}
         >
           {m.marketing_locale_hint_dismiss({}, { locale: hint })}

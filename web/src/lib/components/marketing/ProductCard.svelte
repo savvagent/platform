@@ -26,13 +26,13 @@
 </script>
 
 <article class="sav-card flex flex-col gap-3 p-5">
-  <svelte:element this={`h${level}`} class="text-lg font-semibold tracking-tight text-ink">
+  <svelte:element this={`h${level}`} class="text-lg font-semibold tracking-tight text-foreground">
     {service.name}
   </svelte:element>
-  <p class="flex-1 text-sm text-muted">{service.copy.tagline()}</p>
+  <p class="flex-1 text-sm text-muted-foreground">{service.copy.tagline()}</p>
   <a
     href={localizedPath(lang, `/products/${service.slug}`)}
-    class="text-sm font-medium text-accent hover:underline"
+    class="text-sm font-medium text-primary hover:underline"
   >
     {m.marketing_product_more({ name: service.name })}
     <span aria-hidden="true">→</span>

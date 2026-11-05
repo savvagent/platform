@@ -220,7 +220,7 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.sso_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">{m.sso_subtitle()}</p>
+    <p class="mt-0.5 text-sm text-muted-foreground">{m.sso_subtitle()}</p>
   </div>
 
   {#if !org.isAdmin}
@@ -263,7 +263,7 @@
         </Button>
       </form>
 
-      <div class="mt-4 border-t border-edge/50 pt-3">
+      <div class="mt-4 border-t border-border/50 pt-3">
         {#if connectionRemoveError}<div class="mb-2">
             <Alert>{connectionRemoveError}</Alert>
           </div>{/if}
@@ -301,29 +301,29 @@
         {:else if domains.length === 0}
           <Empty title={m.sso_domains_none()} />
         {:else}
-          <ul class="divide-y divide-edge/40">
+          <ul class="divide-y divide-border/40">
             {#each domains as claimed (claimed.domain)}
               <li class="py-3">
                 <div class="flex flex-wrap items-center gap-3">
                   <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-ink">{claimed.domain}</span>
+                      <span class="text-foreground">{claimed.domain}</span>
                       {#if claimed.verifiedAt}
                         <span
-                          class="rounded-full border border-ok/50 bg-ok/10 px-2 py-0.5 text-xs text-ok"
+                          class="rounded-full border border-success/50 bg-success/10 px-2 py-0.5 text-xs text-success"
                         >
                           {m.sso_domain_verified()}
                         </span>
                       {:else}
                         <span
-                          class="rounded-full border border-warn/50 bg-warn/10 px-2 py-0.5 text-xs text-warn"
+                          class="rounded-full border border-warning/50 bg-warning/10 px-2 py-0.5 text-xs text-warning"
                         >
                           {m.sso_domain_pending()}
                         </span>
                       {/if}
                     </div>
                     {#if claimed.verifiedAt}
-                      <p class="text-xs text-faint">
+                      <p class="text-xs text-muted-foreground">
                         {m.sso_domain_verified_meta({ when: relative(claimed.verifiedAt) })}
                       </p>
                     {/if}
@@ -348,8 +348,10 @@
                 </div>
 
                 {#if !claimed.verifiedAt}
-                  <div class="mt-3 space-y-2 rounded-md border border-edge/60 bg-canvas/60 p-3">
-                    <p class="text-xs text-faint">{m.sso_domain_txt_instructions()}</p>
+                  <div
+                    class="mt-3 space-y-2 rounded-md border border-border/60 bg-background/60 p-3"
+                  >
+                    <p class="text-xs text-muted-foreground">{m.sso_domain_txt_instructions()}</p>
                     <CopyField
                       label={m.sso_domain_txt_name_label()}
                       value={claimed.txtRecordName}
@@ -359,7 +361,7 @@
                       value={claimed.txtRecordValue}
                     />
                     {#if notYetVerified === claimed.domain}
-                      <p class="text-xs text-warn">{m.sso_domain_not_verified_yet()}</p>
+                      <p class="text-xs text-warning">{m.sso_domain_not_verified_yet()}</p>
                     {/if}
                   </div>
                 {/if}
@@ -372,7 +374,7 @@
 
     <Card title={m.sso_enforce_title()} description={m.sso_enforce_description()}>
       {#if enforceError}<div class="mb-3"><Alert>{enforceError}</Alert></div>{/if}
-      <label class="flex items-center gap-2 text-sm text-ink">
+      <label class="flex items-center gap-2 text-sm text-foreground">
         <input
           type="checkbox"
           checked={org.org?.enforceSso ?? false}

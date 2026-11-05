@@ -25,7 +25,8 @@ composites, rewritten on the shared tokens. Both layouts map their state into th
 format` before `lint` when files changed.
 - Evidence: report each command's pass, fail and skip counts and the HEAD SHA. A skipped test is
   not a pass.
-- Invariants: the console stays `ssr = false`; marketing pages are prerendered and each is in its
+- Invariants: no credential is spent on a `GET`, and the session cookie stays in the browser
+  (the console stays `ssr = false`); marketing pages are prerendered and each is in its
   URL's language top to bottom; every link that crosses between the console and marketing is a
   full document load; `200.html` is in the bundle; console `noindex`, marketing `index, follow`.
 - Commits: Conventional Commits, scope `web` (or `ci`, `docs`), with a body that says why. No
@@ -121,7 +122,7 @@ Model: sonnet
 **Files:** `web/src/lib/locale.ts`, `locale.test.ts`, `console-session.ts`,
 `console-session.test.ts`, `navigate.ts`, `navigate.test.ts`
 
-- [ ] Tests first: `toConsoleSession` (org mapping; `currentOrg` from the slug and `null` for an
+- [ ] Tests first, and see them fail (`npm test`): `toConsoleSession` (org mapping; `currentOrg` from the slug and `null` for an
       unknown or missing slug; the user name falls back to the label only when there is neither name
       nor email; `platformUrl` passed through). `crossesHalves(from, to)` is true from
       `/(console)/…` to `/(marketing)/…` and back, false within a group, and false when either id is
@@ -138,7 +139,9 @@ Model: opus
 
 **Files:** `web/src/routes/(console)/+layout.svelte`, `layout.render.test.ts`
 
-- [ ] Update `layout.render.test.ts` first. Signed in: there is an account menu button
+- [ ] Update `layout.render.test.ts` first, and see it fail. Add `beforeNavigate` to its
+      `$app/navigation` mock, and stub `fetch` for `/services/v1.json` (or the header fetches for
+      real). Replace the test of the removed `ServiceLink` nav variant. Signed in: there is an account menu button
       (`aria-label` is the package's `cui_account_label`), an org switcher, and a brand link to
       `/home`. Signed out on `/login`: a "Sign in" link once the session resolves. The footer
       contains the API reference link and `v<version>`. A `PATCH /api/me` failure in `changeLocale`
@@ -157,7 +160,7 @@ Model: opus
 `*.render.test.ts`, `web/scripts/check-build.mjs`, `check-build.test.mjs`, `web/vite.config.ts`
 (the comment only)
 
-- [ ] Tests first. Header in `es`: the brand links to `/es`, the product, pricing and CLI links
+- [ ] Tests first, and see them fail. Stub `fetch` for `/services/v1.json`. Header in `es`: the brand links to `/es`, the product, pricing and CLI links
       are there, "Sign in" and "Create account" show while signed out, and the language trigger shows
       "Español". Footer: the language nav has `data-languages` and links every locale to this page,
       and the shared footer carries the API reference, contact and version links.
@@ -165,7 +168,9 @@ Model: opus
 - [ ] Implement as in the spec's "Marketing layout" section. `useLocale(data.lang,
 overwriteGetLocale)` replaces `overwriteGetLocale(() => data.lang)` at the top of the layout
       script, and the comment above it is updated. Add the `beforeNavigate` cross-half guard. The
-      marker in `check-build.mjs` becomes `/<nav data-languages aria-label="([^"]*)"/`.
+      marker in `check-build.mjs` becomes `/<nav data-languages(?:="")? aria-label="([^"]*)"/`
+      (Svelte's server render writes the bare attribute as `data-languages=""`; the test fixture
+      copies that real output).
 - [ ] Gates, including `npm run build`, whose `check:build` must report `36 pages, all good`.
       Commit `feat(web): render the marketing pages in the shared shell`.
 
@@ -177,6 +182,10 @@ Model: sonnet
 files for `Alert` alone; `grep -rlE "components/(Alert|Button|LinkButton|Card|Field)\.svelte|components/button\.js" web/src`),
 the `.sav-*` users, `Spinner.svelte`, `Loading.svelte`, `CopyField.svelte`, the marketing cards
 
+- [ ] First extend `theme.test.ts` to fail on `sav-card`, `sav-input` and `sav-label` and on
+      any import of the deleted components, and see it fail.
+- [ ] Remove `ServiceLink`'s `nav` variant (only the old console header used it) and update
+      `ServiceLink.render.test.ts`.
 - [ ] Follow the spec's component table. Import from `@savvagent/console-ui/ui/<name>`.
       `Spinner.svelte` is the spinner `<span aria-hidden>` from `Loading.svelte`. `Loading` uses it,
       and so does every button with `pending`.
@@ -186,15 +195,21 @@ the `.sav-*` users, `Spinner.svelte`, `Loading.svelte`, `CopyField.svelte`, the 
       that relied on the wrapping `<label>` now relies on `for`/`id`; `getByLabelText` still works.
 - [ ] Delete `Alert.svelte`, `Button.svelte`, `button.ts`, `Card.svelte`, `Field.svelte` and
       `LinkButton.svelte`. `grep` shows no importer and no `sav-card`, `sav-input` or `sav-label`.
-      Extend `theme.test.ts` to fail on those three classes.
-- [ ] Gates. Commit `feat(web): use the console-ui components`.
+  - [ ] Gates. Commit `feat(web): use the console-ui components`.
 
 ### Task 7: Screenshot comparison and fixes
 
 Model: orchestrator
 
-- [ ] Build, serve with the scratch harness, shoot into `platform158-shots-after`, and run
-      `diff.mjs` against `platform158-shots-before`. Compare each pair and the `.txt` dumps. Fix any
+The harness lives outside the repo, in the session scratchpad
+`S=/tmp/claude-1000/-home-robhicks-dev-savvagent-services/0692bf81-c677-412e-9924-020aa4c29537/scratchpad`:
+`$S/platform158-harness/{serve.mjs,shoot.mjs,diff.mjs}`, with the `main` build's shots in
+`$S/platform158-shots-before`.
+
+- [ ] `npm run build`, then `node $S/platform158-harness/serve.mjs web/build 4918 &`,
+      `node $S/platform158-harness/shoot.mjs http://localhost:4918 $S/platform158-shots-after`, and
+      `node $S/platform158-harness/diff.mjs $S/platform158-shots-before $S/platform158-shots-after
+$S/platform158-shots-diff`. Compare each side-by-side pair and diff each `.txt` dump. Fix any
       lost content, broken layout or unreadable text. Re-run the gates after a fix and commit as
       `fix(web): …`.
 

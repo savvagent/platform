@@ -140,7 +140,7 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.members_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">
+    <p class="mt-0.5 text-sm text-muted-foreground">
       {m.members_subtitle({ org: org.title })}
     </p>
   </div>
@@ -148,14 +148,14 @@
   {#if error}<Alert>{error}</Alert>{/if}
 
   {#if claim}
-    <div class="space-y-3 rounded-lg border border-warn/40 bg-warn/5 p-4">
-      <p class="text-sm text-ink">
+    <div class="space-y-3 rounded-lg border border-warning/40 bg-warning/5 p-4">
+      <p class="text-sm text-foreground">
         {m.members_claim_headline()}
-        <span class="text-muted">{m.members_claim_caveat()}</span>
+        <span class="text-muted-foreground">{m.members_claim_caveat()}</span>
       </p>
       <CopyField label={m.members_copy_link()} value={claim.link} />
       <CopyField label={m.members_copy_code()} value={claim.code} />
-      <p class="text-xs text-faint">
+      <p class="text-xs text-muted-foreground">
         {m.members_claim_note()}
       </p>
       <Button tone="quiet" onclick={() => (claim = undefined)}>{m.members_claim_done()}</Button>
@@ -186,14 +186,14 @@
 
       {#if inviteError}<div class="mt-3"><Alert>{inviteError}</Alert></div>{/if}
       {#if minted}
-        <div class="mt-4 space-y-3 rounded-lg border border-ok/40 bg-ok/5 p-4">
-          <p class="text-sm text-ink">
+        <div class="mt-4 space-y-3 rounded-lg border border-success/40 bg-success/5 p-4">
+          <p class="text-sm text-foreground">
             {m.members_invite_minted_headline({ email: minted.email })}
-            <span class="text-muted">{m.members_invite_minted_caveat()}</span>
+            <span class="text-muted-foreground">{m.members_invite_minted_caveat()}</span>
           </p>
           <CopyField label={m.members_copy_link()} value={minted.link} />
           <CopyField label={m.members_copy_code()} value={minted.code} />
-          <p class="text-xs text-faint">
+          <p class="text-xs text-muted-foreground">
             {m.members_invite_minted_note({ email: minted.email })}
           </p>
         </div>
@@ -205,21 +205,25 @@
     <Loading what={m.members_loading()} />
   {:else}
     <Card title={m.members_roster_title()}>
-      <ul class="divide-y divide-edge/40">
+      <ul class="divide-y divide-border/40">
         {#each members as member (member.id)}
           {@const isMe = member.id === session.me?.user.id}
           <li class="flex flex-wrap items-center gap-3 py-2.5">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 text-sm">
-                <span class="text-ink">{person(member.name, member.email, member.label)}</span>
-                {#if isMe}<span class="text-xs text-faint">{m.members_you()}</span>{/if}
+                <span class="text-foreground"
+                  >{person(member.name, member.email, member.label)}</span
+                >
+                {#if isMe}<span class="text-xs text-muted-foreground">{m.members_you()}</span>{/if}
                 {#if member.disabledAt}
-                  <span class="rounded-full border border-bad/50 px-2 py-0.5 text-xs text-bad">
+                  <span
+                    class="rounded-full border border-destructive/50 px-2 py-0.5 text-xs text-destructive"
+                  >
                     {m.members_badge_disabled()}
                   </span>
                 {/if}
               </div>
-              <p class="text-xs text-faint">
+              <p class="text-xs text-muted-foreground">
                 {m.members_row_meta({
                   email: member.email ?? member.label,
                   when: relative(member.joinedAt)
@@ -301,7 +305,7 @@
         {/each}
       </ul>
 
-      <p class="mt-3 text-xs text-faint">
+      <p class="mt-3 text-xs text-muted-foreground">
         {m.members_roster_note()}
       </p>
     </Card>
@@ -311,12 +315,12 @@
         {#if invites.length === 0}
           <Empty title={m.members_invites_empty()} />
         {:else}
-          <ul class="divide-y divide-edge/40">
+          <ul class="divide-y divide-border/40">
             {#each invites as pending (pending.id)}
               <li class="flex items-center gap-3 py-2.5 text-sm">
                 <div class="min-w-0 flex-1">
-                  <span class="text-ink">{pending.email}</span>
-                  <p class="text-xs text-faint">
+                  <span class="text-foreground">{pending.email}</span>
+                  <p class="text-xs text-muted-foreground">
                     {m.members_invite_row_meta({
                       role: roleLabel(pending.role),
                       when: relative(pending.expiresAt)

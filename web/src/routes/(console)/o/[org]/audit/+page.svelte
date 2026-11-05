@@ -59,7 +59,7 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.audit_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">
+    <p class="mt-0.5 text-sm text-muted-foreground">
       {m.audit_subtitle({ org: org.title })}
     </p>
   </div>
@@ -73,7 +73,7 @@
   {:else}
     <div class="sav-card overflow-x-auto">
       <table class="w-full text-sm">
-        <thead class="border-b border-edge/60 text-left text-xs text-faint">
+        <thead class="border-b border-border/60 text-left text-xs text-muted-foreground">
           <tr>
             <th class="px-4 py-2 font-medium">{m.audit_col_when()}</th>
             <th class="px-4 py-2 font-medium">{m.audit_col_action()}</th>
@@ -82,18 +82,26 @@
             <th class="px-4 py-2 font-medium">{m.audit_col_detail()}</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-edge/40">
+        <tbody class="divide-y divide-border/40">
           {#each events as event (event.id)}
-            <tr class="hover:bg-raised/40">
-              <td class="px-4 py-2 whitespace-nowrap text-faint" title={absolute(event.createdAt)}>
+            <tr class="hover:bg-muted/40">
+              <td
+                class="px-4 py-2 whitespace-nowrap text-muted-foreground"
+                title={absolute(event.createdAt)}
+              >
                 {relative(event.createdAt)}
               </td>
-              <td class="sav-mono px-4 py-2 whitespace-nowrap text-ink">{event.action}</td>
-              <td class="px-4 py-2 text-muted">{event.actorLabel ?? event.actorUserId ?? '—'}</td>
-              <td class="px-4 py-2 text-muted">
+              <td class="sav-mono px-4 py-2 whitespace-nowrap text-foreground">{event.action}</td>
+              <td class="px-4 py-2 text-muted-foreground"
+                >{event.actorLabel ?? event.actorUserId ?? '—'}</td
+              >
+              <td class="px-4 py-2 text-muted-foreground">
                 {event.targetType ? `${event.targetType} ${event.targetId ?? ''}` : '—'}
               </td>
-              <td class="sav-mono max-w-64 truncate px-4 py-2 text-faint" title={detail(event)}>
+              <td
+                class="sav-mono max-w-64 truncate px-4 py-2 text-muted-foreground"
+                title={detail(event)}
+              >
                 {detail(event)}
               </td>
             </tr>

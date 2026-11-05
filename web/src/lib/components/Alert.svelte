@@ -16,10 +16,10 @@
   let { tone = 'error', children }: Props = $props();
 
   const tones = {
-    error: 'border-bad/50 bg-bad/10 text-bad',
-    warn: 'border-warn/50 bg-warn/10 text-warn',
-    ok: 'border-ok/50 bg-ok/10 text-ok',
-    info: 'border-edge bg-raised/50 text-muted'
+    error: 'border-destructive/50 bg-destructive/10 text-destructive',
+    warn: 'border-warning/50 bg-warning/10 text-warning',
+    ok: 'border-success/50 bg-success/10 text-success',
+    info: 'border-border bg-muted/50 text-muted-foreground'
   } as const;
 </script>
 

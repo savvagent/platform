@@ -113,7 +113,7 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.teams_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">
+    <p class="mt-0.5 text-sm text-muted-foreground">
       {m.teams_subtitle()}
     </p>
   </div>
@@ -153,12 +153,12 @@
         <li class="sav-card">
           <div class="flex flex-wrap items-center gap-3 px-4 py-3">
             <div class="min-w-0 flex-1">
-              <span class="sav-mono text-sm text-ink">{team.slug}</span>
-              <p class="text-xs text-faint">{team.name}</p>
+              <span class="sav-mono text-sm text-foreground">{team.slug}</span>
+              <p class="text-xs text-muted-foreground">{team.name}</p>
             </div>
 
             <button
-              class="text-xs text-muted underline hover:text-ink"
+              class="text-xs text-muted-foreground underline hover:text-foreground"
               onclick={() => openTeam(team)}
               aria-expanded={expanded === team.slug}
             >
@@ -178,16 +178,16 @@
 
           {#if expanded === team.slug}
             {@const roster = rosters[team.slug]}
-            <div class="space-y-3 border-t border-edge/60 px-4 py-3">
+            <div class="space-y-3 border-t border-border/60 px-4 py-3">
               {#if !roster}
                 <Loading what={m.teams_roster_loading()} />
               {:else if roster.length === 0}
-                <p class="text-xs text-faint">{m.teams_roster_empty()}</p>
+                <p class="text-xs text-muted-foreground">{m.teams_roster_empty()}</p>
               {:else}
-                <ul class="divide-y divide-edge/40">
+                <ul class="divide-y divide-border/40">
                   {#each roster as member (member.userId)}
                     <li class="flex items-center gap-3 py-2 text-sm">
-                      <span class="min-w-0 flex-1 truncate text-muted">
+                      <span class="min-w-0 flex-1 truncate text-muted-foreground">
                         {person(member.name, member.email, member.label)}
                       </span>
                       {#if org.isAdmin}

@@ -148,11 +148,13 @@
       aria-invalid={fieldError ? 'true' : undefined}
       aria-describedby={fieldError ? `${id}-error ${id}-hint` : `${id}-hint`}
     />
-    <span id="{id}-hint" class="mt-1 block text-xs text-faint">
+    <span id="{id}-hint" class="mt-1 block text-xs text-muted-foreground">
       {m.budget_amount_hint({ max })}
     </span>
     {#if fieldError}
-      <span id="{id}-error" class="mt-1 block text-xs text-bad">{fieldMessage(fieldError)}</span>
+      <span id="{id}-error" class="mt-1 block text-xs text-destructive"
+        >{fieldMessage(fieldError)}</span
+      >
     {/if}
   </div>
 
@@ -162,12 +164,14 @@
       onchange={() => (notice = undefined)}
       id="{id}-hard-stop"
       type="checkbox"
-      class="mt-0.5 size-4 accent-accent"
+      class="mt-0.5 size-4 accent-primary"
       aria-describedby="{id}-hard-stop-hint"
     />
     <div>
-      <label class="text-sm text-ink" for="{id}-hard-stop">{m.budget_hard_stop_label()}</label>
-      <span id="{id}-hard-stop-hint" class="block text-xs text-faint">
+      <label class="text-sm text-foreground" for="{id}-hard-stop"
+        >{m.budget_hard_stop_label()}</label
+      >
+      <span id="{id}-hard-stop-hint" class="block text-xs text-muted-foreground">
         {m.budget_hard_stop_hint()}
       </span>
     </div>
@@ -193,7 +197,12 @@
     {/if}
   </div>
 
-  <p bind:this={status} tabindex="-1" role="status" class="min-h-5 text-sm text-ok outline-none">
+  <p
+    bind:this={status}
+    tabindex="-1"
+    role="status"
+    class="min-h-5 text-sm text-success outline-none"
+  >
     {notice ?? ''}
   </p>
 </form>

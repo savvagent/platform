@@ -51,7 +51,7 @@
 
 <div class="mx-auto max-w-sm py-8">
   <h1 class="text-lg font-semibold">{m.orgnew_heading()}</h1>
-  <p class="mt-1 text-sm text-faint">
+  <p class="mt-1 text-sm text-muted-foreground">
     {#if session.orgs.length === 0}
       {m.orgnew_intro_first()}
     {:else}

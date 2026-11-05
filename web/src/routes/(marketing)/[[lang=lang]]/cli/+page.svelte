@@ -68,47 +68,47 @@
       : []
   );
 
-  const ext = 'font-medium text-accent hover:underline';
+  const ext = 'font-medium text-primary underline underline-offset-4';
 </script>
 
 <Seo title={m.cli_title()} description={m.cli_description()} path="/cli" lang={data.lang} />
 
 <div class="flex flex-col gap-20 pb-10 sm:gap-24">
   <section aria-labelledby="cli-title" class="max-w-3xl pt-6">
-    <p class="sav-label text-accent">{m.cli_eyebrow()}</p>
+    <p class="sav-label text-primary">{m.cli_eyebrow()}</p>
     <h1
       id="cli-title"
-      class="mt-3 text-4xl font-semibold tracking-tight text-balance text-ink sm:text-5xl"
+      class="mt-3 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl"
     >
       {m.cli_heading()}
     </h1>
-    <p class="mt-6 text-lg text-pretty text-muted">{m.cli_lead()}</p>
+    <p class="mt-6 text-lg text-pretty text-muted-foreground">{m.cli_lead()}</p>
   </section>
 
   <section aria-labelledby="why-title">
-    <h2 id="why-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="why-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.cli_why_heading()}
     </h2>
     <ul role="list" class="mt-8 grid gap-8 md:grid-cols-3">
       {#each why as item, i (i)}
-        <li class="border-l-2 border-accent/60 pl-4">
-          <h3 class="font-semibold text-ink">{item.title()}</h3>
-          <p class="mt-1.5 text-sm text-muted">{item.body()}</p>
+        <li class="border-l-2 border-primary/60 pl-4">
+          <h3 class="font-semibold text-foreground">{item.title()}</h3>
+          <p class="mt-1.5 text-sm text-muted-foreground">{item.body()}</p>
         </li>
       {/each}
     </ul>
   </section>
 
   <section aria-labelledby="download-title" class="max-w-3xl">
-    <h2 id="download-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="download-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.cli_download_heading()}
     </h2>
-    <p class="mt-3 text-muted">{m.cli_download_intro()}</p>
+    <p class="mt-3 text-muted-foreground">{m.cli_download_intro()}</p>
     <ul role="list" aria-label={m.cli_download_list_label()} class="mt-6 grid gap-3 sm:grid-cols-2">
       {#each PLATFORMS as platform (platform.archive)}
         <li class="sav-card p-4">
           <a href="{DOWNLOAD}/{platform.archive}" class="block {ext}">{platform.name}</a>
-          <span class="sav-mono mt-1 block text-xs text-muted">{platform.archive}</span>
+          <span class="sav-mono mt-1 block text-xs text-muted-foreground">{platform.archive}</span>
         </li>
       {/each}
     </ul>
@@ -117,50 +117,50 @@
       <a href={RELEASES} class={ext}>{m.cli_download_releases()}</a>
     </p>
     <div class="mt-6">
-      <p class="mb-2 text-sm text-muted">{m.cli_download_source()}</p>
+      <p class="mb-2 text-sm text-muted-foreground">{m.cli_download_source()}</p>
       <CopyField value={FROM_SOURCE} />
     </div>
   </section>
 
   <section aria-labelledby="install-title" class="max-w-3xl">
-    <h2 id="install-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="install-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.cli_install_heading()}
     </h2>
     <div class="mt-6 flex flex-col gap-8">
       <div>
-        <h3 class="font-semibold text-ink">{m.cli_install_unix_heading()}</h3>
-        <p class="mt-1.5 mb-3 text-sm text-muted">{m.cli_install_unix_note()}</p>
+        <h3 class="font-semibold text-foreground">{m.cli_install_unix_heading()}</h3>
+        <p class="mt-1.5 mb-3 text-sm text-muted-foreground">{m.cli_install_unix_note()}</p>
         <CopyField value={UNIX_INSTALL} />
       </div>
       <div>
-        <h3 class="font-semibold text-ink">{m.cli_install_windows_heading()}</h3>
-        <p class="mt-1.5 mb-3 text-sm text-muted">{m.cli_install_windows_note()}</p>
+        <h3 class="font-semibold text-foreground">{m.cli_install_windows_heading()}</h3>
+        <p class="mt-1.5 mb-3 text-sm text-muted-foreground">{m.cli_install_windows_note()}</p>
         <CopyField value={WINDOWS_INSTALL} />
       </div>
     </div>
   </section>
 
   <section aria-labelledby="unsigned-title" class="max-w-3xl">
-    <h2 id="unsigned-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="unsigned-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.cli_unsigned_heading()}
     </h2>
-    <p class="mt-3 text-muted">{m.cli_unsigned_body()}</p>
+    <p class="mt-3 text-muted-foreground">{m.cli_unsigned_body()}</p>
     <div class="mt-5">
-      <p class="mb-2 text-sm text-muted">{m.cli_unsigned_macos()}</p>
+      <p class="mb-2 text-sm text-muted-foreground">{m.cli_unsigned_macos()}</p>
       <CopyField value="xattr -d com.apple.quarantine savctl" />
     </div>
-    <p class="mt-5 text-sm text-muted">{m.cli_unsigned_windows()}</p>
+    <p class="mt-5 text-sm text-muted-foreground">{m.cli_unsigned_windows()}</p>
   </section>
 
   <section aria-labelledby="first-title" class="max-w-3xl">
-    <h2 id="first-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="first-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.cli_first_heading()}
     </h2>
-    <p class="mt-3 text-muted">{m.cli_first_body()}</p>
+    <p class="mt-3 text-muted-foreground">{m.cli_first_body()}</p>
     <div class="mt-5 flex flex-col gap-4">
       <CopyField value="savctl login" label={m.cli_first_label()} />
       {#if loginServices.length > 0}
-        <p class="text-sm text-muted">{m.cli_first_services()}</p>
+        <p class="text-sm text-muted-foreground">{m.cli_first_services()}</p>
         {#each loginServices as service (service.name)}
           <CopyField value={service.command} label={service.name} />
         {/each}
@@ -169,10 +169,10 @@
   </section>
 
   <section aria-labelledby="docs-title" class="max-w-3xl">
-    <h2 id="docs-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="docs-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.cli_docs_heading()}
     </h2>
-    <p class="mt-3 text-muted">
+    <p class="mt-3 text-muted-foreground">
       {m.cli_docs_body()}
       <a href={DOCS} class={ext}>{m.cli_docs_link()}</a>
     </p>

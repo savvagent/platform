@@ -47,19 +47,23 @@
   const width = $derived(percent === null ? 0 : Math.min(100, Math.max(0, percent)));
   const tone = $derived(
     usage.budget?.blocked || (percent ?? 0) >= 100
-      ? 'bg-bad'
+      ? 'bg-destructive'
       : (percent ?? 0) >= 80
-        ? 'bg-warn'
-        : 'bg-accent'
+        ? 'bg-warning'
+        : 'bg-primary'
   );
 </script>
 
 <div>
   <div class="flex items-baseline justify-between gap-3">
     {#if compact}
-      <span class="truncate text-sm text-ink">{name}</span>
+      <span class="truncate text-sm text-foreground">{name}</span>
     {/if}
-    <span class="text-sm" class:text-muted={spend !== undefined} class:text-warn={!spend}>
+    <span
+      class="text-sm"
+      class:text-muted-foreground={spend !== undefined}
+      class:text-warning={!spend}
+    >
       {#if spend === undefined}
         {m.meter_spend_unavailable()}
       {:else if compact}
@@ -69,10 +73,12 @@
       {/if}
     </span>
     {#if usage.budget?.blocked}
-      <span class="rounded-full bg-bad/10 px-2 py-0.5 text-xs text-bad">{m.meter_blocked()}</span>
+      <span class="rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive"
+        >{m.meter_blocked()}</span
+      >
     {/if}
     {#if usage.paymentRequired}
-      <span class="shrink-0 rounded-full bg-bad/10 px-2 py-0.5 text-xs text-bad">
+      <span class="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive">
         {m.meter_payment_required()}
       </span>
     {/if}
@@ -80,7 +86,7 @@
 
   {#if usage.budget && budget && spend !== undefined && percent !== null}
     <div
-      class="mt-1.5 h-2 overflow-hidden rounded-full bg-raised"
+      class="mt-1.5 h-2 overflow-hidden rounded-full bg-muted"
       role="meter"
       aria-label={m.meter_aria_label({ service: name })}
       aria-valuemin={0}
@@ -90,12 +96,12 @@
     >
       <div class="h-full rounded-full transition-all {tone}" style="width: {width}%"></div>
     </div>
-    <p class="mt-1 text-xs text-faint">
+    <p class="mt-1 text-xs text-muted-foreground">
       {m.meter_spend_of_budget({ spend, budget, percent: percentLabel })}
     </p>
   {:else if budget}
-    <p class="mt-1 text-xs text-faint">{m.meter_budget({ budget })}</p>
+    <p class="mt-1 text-xs text-muted-foreground">{m.meter_budget({ budget })}</p>
   {:else if !compact}
-    <p class="mt-1 text-xs text-faint">{m.meter_no_budget()}</p>
+    <p class="mt-1 text-xs text-muted-foreground">{m.meter_no_budget()}</p>
   {/if}
 </div>

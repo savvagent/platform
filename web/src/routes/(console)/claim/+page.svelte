@@ -57,7 +57,7 @@
 
 <div class="mx-auto max-w-sm py-8">
   <h1 class="text-lg font-semibold">{m.claim_heading()}</h1>
-  <p class="mt-1 text-sm text-faint">{m.claim_intro()}</p>
+  <p class="mt-1 text-sm text-muted-foreground">{m.claim_intro()}</p>
 
   <form class="mt-6 space-y-4" onsubmit={claim}>
     <Field label={m.claim_code_label()}>
@@ -76,7 +76,9 @@
     <Button type="submit" {pending}>{m.claim_submit()}</Button>
   </form>
 
-  <p class="mt-6 text-xs text-faint">
-    <a class="text-muted underline hover:text-ink" href="/login">{m.claim_back_to_sign_in()}</a>
+  <p class="mt-6 text-xs text-muted-foreground">
+    <a class="text-muted-foreground underline hover:text-foreground" href="/login"
+      >{m.claim_back_to_sign_in()}</a
+    >
   </p>
 </div>

@@ -146,13 +146,13 @@
 <svelte:head><meta name="robots" content="noindex, nofollow" /></svelte:head>
 
 <div class="flex min-h-full flex-col">
-  <header class="border-b border-edge/60 bg-surface/40">
+  <header class="border-b border-border/60 bg-card/40">
     <div class="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3">
       <!-- `/home`, not `/`: inside the console the logo means "my org", and `/`
            is the public marketing page. -->
       <a href="/home" class="flex items-center gap-2" aria-label="Savvagent">
-        <Logo class="size-6 text-accent" />
-        <span class="text-sm font-semibold tracking-tight text-ink">Savvagent</span>
+        <Logo class="size-6 text-primary" />
+        <span class="text-sm font-semibold tracking-tight text-foreground">Savvagent</span>
       </a>
 
       {#if session.signedIn}
@@ -160,16 +160,16 @@
           {#each session.orgs as membership (membership.orgId)}
             <a
               href="/o/{membership.orgSlug}"
-              class="rounded-md px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink"
-              class:bg-raised={page.url.pathname.startsWith(`/o/${membership.orgSlug}`)}
-              class:text-ink={page.url.pathname.startsWith(`/o/${membership.orgSlug}`)}
+              class="rounded-md px-2.5 py-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              class:bg-muted={page.url.pathname.startsWith(`/o/${membership.orgSlug}`)}
+              class:text-foreground={page.url.pathname.startsWith(`/o/${membership.orgSlug}`)}
             >
               {membership.orgName}
             </a>
           {/each}
           <a
             href="/orgs/new"
-            class="rounded-md px-2.5 py-1 text-faint transition hover:bg-raised hover:text-ink"
+            class="rounded-md px-2.5 py-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
             title={m.nav_create_org()}
           >
             +
@@ -193,11 +193,11 @@
           </nav>
         {/if}
         {#if session.me}
-          <span class="hidden text-faint sm:inline"
+          <span class="hidden text-muted-foreground sm:inline"
             >{session.me.user.email ?? session.me.user.label}</span
           >
           <button
-            class="rounded-md border border-edge px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink disabled:opacity-50"
+            class="rounded-md border border-border px-2.5 py-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
             onclick={signOut}
             disabled={signingOut}
           >
@@ -206,7 +206,7 @@
         {:else if session.ready}
           <a
             href="/login"
-            class="rounded-md border border-edge px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink"
+            class="rounded-md border border-border px-2.5 py-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             {m.nav_sign_in()}
           </a>
@@ -229,8 +229,8 @@
     {/if}
   </main>
 
-  <footer class="border-t border-edge/40 px-4 py-4 text-center text-xs text-faint">
-    <a class="hover:text-muted" href="/api/openapi.json">{m.nav_api_reference()}</a>
+  <footer class="border-t border-border/40 px-4 py-4 text-center text-xs text-muted-foreground">
+    <a class="hover:text-muted-foreground" href="/api/openapi.json">{m.nav_api_reference()}</a>
     <span aria-hidden="true"> · </span>
     <span>v{APP_VERSION}</span>
   </footer>

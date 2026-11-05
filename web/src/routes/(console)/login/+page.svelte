@@ -126,7 +126,7 @@
 
 <div class="mx-auto max-w-sm py-8">
   <h1 class="text-lg font-semibold">{m.login_heading()}</h1>
-  <p class="mt-1 text-sm text-faint">
+  <p class="mt-1 text-sm text-muted-foreground">
     {#if next}
       {m.login_continue_hint()}
     {:else}
@@ -156,7 +156,7 @@
   <div class="mt-4">
     <button
       type="button"
-      class="text-xs text-muted underline hover:text-ink"
+      class="text-xs text-muted-foreground underline hover:text-foreground"
       onclick={() => (ssoOpen = !ssoOpen)}
       aria-expanded={ssoOpen}
     >
@@ -182,7 +182,7 @@
     {/if}
   </div>
 
-  <div class="mt-6 space-y-2 border-t border-edge/50 pt-4 text-xs text-faint">
+  <div class="mt-6 space-y-2 border-t border-border/50 pt-4 text-xs text-muted-foreground">
     <!--
       Two complete sentences, and the link is one of them. A sentence split
       around an anchor is a sentence no translator can reorder — and word order
@@ -190,12 +190,14 @@
     -->
     <p>
       {m.login_recovery_hint()}
-      <a class="text-muted underline hover:text-ink" href="/claim">{m.login_recovery_link()}</a>
+      <a class="text-muted-foreground underline hover:text-foreground" href="/claim"
+        >{m.login_recovery_link()}</a
+      >
     </p>
     <p class="pt-2">
       {m.login_no_account()}
       <a
-        class="text-muted underline hover:text-ink"
+        class="text-muted-foreground underline hover:text-foreground"
         href={next ? `/signup?next=${encodeURIComponent(next)}` : '/signup'}
         >{m.login_create_account()}</a
       >

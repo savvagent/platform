@@ -56,7 +56,7 @@
   {#if !token}
     <Alert>{m.invite_missing_token()}</Alert>
   {:else}
-    <p class="mt-1 text-sm text-faint">
+    <p class="mt-1 text-sm text-muted-foreground">
       {m.invite_signed_in_as({
         email: session.me?.user.email ?? session.me?.user.label ?? m.invite_no_email()
       })}

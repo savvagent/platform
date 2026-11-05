@@ -104,14 +104,14 @@
 <div class="mx-auto max-w-sm py-8">
   {#if step === 'intro'}
     <h1 class="text-lg font-semibold">{m.signup_heading()}</h1>
-    <p class="mt-1 text-sm text-faint">{m.signup_intro()}</p>
+    <p class="mt-1 text-sm text-muted-foreground">{m.signup_intro()}</p>
 
     {#if !supported}
       <div class="mt-4">
         <Alert>{m.signup_unsupported()}</Alert>
       </div>
     {:else}
-      <p class="mt-4 text-xs text-faint">
+      <p class="mt-4 text-xs text-muted-foreground">
         {#if platform}
           {m.signup_platform_hint()}
         {:else}
@@ -126,17 +126,17 @@
       </div>
     {/if}
 
-    <p class="mt-6 text-xs text-faint">
+    <p class="mt-6 text-xs text-muted-foreground">
       {m.signup_have_account()}
       <a
-        class="text-muted underline hover:text-ink"
+        class="text-muted-foreground underline hover:text-foreground"
         href={next ? `/login?next=${encodeURIComponent(next)}` : '/login'}
         >{m.signup_sign_in_link()}</a
       >
     </p>
   {:else}
     <h1 class="text-lg font-semibold">{m.signup_ready_heading()}</h1>
-    <p class="mt-1 text-sm text-faint">{m.signup_ready_intro()}</p>
+    <p class="mt-1 text-sm text-muted-foreground">{m.signup_ready_intro()}</p>
 
     <form class="mt-6 space-y-4" onsubmit={saveProfile}>
       <Field label={m.signup_email_label()} hint={m.signup_email_hint()}>
@@ -157,8 +157,8 @@
       of the middle of one: a sentence cut around an anchor cannot be reordered
       into a language that puts the verb somewhere else.
     -->
-    <p class="mt-6 text-xs text-faint">
-      <a class="text-muted underline hover:text-ink" href="/settings"
+    <p class="mt-6 text-xs text-muted-foreground">
+      <a class="text-muted-foreground underline hover:text-foreground" href="/settings"
         >{m.signup_second_passkey_link()}</a
       >
       {m.signup_second_passkey_hint()}

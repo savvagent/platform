@@ -60,14 +60,16 @@
     class="grid items-center gap-12 pt-6 lg:grid-cols-[3fr_2fr]"
   >
     <div>
-      <p class="sav-label text-accent">{m.landing_hero_eyebrow()}</p>
+      <p class="sav-label text-primary">{m.landing_hero_eyebrow()}</p>
       <h1
         id="hero-title"
-        class="mt-3 text-4xl font-semibold tracking-tight text-balance text-ink sm:text-5xl"
+        class="mt-3 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl"
       >
         {m.landing_hero_title()}
       </h1>
-      <p class="mt-6 max-w-2xl text-lg text-pretty text-muted">{m.landing_hero_subtitle()}</p>
+      <p class="mt-6 max-w-2xl text-lg text-pretty text-muted-foreground">
+        {m.landing_hero_subtitle()}
+      </p>
       <div class="mt-8">
         <AccountActions lang={data.lang} />
       </div>
@@ -82,18 +84,18 @@
       out twice.
     -->
     <div class="sav-card relative overflow-hidden p-5" aria-hidden="true">
-      <Logo class="absolute -right-8 -bottom-10 size-40 text-accent/10" />
+      <Logo class="absolute -right-8 -bottom-10 size-40 text-primary/10" />
       <div class="flex gap-1.5">
-        <span class="size-2.5 rounded-full bg-edge"></span>
-        <span class="size-2.5 rounded-full bg-edge"></span>
-        <span class="size-2.5 rounded-full bg-edge"></span>
+        <span class="size-2.5 rounded-full bg-border"></span>
+        <span class="size-2.5 rounded-full bg-border"></span>
+        <span class="size-2.5 rounded-full bg-border"></span>
       </div>
       <ul class="relative mt-4 flex flex-col gap-3 font-mono text-xs sm:text-sm">
         {#each SERVICES as service (service.slug)}
           {#if service.mcpUrl}
             <li>
-              <span class="text-muted">"{service.slug}":</span>
-              <span class="block pl-4 break-all text-accent">"{service.mcpUrl}"</span>
+              <span class="text-muted-foreground">"{service.slug}":</span>
+              <span class="block pl-4 break-all text-primary">"{service.mcpUrl}"</span>
             </li>
           {/if}
         {/each}
@@ -102,10 +104,10 @@
   </section>
 
   <section aria-labelledby="products-title">
-    <h2 id="products-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="products-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.landing_products_heading()}
     </h2>
-    <p class="mt-2 max-w-2xl text-muted">{m.landing_products_intro()}</p>
+    <p class="mt-2 max-w-2xl text-muted-foreground">{m.landing_products_intro()}</p>
     <ul role="list" class="mt-8 grid gap-4 sm:grid-cols-2">
       {#each SERVICES as service (service.slug)}
         <li class="grid"><ProductCard {service} lang={data.lang} level={3} /></li>
@@ -115,34 +117,34 @@
 
   <section aria-labelledby="family-title" class="grid gap-10 lg:grid-cols-[2fr_3fr]">
     <div>
-      <h2 id="family-title" class="text-2xl font-semibold tracking-tight text-ink">
+      <h2 id="family-title" class="text-2xl font-semibold tracking-tight text-foreground">
         {m.landing_family_heading()}
       </h2>
-      <p class="mt-3 text-muted">{m.landing_family_intro()}</p>
+      <p class="mt-3 text-muted-foreground">{m.landing_family_intro()}</p>
     </div>
     <ul role="list" class="grid gap-x-8 gap-y-8 sm:grid-cols-2">
       {#each family as item, i (i)}
-        <li class="border-l-2 border-accent/60 pl-4">
-          <h3 class="font-semibold text-ink">{item.title()}</h3>
-          <p class="mt-1.5 text-sm text-muted">{item.body()}</p>
+        <li class="border-l-2 border-primary/60 pl-4">
+          <h3 class="font-semibold text-foreground">{item.title()}</h3>
+          <p class="mt-1.5 text-sm text-muted-foreground">{item.body()}</p>
         </li>
       {/each}
     </ul>
   </section>
 
   <section aria-labelledby="how-title">
-    <h2 id="how-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="how-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.landing_how_heading()}
     </h2>
     <ol role="list" class="mt-8 grid gap-4 md:grid-cols-3">
       {#each steps as step, i (i)}
         <li class="sav-card flex flex-col gap-3 p-5">
           <span
-            class="flex size-8 items-center justify-center rounded-full border border-accent/60 font-mono text-sm text-accent"
+            class="flex size-8 items-center justify-center rounded-full border border-primary/60 font-mono text-sm text-primary"
             aria-hidden="true">{i + 1}</span
           >
-          <h3 class="font-semibold text-ink">{step.title()}</h3>
-          <p class="text-sm text-muted">{step.body()}</p>
+          <h3 class="font-semibold text-foreground">{step.title()}</h3>
+          <p class="text-sm text-muted-foreground">{step.body()}</p>
         </li>
       {/each}
     </ol>
@@ -150,11 +152,11 @@
 
   <section aria-labelledby="cli-title" class="grid items-center gap-10 lg:grid-cols-[3fr_2fr]">
     <div>
-      <p class="sav-label text-accent">{m.landing_cli_eyebrow()}</p>
-      <h2 id="cli-title" class="mt-3 text-2xl font-semibold tracking-tight text-ink">
+      <p class="sav-label text-primary">{m.landing_cli_eyebrow()}</p>
+      <h2 id="cli-title" class="mt-3 text-2xl font-semibold tracking-tight text-foreground">
         {m.landing_cli_heading()}
       </h2>
-      <p class="mt-3 max-w-2xl text-muted">{m.landing_cli_body()}</p>
+      <p class="mt-3 max-w-2xl text-muted-foreground">{m.landing_cli_body()}</p>
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <LinkButton href={RELEASES} size="lg">{m.landing_cli_download()}</LinkButton>
         <LinkButton href={localizedPath(data.lang, '/cli')} tone="quiet" size="lg">
@@ -164,21 +166,21 @@
     </div>
     <!-- The one command a visitor runs; decorative, the full steps are on /cli. -->
     <div class="sav-card p-5" aria-hidden="true">
-      <p class="sav-mono text-xs break-all text-muted sm:text-sm">
-        <span class="text-accent">$</span> savctl login
+      <p class="sav-mono text-xs break-all text-muted-foreground sm:text-sm">
+        <span class="text-primary">$</span> savctl login
       </p>
     </div>
   </section>
 
   <section
     aria-labelledby="cta-title"
-    class="sav-card flex flex-col gap-6 bg-raised/40 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between"
+    class="sav-card flex flex-col gap-6 bg-muted/40 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between"
   >
     <div class="max-w-xl">
-      <h2 id="cta-title" class="text-2xl font-semibold tracking-tight text-ink">
+      <h2 id="cta-title" class="text-2xl font-semibold tracking-tight text-foreground">
         {m.landing_cta_heading()}
       </h2>
-      <p class="mt-2 text-muted">{m.landing_cta_body()}</p>
+      <p class="mt-2 text-muted-foreground">{m.landing_cta_body()}</p>
     </div>
     <AccountActions lang={data.lang} />
   </section>

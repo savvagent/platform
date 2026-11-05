@@ -198,7 +198,7 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.billing_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">{m.billing_subtitle()}</p>
+    <p class="mt-0.5 text-sm text-muted-foreground">{m.billing_subtitle()}</p>
   </div>
 
   {#if org.role && !org.isOwner}
@@ -232,12 +232,12 @@
         {#snippet actions()}
           <Button tone="quiet" pending={refreshing} onclick={refresh}>{m.billing_refresh()}</Button>
         {/snippet}
-        <p class="text-sm text-ink">{cardLine(status.cardStatus)}</p>
+        <p class="text-sm text-foreground">{cardLine(status.cardStatus)}</p>
 
         <dl class="mt-4 grid grid-cols-2 gap-y-2 text-sm">
           <div>
             <dt class="sav-label">{m.billing_subscription_label()}</dt>
-            <dd class="text-muted">
+            <dd class="text-muted-foreground">
               {#if status.subscriptionStatus === null}
                 {m.billing_subscription_none()}
               {:else if SUBSCRIPTION[status.subscriptionStatus]}
@@ -249,7 +249,7 @@
           </div>
           <div>
             <dt class="sav-label">{m.billing_invoicing_label()}</dt>
-            <dd class="text-muted">
+            <dd class="text-muted-foreground">
               {status.subscriptionLive ? m.billing_invoicing_live() : m.billing_invoicing_off()}
             </dd>
           </div>
@@ -259,7 +259,7 @@
           <Button pending={starting} onclick={addCard}>
             {status.cardStatus === 'active' ? m.billing_replace_card() : m.billing_add_card()}
           </Button>
-          <p class="text-xs text-faint">{m.billing_add_card_hint()}</p>
+          <p class="text-xs text-muted-foreground">{m.billing_add_card_hint()}</p>
         </div>
       </Card>
     {/if}
@@ -273,7 +273,7 @@
         bind:this={errorBox}
         tabindex="-1"
         data-setup-error
-        class="rounded-md border border-bad/50 bg-bad/10 px-3 py-2 text-sm text-bad outline-none"
+        class="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive outline-none"
       >
         {setupError}
       </div>

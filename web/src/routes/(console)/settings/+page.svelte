@@ -191,7 +191,7 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.settings_heading()}</h1>
-    <p class="mt-0.5 text-sm text-faint">{m.settings_subtitle()}</p>
+    <p class="mt-0.5 text-sm text-muted-foreground">{m.settings_subtitle()}</p>
   </div>
 
   {#if error}<Alert>{error}</Alert>{/if}
@@ -204,12 +204,14 @@
     {#if loading}
       <Loading what={m.settings_loading_passkeys()} />
     {:else}
-      <ul class="divide-y divide-edge/50">
+      <ul class="divide-y divide-border/50">
         {#each keys as key (key.id)}
           <li class="flex items-center gap-3 py-2.5">
             <div class="min-w-0 flex-1">
-              <div class="text-sm text-ink">{key.nickname ?? m.settings_unnamed_passkey()}</div>
-              <p class="text-xs text-faint">
+              <div class="text-sm text-foreground">
+                {key.nickname ?? m.settings_unnamed_passkey()}
+              </div>
+              <p class="text-xs text-muted-foreground">
                 {m.settings_passkey_added({ when: relative(key.createdAt) })}
                 {#if key.lastUsedAt}·
                   {m.settings_passkey_last_used({ when: relative(key.lastUsedAt) })}
@@ -246,15 +248,16 @@
         {/each}
       </ul>
 
-      <div class="mt-4 border-t border-edge/50 pt-3">
+      <div class="mt-4 border-t border-border/50 pt-3">
         <Button pending={busy === 'add'} onclick={addPasskey}>{m.settings_add_passkey()}</Button>
       </div>
     {/if}
   </Card>
 
   <Card title={m.settings_activity_title()} description={m.settings_activity_description()}>
-    <a class="text-sm text-muted underline hover:text-ink" href="/settings/activity"
-      >{m.settings_activity_link()}</a
+    <a
+      class="text-sm text-muted-foreground underline hover:text-foreground"
+      href="/settings/activity">{m.settings_activity_link()}</a
     >
   </Card>
 
@@ -303,7 +306,7 @@
       </label>
 
       {#if localeError}<Alert>{localeError}</Alert>{/if}
-      <p class="text-xs text-faint">{m.settings_language_reload_note()}</p>
+      <p class="text-xs text-muted-foreground">{m.settings_language_reload_note()}</p>
     </div>
   </Card>
 </div>

@@ -34,7 +34,7 @@
   {#if label}<span class="sav-label">{label}</span>{/if}
   <div class="flex items-start gap-2">
     <code
-      class="sav-mono flex-1 rounded-md border border-edge bg-canvas px-3 py-2 text-ink"
+      class="sav-mono flex-1 rounded-md border border-border bg-background px-3 py-2 text-foreground"
       class:whitespace-pre-wrap={multiline}>{value}</code
     >
     <Button tone="quiet" onclick={onCopy}>
@@ -46,6 +46,6 @@
     </Button>
   </div>
   {#if state === 'failed'}
-    <p class="mt-1 text-xs text-warn">{m.copy_clipboard_refused()}</p>
+    <p class="mt-1 text-xs text-warning">{m.copy_clipboard_refused()}</p>
   {/if}
 </div>

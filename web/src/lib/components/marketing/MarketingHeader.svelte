@@ -78,16 +78,16 @@
   // The current page is underlined as well as brighter: colour alone is not
   // a cue everyone can see (WCAG 1.4.1).
   const link =
-    'rounded-md px-2.5 py-1.5 text-muted transition hover:bg-raised hover:text-ink aria-[current=page]:text-ink aria-[current=page]:underline aria-[current=page]:decoration-accent aria-[current=page]:underline-offset-4';
+    'rounded-md px-2.5 py-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground aria-[current=page]:text-foreground aria-[current=page]:underline aria-[current=page]:decoration-primary aria-[current=page]:underline-offset-4';
 </script>
 
 <svelte:window onkeydown={onMenuKeydown} />
 
-<header class="border-b border-edge/60 bg-surface/40">
+<header class="border-b border-border/60 bg-card/40">
   <div class="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-3 sm:gap-4">
     <a href={localizedPath(lang, '/')} class="flex items-center gap-2" aria-label="Savvagent">
-      <Logo class="size-6 text-accent" />
-      <span class="text-sm font-semibold tracking-tight text-ink">Savvagent</span>
+      <Logo class="size-6 text-primary" />
+      <span class="text-sm font-semibold tracking-tight text-foreground">Savvagent</span>
     </a>
 
     <nav
@@ -118,19 +118,19 @@
       <details class="relative md:hidden" bind:open={menuOpen}>
         <summary
           bind:this={menuToggle}
-          class="cursor-pointer list-none rounded-md border border-edge px-2.5 py-1.5 text-muted transition select-none hover:bg-raised hover:text-ink [&::-webkit-details-marker]:hidden"
+          class="cursor-pointer list-none rounded-md border border-border px-2.5 py-1.5 text-muted-foreground transition select-none hover:bg-muted hover:text-foreground [&::-webkit-details-marker]:hidden"
         >
           {m.marketing_nav_menu()}
         </summary>
         <nav
-          class="sav-card absolute right-0 z-10 mt-2 flex w-56 flex-col gap-1 bg-surface p-2 shadow-lg"
+          class="sav-card absolute right-0 z-10 mt-2 flex w-56 flex-col gap-1 bg-card p-2 shadow-lg"
           aria-label={m.marketing_nav_label()}
         >
           <span class="sav-label px-2.5 pt-1">{m.marketing_nav_products()}</span>
           {#each products as item (item.href)}
             <a href={item.href} class={link} aria-current={current(item.href)}>{item.label}</a>
           {/each}
-          <hr class="my-1 border-edge/60" />
+          <hr class="my-1 border-border/60" />
           <a href={pricing} class={link} aria-current={current(pricing)}>
             {m.marketing_nav_pricing()}
           </a>

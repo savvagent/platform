@@ -38,7 +38,7 @@
     <div role="status" class="space-y-2">
       {#each paused as service (service.service)}
         <div
-          class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-bad/50 bg-bad/10 px-3 py-2 text-sm text-bad"
+          class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
         >
           {#if owner}
             <p>{m.payment_required_owner({ service: serviceName(service.service) })}</p>

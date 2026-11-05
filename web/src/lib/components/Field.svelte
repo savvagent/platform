@@ -18,5 +18,5 @@
 <label class="block">
   <span class="sav-label">{label}</span>
   {@render children()}
-  {#if hint}<span class="mt-1 block text-xs text-faint">{hint}</span>{/if}
+  {#if hint}<span class="mt-1 block text-xs text-muted-foreground">{hint}</span>{/if}
 </label>

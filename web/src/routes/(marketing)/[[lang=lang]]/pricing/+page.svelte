@@ -153,30 +153,31 @@
 />
 
 {#snippet contact()}
-  <a href="mailto:{CONTACT_EMAIL}" class="font-medium break-all text-accent hover:underline"
-    >{CONTACT_EMAIL}</a
+  <a
+    href="mailto:{CONTACT_EMAIL}"
+    class="font-medium break-all text-primary underline underline-offset-4">{CONTACT_EMAIL}</a
   >
 {/snippet}
 
 <div class="flex flex-col gap-20 pb-10 sm:gap-24">
   <section aria-labelledby="pricing-title" class="max-w-3xl pt-6">
-    <p class="sav-label text-accent">{m.pricing_eyebrow()}</p>
+    <p class="sav-label text-primary">{m.pricing_eyebrow()}</p>
     <h1
       id="pricing-title"
-      class="mt-3 text-4xl font-semibold tracking-tight text-balance text-ink sm:text-5xl"
+      class="mt-3 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl"
     >
       {m.pricing_heading()}
     </h1>
-    <p class="mt-6 text-lg text-pretty text-muted">{m.pricing_lead()}</p>
+    <p class="mt-6 text-lg text-pretty text-muted-foreground">{m.pricing_lead()}</p>
   </section>
 
   <section aria-labelledby="plans-title">
-    <h2 id="plans-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="plans-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.pricing_plans_heading()}
     </h2>
 
     <noscript>
-      <p class="mt-4 text-muted">{m.pricing_noscript()} {@render contact()}</p>
+      <p class="mt-4 text-muted-foreground">{m.pricing_noscript()} {@render contact()}</p>
     </noscript>
 
     <div role="status" class="sr-only">{status}</div>
@@ -195,11 +196,11 @@
         <ul role="list" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-hidden="true">
           {#each [0, 1, 2, 3] as i (i)}
             <li class="sav-card flex animate-pulse flex-col gap-4 p-5">
-              <span class="h-5 w-24 rounded bg-edge/60"></span>
-              <span class="h-8 w-20 rounded bg-edge/60"></span>
-              <span class="h-4 w-full rounded bg-edge/40"></span>
-              <span class="h-4 w-3/4 rounded bg-edge/40"></span>
-              <span class="mt-6 h-9 w-32 rounded-md bg-edge/50"></span>
+              <span class="h-5 w-24 rounded bg-border/60"></span>
+              <span class="h-8 w-20 rounded bg-border/60"></span>
+              <span class="h-4 w-full rounded bg-border/40"></span>
+              <span class="h-4 w-3/4 rounded bg-border/40"></span>
+              <span class="mt-6 h-9 w-32 rounded-md bg-border/50"></span>
             </li>
           {/each}
         </ul>
@@ -211,7 +212,7 @@
           </Button>
         </div>
       {:else if plans.plans.length === 0}
-        <p class="text-muted">{m.pricing_empty()} {@render contact()}</p>
+        <p class="text-muted-foreground">{m.pricing_empty()} {@render contact()}</p>
       {:else}
         <ul role="list" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {#each plans.plans as plan (plan.plan)}
@@ -223,10 +224,10 @@
   </section>
 
   <section aria-labelledby="usage-title">
-    <h2 id="usage-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="usage-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.pricing_usage_heading()}
     </h2>
-    <p class="mt-3 max-w-3xl text-muted">{m.pricing_usage_intro()}</p>
+    <p class="mt-3 max-w-3xl text-muted-foreground">{m.pricing_usage_intro()}</p>
 
     <!--
       Filled by the same request as the plans. A failure is reported once, in
@@ -245,14 +246,14 @@
         <ul role="list" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
           {#each [0, 1, 2] as i (i)}
             <li class="sav-card flex animate-pulse flex-col gap-4 p-5">
-              <span class="h-5 w-28 rounded bg-edge/60"></span>
-              <span class="h-4 w-full rounded bg-edge/40"></span>
-              <span class="h-4 w-2/3 rounded bg-edge/40"></span>
+              <span class="h-5 w-28 rounded bg-border/60"></span>
+              <span class="h-4 w-full rounded bg-border/40"></span>
+              <span class="h-4 w-2/3 rounded bg-border/40"></span>
             </li>
           {/each}
         </ul>
       {:else if plans.meters.length === 0}
-        <p class="sav-card p-5 text-muted">{m.pricing_usage_empty()}</p>
+        <p class="sav-card p-5 text-muted-foreground">{m.pricing_usage_empty()}</p>
       {:else if usage}
         <ul role="list" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {#each usage as service (service.service)}
@@ -264,31 +265,31 @@
   </section>
 
   <section aria-labelledby="how-title">
-    <h2 id="how-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="how-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.pricing_how_heading()}
     </h2>
     <ul role="list" class="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
       {#each how as item, i (i)}
-        <li class="border-l-2 border-accent/60 pl-4">
-          <h3 class="font-semibold text-ink">{item.title()}</h3>
-          <p class="mt-1.5 text-sm text-muted">{item.body()}</p>
+        <li class="border-l-2 border-primary/60 pl-4">
+          <h3 class="font-semibold text-foreground">{item.title()}</h3>
+          <p class="mt-1.5 text-sm text-muted-foreground">{item.body()}</p>
         </li>
       {/each}
     </ul>
   </section>
 
   <section aria-labelledby="faq-title" class="max-w-3xl">
-    <h2 id="faq-title" class="text-2xl font-semibold tracking-tight text-ink">
+    <h2 id="faq-title" class="text-2xl font-semibold tracking-tight text-foreground">
       {m.pricing_faq_heading()}
     </h2>
-    <dl class="mt-6 flex flex-col divide-y divide-edge/60">
+    <dl class="mt-6 flex flex-col divide-y divide-border/60">
       {#each faq as entry, i (i)}
         <div class="py-5 first:pt-0">
-          <dt class="font-semibold text-ink">{entry.q()}</dt>
-          <dd class="mt-2 text-muted">{entry.a()}</dd>
+          <dt class="font-semibold text-foreground">{entry.q()}</dt>
+          <dd class="mt-2 text-muted-foreground">{entry.a()}</dd>
         </div>
       {/each}
     </dl>
-    <p class="mt-6 text-muted">{m.pricing_faq_more()} {@render contact()}</p>
+    <p class="mt-6 text-muted-foreground">{m.pricing_faq_more()} {@render contact()}</p>
   </section>
 </div>

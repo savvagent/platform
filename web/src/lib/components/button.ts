@@ -17,9 +17,9 @@ export type ButtonTone = 'primary' | 'quiet' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const TONES: Record<ButtonTone, string> = {
-  primary: 'bg-accent text-accent-ink hover:brightness-110',
-  quiet: 'border border-edge bg-raised/60 text-ink hover:bg-raised',
-  danger: 'border border-bad/50 bg-transparent text-bad hover:bg-bad/10'
+  primary: 'bg-primary text-primary-foreground hover:brightness-110',
+  quiet: 'border border-border bg-muted/60 text-foreground hover:bg-muted',
+  danger: 'border border-destructive/50 bg-transparent text-destructive hover:bg-destructive/10'
 };
 
 const SIZES: Record<ButtonSize, string> = {

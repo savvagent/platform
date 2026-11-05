@@ -37,7 +37,9 @@
   const fresh = $derived(alerts.filter((a) => !onLoad.has(key(a))));
 
   const tone = (a: BudgetAlert) =>
-    a.blocked ? 'border-bad/50 bg-bad/10 text-bad' : 'border-warn/50 bg-warn/10 text-warn';
+    a.blocked
+      ? 'border-destructive/50 bg-destructive/10 text-destructive'
+      : 'border-warning/50 bg-warning/10 text-warning';
 
   const text = (a: BudgetAlert) =>
     a.blocked

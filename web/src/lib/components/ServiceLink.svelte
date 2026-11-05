@@ -25,7 +25,7 @@
    * reads as a phrase rather than the two words run together; the badge is
    * hidden from assistive technology, which already hears it in the name.
    * The name starts with the visible text, so a voice-control user can say
-   * what they see. The badge is `text-muted`, not `text-faint`: it is small
+   * what they see. The badge is `text-muted-foreground`, not `text-muted-foreground`: it is small
    * text that carries meaning, and faint falls under 4.5:1 on the card and on
    * the hover background.
    */
@@ -43,8 +43,8 @@
 <a
   href={link.href}
   class={variant === 'nav'
-    ? 'group inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-muted transition hover:bg-raised hover:text-ink'
-    : 'group flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 text-sm text-muted transition hover:bg-raised hover:text-ink'}
+    ? 'group inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-muted-foreground transition hover:bg-muted hover:text-foreground'
+    : 'group flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground'}
   aria-label={link.kind === 'connector'
     ? m.service_connector_label({ name: service.name })
     : undefined}
@@ -54,7 +54,7 @@
   {#if link.kind === 'connector'}
     <span
       aria-hidden="true"
-      class="rounded border border-edge px-1 text-[0.6875rem] leading-4 font-medium text-muted group-hover:text-ink"
+      class="rounded border border-border px-1 text-[0.6875rem] leading-4 font-medium text-muted-foreground group-hover:text-foreground"
     >
       {m.service_connector_badge()}
     </span>

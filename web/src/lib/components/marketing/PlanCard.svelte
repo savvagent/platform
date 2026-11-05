@@ -40,28 +40,30 @@
 </script>
 
 <article class="sav-card flex flex-col gap-5 p-5">
-  <svelte:element this={`h${level}`} class="text-lg font-semibold tracking-tight text-ink">
+  <svelte:element this={`h${level}`} class="text-lg font-semibold tracking-tight text-foreground">
     {plan.displayName}
   </svelte:element>
 
   <p class="flex flex-wrap items-baseline gap-x-2">
     {#if price.kind === 'contact'}
-      <span class="text-2xl font-semibold tracking-tight text-ink">{m.pricing_contact_us()}</span>
+      <span class="text-2xl font-semibold tracking-tight text-foreground"
+        >{m.pricing_contact_us()}</span
+      >
     {:else if price.kind === 'free'}
-      <span class="text-3xl font-semibold tracking-tight text-ink">{m.pricing_free()}</span>
+      <span class="text-3xl font-semibold tracking-tight text-foreground">{m.pricing_free()}</span>
     {:else}
-      <span class="text-3xl font-semibold tracking-tight text-ink">{price.amount}</span>
-      <span class="text-sm text-muted">{m.pricing_per_month()}</span>
+      <span class="text-3xl font-semibold tracking-tight text-foreground">{price.amount}</span>
+      <span class="text-sm text-muted-foreground">{m.pricing_per_month()}</span>
     {/if}
   </p>
 
-  <p class="text-sm text-muted">{m.pricing_plan_usage_note()}</p>
+  <p class="text-sm text-muted-foreground">{m.pricing_plan_usage_note()}</p>
 
   {#if features.length > 0}
     <ul role="list" aria-label={m.pricing_features_label()} class="flex flex-col gap-2 text-sm">
       {#each features as label, i (i)}
-        <li class="flex gap-2.5 text-muted">
-          <span class="mt-2 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+        <li class="flex gap-2.5 text-muted-foreground">
+          <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>
           <span>{label()}</span>
         </li>
       {/each}

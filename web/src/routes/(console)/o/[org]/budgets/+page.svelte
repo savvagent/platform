@@ -61,7 +61,7 @@
 <div class="space-y-5">
   <div>
     <h1 class="text-lg font-semibold">{m.budget_title()}</h1>
-    <p class="mt-0.5 text-sm text-faint">{m.budget_subtitle()}</p>
+    <p class="mt-0.5 text-sm text-muted-foreground">{m.budget_subtitle()}</p>
   </div>
 
   {#if error}
@@ -75,7 +75,9 @@
       <Alert tone="info">{m.budget_read_only()}</Alert>
     {/if}
 
-    <p class="text-xs text-faint">{m.usage_period_since({ date: day(view.periodStart) })}</p>
+    <p class="text-xs text-muted-foreground">
+      {m.usage_period_since({ date: day(view.periodStart) })}
+    </p>
 
     {#if view.services.length === 0}
       <Empty title={m.budget_empty_title()}>{m.budget_empty_hint()}</Empty>
@@ -94,7 +96,7 @@
               <dl class="grid grid-cols-2 gap-y-2 text-sm">
                 <div>
                   <dt class="sav-label">{m.budget_value_label()}</dt>
-                  <dd class="text-muted">
+                  <dd class="text-muted-foreground">
                     {row.budget
                       ? formatCents(row.budget.monthlyBudgetCents, currentLocale())
                       : m.budget_none()}
@@ -102,7 +104,7 @@
                 </div>
                 <div>
                   <dt class="sav-label">{m.budget_hard_stop_label()}</dt>
-                  <dd class="text-muted">
+                  <dd class="text-muted-foreground">
                     {row.budget?.hardStop ? m.budget_hard_stop_on() : m.budget_hard_stop_off()}
                   </dd>
                 </div>
@@ -113,6 +115,6 @@
       {/each}
     {/if}
 
-    <p class="text-xs text-faint">{m.budget_resend_note()}</p>
+    <p class="text-xs text-muted-foreground">{m.budget_resend_note()}</p>
   {/if}
 </div>
