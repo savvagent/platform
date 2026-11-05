@@ -51,7 +51,7 @@ already been granted.
   - PR body: `Fixes #158` and `Part of #154`
   - gates for `web/`: `npm ci`, `npm run check`, `npm run lint`, `npm test`, `npm run build`
     (CI `web` job). Rust: `cargo fmt --all -- --check`, `cargo clippy --all-targets -- -D
-    warnings`, `cargo test --workspace` (Postgres). `docker-build` builds the image. This change
+warnings`, `cargo test --workspace` (Postgres). `docker-build` builds the image. This change
     touches no Rust.
   - design docs: `committed`, with specs in `docs/specs/` and plans in `docs/plans/`
   - deploy: `ci-auto` on release. release-please keeps a `chore: release X.Y.Z` PR open, and
@@ -65,7 +65,8 @@ already been granted.
   and dark check, so both have to exist, and following `prefers-color-scheme` is the policy that
   needs no new setting. A blocking `static/theme.js` (not inline, so a `script-src 'self'` policy
   still holds) sets the class before first paint and follows changes. There is no in-app toggle,
-  which would be a new feature.
+  which would be a new feature. Without JavaScript a page renders in the light theme, where it
+  used to be dark. Its content is unchanged.
 - **`service="platform"`.** The platform is not an entry in the service list. The package README
   uses `service="platform"` for its own example, so the header's service switcher is labelled
   "platform" until a service is chosen. Changing that label is the package's concern.
@@ -77,7 +78,8 @@ already been granted.
   `.sav-select` class in `app.css`.
 - **Platform-specific composites stay.** `Empty`, `Loading`, `CopyField`, `Meter`, `Logo`,
   `ServiceLink`, `BudgetForm`, `BudgetAlerts`, `PaymentRequiredNotices`, `Seo` and the marketing
-  cards are not shadcn components. They are restyled on the shared tokens and built from the
+  cards are not shadcn components. `ServiceLink`'s `nav` variant was used only by the old
+  console header, so it goes and the `card` variant stays. They are restyled on the shared tokens and built from the
   package's parts where one fits (`CopyField` uses `Button`, the marketing cards use `Card`).
 - **The language links stay on marketing pages.** The header's picker needs JavaScript, and
   crawlers and no-script readers need `<a hreflang>` links. A one-row language `<nav>` sits
@@ -97,8 +99,12 @@ the other consoles, and lose no content or behaviour.
   BuildKit secret) and the Fly deploy (`--build-secret`). The token is never a build arg and is
   never left in a layer.
 - The four `web/` gates and `docker build` pass.
-- Before and after screenshots of 22 pages, in light and dark, show the same content and states,
-  with no broken layout.
+- Before and after screenshots of 20 pages, in light and dark, show the same content and states,
+  with no broken layout. Signed out: `/`, `/pricing`, `/products/tower`, `/cli`, `/es`,
+  `/es/pricing`, `/login`, `/signup`. Signed in (an owner of `acme` who is also a member of
+  `globex`): `/` again, `/o/acme` and its `members`, `teams`, `sso`, `usage` (with one service's
+  price unreadable), `budgets`, `billing` and `audit` pages, `/settings`, `/settings/activity`
+  and `/orgs/new`.
 
 ## Scope
 
@@ -121,17 +127,17 @@ pages, and copy changes beyond what a component swap needs.
   `//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}`. It holds no secret. npm leaves an unset
   variable unexpanded, and only `npm ci` and `npm install` contact the registry.
 - CI `web` job: `permissions: { contents: read, packages: read }`, and `NODE_AUTH_TOKEN: ${{
-  secrets.GITHUB_TOKEN }}` on the `npm ci` step only.
+secrets.GITHUB_TOKEN }}` on the `npm ci` step only.
 - CI `docker-build` job: `permissions: { contents: read, packages: read }`, and
   `docker/build-push-action` with `secrets: npm_token=${{ secrets.GITHUB_TOKEN }}`.
 - `Dockerfile` `console` stage: copy `web/.npmrc` with the manifests, then
   `RUN --mount=type=secret,id=npm_token,required=true NODE_AUTH_TOKEN="$(cat
-  /run/secrets/npm_token)" npm ci`. The variable exists only for that command, the secret mount is
+/run/secrets/npm_token)" npm ci`. The variable exists only for that command, the secret mount is
   never written to a layer, and `.npmrc` carries only the placeholder. A local
   `docker build` passes `--secret id=npm_token,env=NODE_AUTH_TOKEN`.
 - CI `deploy` job: `permissions: { contents: read, packages: read }`, and
   `flyctl deploy --remote-only -a otto-platform --build-secret npm_token=${{
-  secrets.GITHUB_TOKEN }}`. The token is the job's own short-lived one, with read-only packages
+secrets.GITHUB_TOKEN }}`. The token is the job's own short-lived one, with read-only packages
   and contents.
 
 ### Theme
@@ -141,19 +147,19 @@ plus the focus-ring rule (now `var(--color-ring)`), `.sav-mono`, `.sav-kicker` (
 uppercase heading that `.sav-label` was when it labelled no control) and `.sav-select`. The
 `@theme` palette is removed. The utilities are rewritten as follows:
 
-| Old | New |
-| --- | --- |
-| `bg-canvas` | `bg-background` |
-| `bg-surface` | `bg-card` |
-| `bg-raised` | `bg-muted` |
-| `border-edge`, `bg-edge`, `divide-edge` | `border-border`, `bg-border`, `divide-border` |
-| `text-ink` | `text-foreground` |
-| `text-muted`, `text-faint` | `text-muted-foreground` |
+| Old                                                 | New                                                                                                                                                         |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bg-canvas`                                         | `bg-background`                                                                                                                                             |
+| `bg-surface`                                        | `bg-card`                                                                                                                                                   |
+| `bg-raised`                                         | `bg-muted`                                                                                                                                                  |
+| `border-edge`, `bg-edge`, `divide-edge`             | `border-border`, `bg-border`, `divide-border`                                                                                                               |
+| `text-ink`                                          | `text-foreground`                                                                                                                                           |
+| `text-muted`, `text-faint`                          | `text-muted-foreground`                                                                                                                                     |
 | `text-accent`, `border-accent`, `decoration-accent` | `text-primary`, `border-primary`, `decoration-primary`. An inline text link also gets `underline underline-offset-4`, since `primary` is not a link colour. |
-| `bg-accent text-accent-ink` | `bg-primary text-primary-foreground` |
-| `*-ok` | `*-success` |
-| `*-warn`, `*-busy` | `*-warning` |
-| `*-bad` | `*-destructive` |
+| `bg-accent text-accent-ink`                         | `bg-primary text-primary-foreground`                                                                                                                        |
+| `*-ok`                                              | `*-success`                                                                                                                                                 |
+| `*-warn`, `*-busy`                                  | `*-warning`                                                                                                                                                 |
+| `*-bad`                                             | `*-destructive`                                                                                                                                             |
 
 Opacity modifiers carry over (`border-edge/60` becomes `border-border/60`). `app.html` drops
 `bg-canvas text-ink` from `<body>` (the theme styles `body`) and loads
@@ -163,16 +169,16 @@ removes `dark` on `<html>` from `matchMedia('(prefers-color-scheme: dark)')`, an
 
 ### Components
 
-| Hand-written (deleted) | Package replacement |
-| --- | --- |
-| `Alert tone=error` (also the default) | `Alert variant="destructive"` |
-| `Alert tone=warn` / `ok` / `info` | `variant="warning"` / `"success"` / `"default"` |
-| `Button tone=primary` / `quiet` / `danger` | `Button variant="default"` / `"outline"` / `"destructive"`; `pending` becomes `disabled` plus `Spinner` |
-| `LinkButton href tone size` | `Button href variant size` (`md` is `default`; marketing `lg` CTAs add `class="h-10 px-5"`) |
-| `Card title description actions` | `Card` > `CardHeader` (`CardTitle`, `CardDescription`, `CardAction`) and `CardContent` |
-| `Field label hint` (wrapping label) | `Field` > `FieldLabel for={id}`, the control with `id`, `FieldDescription`. Ids from `$props.id()`, suffixed with the item key inside an `{#each}` |
-| `input.sav-input`, `textarea.sav-input` | `Input`, `Textarea` |
-| `select.sav-input` | native `select.sav-select` |
+| Hand-written (deleted)                     | Package replacement                                                                                                                                |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Alert tone=error` (also the default)      | `Alert variant="destructive"`                                                                                                                      |
+| `Alert tone=warn` / `ok` / `info`          | `variant="warning"` / `"success"` / `"default"`                                                                                                    |
+| `Button tone=primary` / `quiet` / `danger` | `Button variant="default"` / `"outline"` / `"destructive"`; `pending` becomes `disabled` plus `Spinner`                                            |
+| `LinkButton href tone size`                | `Button href variant size` (`md` is `default`; marketing `lg` CTAs add `class="h-10 px-5"`)                                                        |
+| `Card title description actions`           | `Card` > `CardHeader` (`CardTitle`, `CardDescription`, `CardAction`) and `CardContent`                                                             |
+| `Field label hint` (wrapping label)        | `Field` > `FieldLabel for={id}`, the control with `id`, `FieldDescription`. Ids from `$props.id()`, suffixed with the item key inside an `{#each}` |
+| `input.sav-input`, `textarea.sav-input`    | `Input`, `Textarea`                                                                                                                                |
+| `select.sav-input`                         | native `select.sav-select`                                                                                                                         |
 
 The package's `Alert` keeps the old roles: `destructive` is `role="alert"` and the rest are
 `role="status"`.
@@ -197,7 +203,11 @@ platform's list.
 New `#lib/console-session.ts`:
 
 ```ts
-export function toConsoleSession(me: Me, orgSlug: string | undefined, platformUrl: string): ConsoleSession
+export function toConsoleSession(
+  me: Me,
+  orgSlug: string | undefined,
+  platformUrl: string,
+): ConsoleSession;
 ```
 
 It maps `me.orgs` to `{ id: orgId, slug: orgSlug, name: orgName, role }` and sets `currentOrg` by
@@ -226,7 +236,8 @@ the generated label when there is neither name nor email, as the old header did.
   marketing landing page.
 - `changeLocale(next)`: signed in, `PATCH /api/me { locale: next }` first and then
   `applyLocale(next)`. A failure sets a `localeError` shown as a destructive `Alert` above the
-  page, and the picker keeps its old value because the promise rejects. Signed out:
+  page and rethrows, so the picker keeps its old value. The picker calls the handler with
+  `void`, so the rejection is also logged as unhandled, which is accepted: it is a real failure. Signed out:
   `applyLocale(next)`. This is the same save-then-reload rule the settings page follows.
 - **Crossing between the halves.** Shell links are rendered by the package and cannot carry
   `data-sveltekit-reload`: the service switcher's connect cards (`/products/flags#connect`) and
@@ -247,7 +258,7 @@ the generated label when there is neither name nor email, as the old header did.
   ever passed, so marketing pages never render the org switcher or account menu, whose links
   would cross into the console.
 - `onLocaleChange(next)`: `writeCached(next)`, then `location.assign(localizedPath(next,
-  basePath))`.
+basePath))`.
 - `platformUrl` is `$state(SITE_ORIGIN)` and is set to `location.origin` in `onMount`. The
   prerendered file names the production origin. A self-hosted copy repoints after hydration
   (Svelte keeps a server-rendered `href` through hydration, so it cannot be a `browser ? … : …`
@@ -286,6 +297,9 @@ None.
   (`docker build --secret id=npm_token,env=NODE_AUTH_TOKEN .`). Documented in
   `docs/deploy/fly.md`.
 - No new secret: `GITHUB_TOKEN` is the workflow's own.
+- Recurring cost: none expected. Installs inside Actions are free. The Fly remote builder pulls
+  the package from outside Actions about once per release, and that transfer counts against the
+  org's GitHub Packages allowance. The package is a few hundred kilobytes.
 
 ## Error handling and edge cases
 
@@ -308,12 +322,16 @@ None.
 - `check-build.test.mjs`: the new language-nav marker.
 - `npm run check`, `lint`, `test`, `build`. Then `docker build` with the secret locally, and
   `docker history` to show no layer carries the token.
-- Screenshots: a scratch harness serves `build/`, mocks `/api`, and shoots 22 pages in light and
+- Screenshots: a scratch harness serves `build/`, mocks `/api`, and shoots 20 pages in light and
   dark for the `main` build and for this branch. Each pair is compared side by side, with a diff
   of each page's `innerText`. Kept outside the repo.
 
 ## Risks and open questions
 
+- Marketing pages: `platformUrl` changes from the production origin to `location.origin` on
+  mount, so the header fetches the service list a second time. The two are the same origin on
+  savvagent.com. On a preview or self-hosted copy the first fetch is cross-origin, which the
+  list's `Access-Control-Allow-Origin: *` allows.
 - The shadcn sizes are more compact than the old buttons (`h-8`). Pages may look denser. This is
   accepted as the shared look, but any clipping or wrapping it causes is fixed.
 - `--destructive` text contrast is low in dark mode (savvagent/console-ui#10). Not worked around
