@@ -6,8 +6,9 @@
   import { messageFor } from '#lib/errors.js';
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
 
   /**
    * What an invitation link opens.
@@ -54,7 +55,7 @@
   <h1 class="text-lg font-semibold">{m.invite_heading({ org })}</h1>
 
   {#if !token}
-    <Alert>{m.invite_missing_token()}</Alert>
+    <Alert variant="destructive">{m.invite_missing_token()}</Alert>
   {:else}
     <p class="mt-1 text-sm text-muted-foreground">
       {m.invite_signed_in_as({
@@ -65,7 +66,7 @@
 
     {#if error}
       <div class="mt-4">
-        <Alert>
+        <Alert variant="destructive">
           {error}
           {#if wrongAccount}
             <span class="mt-1 block">{m.invite_wrong_account_hint()}</span>
@@ -75,7 +76,10 @@
     {/if}
 
     <div class="mt-6">
-      <Button {pending} onclick={accept}>{m.invite_accept_button()}</Button>
+      <Button disabled={pending} onclick={accept}>
+        {#if pending}<Spinner />{/if}
+        {m.invite_accept_button()}
+      </Button>
     </div>
   {/if}
 </div>

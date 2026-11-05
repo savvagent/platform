@@ -1,7 +1,7 @@
 <script lang="ts">
   import { copy } from '#lib/format.js';
   import { m } from '#lib/paraglide/messages.js';
-  import Button from './Button.svelte';
+  import { Button } from '@savvagent/console-ui/ui/button';
 
   /**
    * A value that exists to be copied — a PAT, a provisioning key, an MCP URL.
@@ -31,13 +31,13 @@
 </script>
 
 <div>
-  {#if label}<span class="sav-label">{label}</span>{/if}
+  {#if label}<span class="sav-kicker">{label}</span>{/if}
   <div class="flex items-start gap-2">
     <code
       class="sav-mono flex-1 rounded-md border border-border bg-background px-3 py-2 text-foreground"
       class:whitespace-pre-wrap={multiline}>{value}</code
     >
-    <Button tone="quiet" onclick={onCopy}>
+    <Button variant="outline" onclick={onCopy}>
       {state === 'copied'
         ? m.copy_copied()
         : state === 'failed'

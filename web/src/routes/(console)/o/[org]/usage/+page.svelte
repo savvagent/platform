@@ -7,13 +7,13 @@
   import { useOrg } from '#lib/org.svelte.js';
   import { day } from '#lib/format.js';
   import type { BudgetsResponse, UsageStatus } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
   import BudgetAlerts from '#lib/components/BudgetAlerts.svelte';
-  import Card from '#lib/components/Card.svelte';
   import Empty from '#lib/components/Empty.svelte';
   import Loading from '#lib/components/Loading.svelte';
   import Meter from '#lib/components/Meter.svelte';
   import PaymentRequiredNotices from '#lib/components/PaymentRequiredNotices.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Card, CardContent, CardHeader, CardTitle } from '@savvagent/console-ui/ui/card';
 
   /**
    * Usage, per service: each meter's quantity this month, and what it has
@@ -87,7 +87,7 @@
   </div>
 
   {#if error}
-    <Alert>{error}</Alert>
+    <Alert variant="destructive">{error}</Alert>
   {:else if !report}
     <Loading what={m.usage_reading_meter()} />
   {:else}
@@ -111,48 +111,57 @@
       <Empty title={m.usage_empty_title()}>{m.usage_empty_hint()}</Empty>
     {:else}
       {#each report.usage.services as service (service.service)}
-        <Card title={serviceName(service.service)}>
-          <div class="space-y-4">
-            <div>
-              <div class="sav-label">{m.usage_spend_label()}</div>
-              <Meter usage={service} />
-              {#if service.spendError}
-                <p class="mt-1 text-xs text-muted-foreground">{m.usage_spend_unavailable_hint()}</p>
+        <Card>
+          <CardHeader class="border-b">
+            <CardTitle
+              ><h2 class="text-sm font-semibold">{serviceName(service.service)}</h2></CardTitle
+            >
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-4">
+              <div>
+                <div class="sav-kicker">{m.usage_spend_label()}</div>
+                <Meter usage={service} />
+                {#if service.spendError}
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    {m.usage_spend_unavailable_hint()}
+                  </p>
+                {/if}
+              </div>
+
+              {#if service.meters.length === 0}
+                <p class="text-sm text-muted-foreground">{m.usage_no_meters()}</p>
+              {:else}
+                <table class="w-full text-left text-sm">
+                  <caption class="sr-only">
+                    {m.usage_meters_caption({ service: serviceName(service.service) })}
+                  </caption>
+                  <thead class="text-xs text-muted-foreground">
+                    <tr>
+                      <th scope="col" class="py-1 font-medium">{m.usage_col_meter()}</th>
+                      <th scope="col" class="py-1 font-medium">{m.usage_col_unit()}</th>
+                      <th scope="col" class="py-1 text-right font-medium">
+                        {m.usage_col_quantity()}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {#each service.meters as meter (meter.meter)}
+                      <tr class="border-t border-border/60">
+                        <th scope="row" class="py-1.5 font-normal text-foreground"
+                          >{meter.displayName}</th
+                        >
+                        <td class="py-1.5 text-muted-foreground">{meter.unit}</td>
+                        <td class="py-1.5 text-right text-foreground tabular-nums">
+                          {count(meter.quantity)}
+                        </td>
+                      </tr>
+                    {/each}
+                  </tbody>
+                </table>
               {/if}
             </div>
-
-            {#if service.meters.length === 0}
-              <p class="text-sm text-muted-foreground">{m.usage_no_meters()}</p>
-            {:else}
-              <table class="w-full text-left text-sm">
-                <caption class="sr-only">
-                  {m.usage_meters_caption({ service: serviceName(service.service) })}
-                </caption>
-                <thead class="text-xs text-muted-foreground">
-                  <tr>
-                    <th scope="col" class="py-1 font-medium">{m.usage_col_meter()}</th>
-                    <th scope="col" class="py-1 font-medium">{m.usage_col_unit()}</th>
-                    <th scope="col" class="py-1 text-right font-medium">
-                      {m.usage_col_quantity()}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {#each service.meters as meter (meter.meter)}
-                    <tr class="border-t border-border/60">
-                      <th scope="row" class="py-1.5 font-normal text-foreground"
-                        >{meter.displayName}</th
-                      >
-                      <td class="py-1.5 text-muted-foreground">{meter.unit}</td>
-                      <td class="py-1.5 text-right text-foreground tabular-nums">
-                        {count(meter.quantity)}
-                      </td>
-                    </tr>
-                  {/each}
-                </tbody>
-              </table>
-            {/if}
-          </div>
+          </CardContent>
         </Card>
       {/each}
     {/if}

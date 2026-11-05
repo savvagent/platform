@@ -36,7 +36,7 @@ afterEach(() => {
 function render(slug: string) {
   const instance = mount(ServiceLink, {
     target: container,
-    props: { service: serviceBySlug(slug)!, variant: 'nav' }
+    props: { service: serviceBySlug(slug)! }
   });
   flushSync();
   return { instance, link: container.querySelector('a')! };

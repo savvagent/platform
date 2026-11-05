@@ -7,8 +7,8 @@
   import { m } from '#lib/paraglide/messages.js';
   import { OrgContext, provideOrg } from '#lib/org.svelte.js';
   import { session } from '#lib/session.svelte.js';
-  import Alert from '#lib/components/Alert.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
 
   let { children }: { children: Snippet } = $props();
 
@@ -90,7 +90,7 @@
     <p class="mt-2 text-sm text-muted-foreground">{m.orgnav_missing_body({ slug })}</p>
   </div>
 {:else if error}
-  <Alert>{error}</Alert>
+  <Alert variant="destructive">{error}</Alert>
 {:else}
   <div class="flex flex-col gap-6 sm:flex-row">
     <nav

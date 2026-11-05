@@ -8,9 +8,11 @@
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';
   import * as webauthn from '#lib/webauthn.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Field from '#lib/components/Field.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import { Field, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
 
   /**
    * Register a new passkey after an admin cleared this account's.
@@ -27,6 +29,8 @@
    */
 
   let code = $state(page.url.searchParams.get('code') ?? '');
+  const id = $props.id();
+
   let pending = $state(false);
   let error = $state<string | undefined>(undefined);
 
@@ -60,9 +64,11 @@
   <p class="mt-1 text-sm text-muted-foreground">{m.claim_intro()}</p>
 
   <form class="mt-6 space-y-4" onsubmit={claim}>
-    <Field label={m.claim_code_label()}>
-      <input
-        class="sav-input sav-mono"
+    <Field>
+      <FieldLabel for="{id}-code">{m.claim_code_label()}</FieldLabel>
+      <Input
+        id="{id}-code"
+        class="sav-mono"
         type="text"
         autocapitalize="off"
         spellcheck="false"
@@ -71,9 +77,12 @@
       />
     </Field>
 
-    {#if error}<Alert>{error}</Alert>{/if}
+    {#if error}<Alert variant="destructive">{error}</Alert>{/if}
 
-    <Button type="submit" {pending}>{m.claim_submit()}</Button>
+    <Button type="submit" disabled={pending}>
+      {#if pending}<Spinner />{/if}
+      {m.claim_submit()}
+    </Button>
   </form>
 
   <p class="mt-6 text-xs text-muted-foreground">

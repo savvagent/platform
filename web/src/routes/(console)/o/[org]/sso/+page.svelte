@@ -5,13 +5,21 @@
   import { relative } from '#lib/format.js';
   import { useOrg } from '#lib/org.svelte.js';
   import type { ClaimedDomain, IdpConnection } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Card from '#lib/components/Card.svelte';
   import CopyField from '#lib/components/CopyField.svelte';
   import Empty from '#lib/components/Empty.svelte';
-  import Field from '#lib/components/Field.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+  } from '@savvagent/console-ui/ui/card';
+  import { Field, FieldDescription, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
 
   /**
    * Enterprise single sign-on: the org's identity provider connection, the
@@ -31,6 +39,7 @@
    */
 
   const org = useOrg();
+  const id = $props.id();
 
   let domains = $state<ClaimedDomain[]>([]);
   let loadingDomains = $state(true);
@@ -224,165 +233,208 @@
   </div>
 
   {#if !org.isAdmin}
-    <Alert>{m.sso_admin_only()}</Alert>
+    <Alert variant="destructive">{m.sso_admin_only()}</Alert>
   {:else}
-    <Card title={m.sso_connection_title()} description={m.sso_connection_description()}>
-      {#if savedConnection}
-        <div class="mb-3">
-          <Alert tone="ok">{m.sso_connection_saved({ issuer: savedConnection.issuer })}</Alert>
+    <Card>
+      <CardHeader class="border-b">
+        <CardTitle><h2 class="text-sm font-semibold">{m.sso_connection_title()}</h2></CardTitle>
+        <CardDescription>{m.sso_connection_description()}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {#if savedConnection}
+          <div class="mb-3">
+            <Alert variant="success"
+              >{m.sso_connection_saved({ issuer: savedConnection.issuer })}</Alert
+            >
+          </div>
+        {/if}
+
+        <form class="max-w-lg space-y-4" onsubmit={saveConnection}>
+          <Field>
+            <FieldLabel for="{id}-issuer">{m.sso_issuer_label()}</FieldLabel>
+            <Input
+              id="{id}-issuer"
+              aria-describedby="{id}-issuer-hint"
+              type="url"
+              required
+              bind:value={issuer}
+              placeholder="https://idp.example.com"
+            />
+            <FieldDescription id="{id}-issuer-hint">{m.sso_issuer_hint()}</FieldDescription>
+          </Field>
+          <Field>
+            <FieldLabel for="{id}-client-id">{m.sso_client_id_label()}</FieldLabel>
+            <Input id="{id}-client-id" type="text" required bind:value={clientId} />
+          </Field>
+          <Field>
+            <FieldLabel for="{id}-client-secret">{m.sso_client_secret_label()}</FieldLabel>
+            <Input
+              id="{id}-client-secret"
+              aria-describedby="{id}-client-secret-hint"
+              type="password"
+              required
+              autocomplete="off"
+              bind:value={clientSecret}
+            />
+            <FieldDescription id="{id}-client-secret-hint"
+              >{m.sso_client_secret_hint()}</FieldDescription
+            >
+          </Field>
+
+          {#if connectionError}<Alert variant="destructive">{connectionError}</Alert>{/if}
+
+          <Button type="submit" disabled={loadingConnection || savingConnection}>
+            {#if savingConnection}<Spinner />{/if}
+            {m.sso_save_connection()}
+          </Button>
+        </form>
+
+        <div class="mt-4 border-t border-border/50 pt-3">
+          {#if connectionRemoveError}<div class="mb-2">
+              <Alert variant="destructive">{connectionRemoveError}</Alert>
+            </div>{/if}
+          <Button variant="destructive" disabled={removingConnection} onclick={removeConnection}>
+            {#if removingConnection}<Spinner />{/if}
+            {m.sso_delete_connection()}
+          </Button>
         </div>
-      {/if}
-
-      <form class="max-w-lg space-y-4" onsubmit={saveConnection}>
-        <Field label={m.sso_issuer_label()} hint={m.sso_issuer_hint()}>
-          <input
-            class="sav-input"
-            type="url"
-            required
-            bind:value={issuer}
-            placeholder="https://idp.example.com"
-          />
-        </Field>
-        <Field label={m.sso_client_id_label()}>
-          <input class="sav-input" type="text" required bind:value={clientId} />
-        </Field>
-        <Field label={m.sso_client_secret_label()} hint={m.sso_client_secret_hint()}>
-          <input
-            class="sav-input"
-            type="password"
-            required
-            autocomplete="off"
-            bind:value={clientSecret}
-          />
-        </Field>
-
-        {#if connectionError}<Alert>{connectionError}</Alert>{/if}
-
-        <Button type="submit" disabled={loadingConnection} pending={savingConnection}>
-          {m.sso_save_connection()}
-        </Button>
-      </form>
-
-      <div class="mt-4 border-t border-border/50 pt-3">
-        {#if connectionRemoveError}<div class="mb-2">
-            <Alert>{connectionRemoveError}</Alert>
-          </div>{/if}
-        <Button tone="danger" pending={removingConnection} onclick={removeConnection}>
-          {m.sso_delete_connection()}
-        </Button>
-      </div>
+      </CardContent>
     </Card>
 
-    <Card title={m.sso_domains_title()} description={m.sso_domains_description()}>
-      <form class="flex flex-wrap items-end gap-3" onsubmit={addDomain}>
-        <div class="min-w-56 flex-1">
-          <Field label={m.sso_domain_input_label()}>
-            <input
-              class="sav-input"
-              type="text"
-              required
-              bind:value={newDomain}
-              placeholder={m.sso_domain_input_placeholder()}
-            />
-          </Field>
-        </div>
-        <div class="pb-0.5">
-          <Button type="submit" pending={addingDomain}>{m.sso_domain_add_button()}</Button>
-        </div>
-      </form>
-      {#if addDomainError}<div class="mt-3"><Alert>{addDomainError}</Alert></div>{/if}
-      {#if domainActionError}<div class="mt-3"><Alert>{domainActionError}</Alert></div>{/if}
+    <Card>
+      <CardHeader class="border-b">
+        <CardTitle><h2 class="text-sm font-semibold">{m.sso_domains_title()}</h2></CardTitle>
+        <CardDescription>{m.sso_domains_description()}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form class="flex flex-wrap items-end gap-3" onsubmit={addDomain}>
+          <div class="min-w-56 flex-1">
+            <Field>
+              <FieldLabel for="{id}-domain">{m.sso_domain_input_label()}</FieldLabel>
+              <Input
+                id="{id}-domain"
+                type="text"
+                required
+                bind:value={newDomain}
+                placeholder={m.sso_domain_input_placeholder()}
+              />
+            </Field>
+          </div>
+          <div class="pb-0.5">
+            <Button type="submit" disabled={addingDomain}>
+              {#if addingDomain}<Spinner />{/if}
+              {m.sso_domain_add_button()}
+            </Button>
+          </div>
+        </form>
+        {#if addDomainError}<div class="mt-3">
+            <Alert variant="destructive">{addDomainError}</Alert>
+          </div>{/if}
+        {#if domainActionError}<div class="mt-3">
+            <Alert variant="destructive">{domainActionError}</Alert>
+          </div>{/if}
 
-      <div class="mt-4">
-        {#if loadingDomains}
-          <Loading what={m.sso_domains_loading()} />
-        {:else if domainsError}
-          <Alert>{domainsError}</Alert>
-        {:else if domains.length === 0}
-          <Empty title={m.sso_domains_none()} />
-        {:else}
-          <ul class="divide-y divide-border/40">
-            {#each domains as claimed (claimed.domain)}
-              <li class="py-3">
-                <div class="flex flex-wrap items-center gap-3">
-                  <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-2 text-sm">
-                      <span class="text-foreground">{claimed.domain}</span>
+        <div class="mt-4">
+          {#if loadingDomains}
+            <Loading what={m.sso_domains_loading()} />
+          {:else if domainsError}
+            <Alert variant="destructive">{domainsError}</Alert>
+          {:else if domains.length === 0}
+            <Empty title={m.sso_domains_none()} />
+          {:else}
+            <ul class="divide-y divide-border/40">
+              {#each domains as claimed (claimed.domain)}
+                <li class="py-3">
+                  <div class="flex flex-wrap items-center gap-3">
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-2 text-sm">
+                        <span class="text-foreground">{claimed.domain}</span>
+                        {#if claimed.verifiedAt}
+                          <span
+                            class="rounded-full border border-success/50 bg-success/10 px-2 py-0.5 text-xs text-success"
+                          >
+                            {m.sso_domain_verified()}
+                          </span>
+                        {:else}
+                          <span
+                            class="rounded-full border border-warning/50 bg-warning/10 px-2 py-0.5 text-xs text-warning"
+                          >
+                            {m.sso_domain_pending()}
+                          </span>
+                        {/if}
+                      </div>
                       {#if claimed.verifiedAt}
-                        <span
-                          class="rounded-full border border-success/50 bg-success/10 px-2 py-0.5 text-xs text-success"
-                        >
-                          {m.sso_domain_verified()}
-                        </span>
-                      {:else}
-                        <span
-                          class="rounded-full border border-warning/50 bg-warning/10 px-2 py-0.5 text-xs text-warning"
-                        >
-                          {m.sso_domain_pending()}
-                        </span>
+                        <p class="text-xs text-muted-foreground">
+                          {m.sso_domain_verified_meta({ when: relative(claimed.verifiedAt) })}
+                        </p>
                       {/if}
                     </div>
-                    {#if claimed.verifiedAt}
-                      <p class="text-xs text-muted-foreground">
-                        {m.sso_domain_verified_meta({ when: relative(claimed.verifiedAt) })}
-                      </p>
+
+                    {#if !claimed.verifiedAt}
+                      <Button
+                        variant="outline"
+                        disabled={domainBusy === `${claimed.domain}:verify`}
+                        onclick={() => verifyDomain(claimed.domain)}
+                      >
+                        {#if domainBusy === `${claimed.domain}:verify`}<Spinner />{/if}
+                        {m.sso_domain_verify_button()}
+                      </Button>
                     {/if}
+                    <Button
+                      variant="destructive"
+                      disabled={domainBusy === `${claimed.domain}:remove`}
+                      onclick={() => removeDomain(claimed.domain)}
+                    >
+                      {#if domainBusy === `${claimed.domain}:remove`}<Spinner />{/if}
+                      {m.sso_domain_remove_button()}
+                    </Button>
                   </div>
 
                   {#if !claimed.verifiedAt}
-                    <Button
-                      tone="quiet"
-                      pending={domainBusy === `${claimed.domain}:verify`}
-                      onclick={() => verifyDomain(claimed.domain)}
+                    <div
+                      class="mt-3 space-y-2 rounded-md border border-border/60 bg-background/60 p-3"
                     >
-                      {m.sso_domain_verify_button()}
-                    </Button>
+                      <p class="text-xs text-muted-foreground">{m.sso_domain_txt_instructions()}</p>
+                      <CopyField
+                        label={m.sso_domain_txt_name_label()}
+                        value={claimed.txtRecordName}
+                      />
+                      <CopyField
+                        label={m.sso_domain_txt_value_label()}
+                        value={claimed.txtRecordValue}
+                      />
+                      {#if notYetVerified === claimed.domain}
+                        <p class="text-xs text-warning">{m.sso_domain_not_verified_yet()}</p>
+                      {/if}
+                    </div>
                   {/if}
-                  <Button
-                    tone="danger"
-                    pending={domainBusy === `${claimed.domain}:remove`}
-                    onclick={() => removeDomain(claimed.domain)}
-                  >
-                    {m.sso_domain_remove_button()}
-                  </Button>
-                </div>
-
-                {#if !claimed.verifiedAt}
-                  <div
-                    class="mt-3 space-y-2 rounded-md border border-border/60 bg-background/60 p-3"
-                  >
-                    <p class="text-xs text-muted-foreground">{m.sso_domain_txt_instructions()}</p>
-                    <CopyField
-                      label={m.sso_domain_txt_name_label()}
-                      value={claimed.txtRecordName}
-                    />
-                    <CopyField
-                      label={m.sso_domain_txt_value_label()}
-                      value={claimed.txtRecordValue}
-                    />
-                    {#if notYetVerified === claimed.domain}
-                      <p class="text-xs text-warning">{m.sso_domain_not_verified_yet()}</p>
-                    {/if}
-                  </div>
-                {/if}
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
+                </li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
+      </CardContent>
     </Card>
 
-    <Card title={m.sso_enforce_title()} description={m.sso_enforce_description()}>
-      {#if enforceError}<div class="mb-3"><Alert>{enforceError}</Alert></div>{/if}
-      <label class="flex items-center gap-2 text-sm text-foreground">
-        <input
-          type="checkbox"
-          checked={org.org?.enforceSso ?? false}
-          disabled={enforceBusy}
-          onchange={(e) => toggleEnforce(e.currentTarget.checked)}
-        />
-        {m.sso_enforce_toggle_label()}
-      </label>
+    <Card>
+      <CardHeader class="border-b">
+        <CardTitle><h2 class="text-sm font-semibold">{m.sso_enforce_title()}</h2></CardTitle>
+        <CardDescription>{m.sso_enforce_description()}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {#if enforceError}<div class="mb-3">
+            <Alert variant="destructive">{enforceError}</Alert>
+          </div>{/if}
+        <label class="flex items-center gap-2 text-sm text-foreground">
+          <input
+            type="checkbox"
+            checked={org.org?.enforceSso ?? false}
+            disabled={enforceBusy}
+            onchange={(e) => toggleEnforce(e.currentTarget.checked)}
+          />
+          {m.sso_enforce_toggle_label()}
+        </label>
+      </CardContent>
     </Card>
   {/if}
 </div>

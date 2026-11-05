@@ -7,13 +7,13 @@
   import { m } from '#lib/paraglide/messages.js';
   import { useOrg } from '#lib/org.svelte.js';
   import type { BudgetsResponse, ServiceBudget } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
   import BudgetAlerts from '#lib/components/BudgetAlerts.svelte';
   import BudgetForm from '#lib/components/BudgetForm.svelte';
-  import Card from '#lib/components/Card.svelte';
   import Empty from '#lib/components/Empty.svelte';
   import Loading from '#lib/components/Loading.svelte';
   import Meter from '#lib/components/Meter.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Card, CardContent, CardHeader, CardTitle } from '@savvagent/console-ui/ui/card';
 
   /**
    * Monthly budgets, per service.
@@ -65,14 +65,14 @@
   </div>
 
   {#if error}
-    <Alert>{error}</Alert>
+    <Alert variant="destructive">{error}</Alert>
   {:else if !view}
     <Loading what={m.budget_loading()} />
   {:else}
     <BudgetAlerts services={view.services} />
 
     {#if !org.isAdmin}
-      <Alert tone="info">{m.budget_read_only()}</Alert>
+      <Alert>{m.budget_read_only()}</Alert>
     {/if}
 
     <p class="text-xs text-muted-foreground">
@@ -83,34 +83,39 @@
       <Empty title={m.budget_empty_title()}>{m.budget_empty_hint()}</Empty>
     {:else}
       {#each view.services as row (row.service)}
-        <Card title={serviceName(row.service)}>
-          <div class="space-y-4">
-            <div>
-              <div class="sav-label">{m.usage_spend_label()}</div>
-              <Meter usage={row} />
-            </div>
+        <Card>
+          <CardHeader class="border-b">
+            <CardTitle><h2 class="text-sm font-semibold">{serviceName(row.service)}</h2></CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-4">
+              <div>
+                <div class="sav-kicker">{m.usage_spend_label()}</div>
+                <Meter usage={row} />
+              </div>
 
-            {#if org.isAdmin}
-              <BudgetForm org={org.slug} {row} onchange={replace} />
-            {:else}
-              <dl class="grid grid-cols-2 gap-y-2 text-sm">
-                <div>
-                  <dt class="sav-label">{m.budget_value_label()}</dt>
-                  <dd class="text-muted-foreground">
-                    {row.budget
-                      ? formatCents(row.budget.monthlyBudgetCents, currentLocale())
-                      : m.budget_none()}
-                  </dd>
-                </div>
-                <div>
-                  <dt class="sav-label">{m.budget_hard_stop_label()}</dt>
-                  <dd class="text-muted-foreground">
-                    {row.budget?.hardStop ? m.budget_hard_stop_on() : m.budget_hard_stop_off()}
-                  </dd>
-                </div>
-              </dl>
-            {/if}
-          </div>
+              {#if org.isAdmin}
+                <BudgetForm org={org.slug} {row} onchange={replace} />
+              {:else}
+                <dl class="grid grid-cols-2 gap-y-2 text-sm">
+                  <div>
+                    <dt class="sav-kicker">{m.budget_value_label()}</dt>
+                    <dd class="text-muted-foreground">
+                      {row.budget
+                        ? formatCents(row.budget.monthlyBudgetCents, currentLocale())
+                        : m.budget_none()}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt class="sav-kicker">{m.budget_hard_stop_label()}</dt>
+                    <dd class="text-muted-foreground">
+                      {row.budget?.hardStop ? m.budget_hard_stop_on() : m.budget_hard_stop_off()}
+                    </dd>
+                  </div>
+                </dl>
+              {/if}
+            </div>
+          </CardContent>
         </Card>
       {/each}
     {/if}

@@ -4,8 +4,7 @@
   import { serviceLink, type Service } from '#lib/services.js';
 
   /**
-   * A link to a Savvagent service from inside the console: the header's Services
-   * nav, and the org home's Services card.
+   * A link to a Savvagent service from inside the console: the org home's Services card.
    *
    * **Where it goes is `serviceLink`'s call, not this component's.** A service
    * with a web console is a plain external link to it, as it always was. One
@@ -31,20 +30,16 @@
    */
   interface Props {
     service: Service;
-    /** `nav` for the header's quiet pills, `chip` for the org home's bordered ones. */
-    variant: 'nav' | 'chip';
   }
 
-  let { service, variant }: Props = $props();
+  let { service }: Props = $props();
 
   const link = $derived(serviceLink(service, currentLocale()));
 </script>
 
 <a
   href={link.href}
-  class={variant === 'nav'
-    ? 'group inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-muted-foreground transition hover:bg-muted hover:text-foreground'
-    : 'group flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground'}
+  class="group flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
   aria-label={link.kind === 'connector'
     ? m.service_connector_label({ name: service.name })
     : undefined}

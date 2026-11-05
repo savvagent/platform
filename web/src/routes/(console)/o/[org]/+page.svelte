@@ -7,14 +7,21 @@
   import { roleLabel } from '#lib/labels.js';
   import { SERVICES } from '#lib/services.js';
   import type { BudgetsResponse, OrgMember, Team, UsageStatus } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
   import BudgetAlerts from '#lib/components/BudgetAlerts.svelte';
-  import Card from '#lib/components/Card.svelte';
   import Empty from '#lib/components/Empty.svelte';
   import Loading from '#lib/components/Loading.svelte';
   import Meter from '#lib/components/Meter.svelte';
   import PaymentRequiredNotices from '#lib/components/PaymentRequiredNotices.svelte';
   import ServiceLink from '#lib/components/ServiceLink.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import {
+    Card,
+    CardAction,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+  } from '@savvagent/console-ui/ui/card';
 
   /**
    * The organization overview: who is in it, what plan it is on, what each
@@ -103,7 +110,7 @@
   </div>
 
   {#if error}
-    <Alert>{error}</Alert>
+    <Alert variant="destructive">{error}</Alert>
   {:else if !overview}
     <Loading what={m.overview_loading()} />
   {:else}
@@ -121,7 +128,10 @@
 
     <div class="grid grid-cols-2 gap-3">
       {#each tiles as tile (tile.href)}
-        <a class="sav-card px-4 py-3 transition hover:bg-muted" href="/o/{org.slug}/{tile.href}">
+        <a
+          class="rounded-xl bg-card px-4 py-3 text-card-foreground ring-1 ring-foreground/10 transition hover:bg-muted"
+          href="/o/{org.slug}/{tile.href}"
+        >
           <div class="text-2xl font-semibold text-foreground">
             {tile.value.toLocaleString(currentLocale())}
           </div>
@@ -131,38 +141,51 @@
     </div>
 
     <div class="grid gap-6 lg:grid-cols-2">
-      <Card title={m.overview_period_title()} description={m.overview_period_description()}>
-        {#snippet actions()}
-          <a
-            class="text-xs text-muted-foreground underline hover:text-foreground"
-            href="/o/{org.slug}/usage"
-          >
-            {m.overview_period_details()}
-          </a>
-        {/snippet}
-        {#if overview.usage.services.length === 0}
-          <p class="text-sm text-muted-foreground">{m.overview_spend_empty()}</p>
-        {:else}
-          <ul class="space-y-3">
-            {#each overview.usage.services as service (service.service)}
-              <li><Meter usage={service} compact /></li>
-            {/each}
-          </ul>
-        {/if}
+      <Card>
+        <CardHeader class="border-b">
+          <CardTitle><h2 class="text-sm font-semibold">{m.overview_period_title()}</h2></CardTitle>
+          <CardDescription>{m.overview_period_description()}</CardDescription>
+          <CardAction>
+            <a
+              class="text-xs text-muted-foreground underline hover:text-foreground"
+              href="/o/{org.slug}/usage"
+            >
+              {m.overview_period_details()}
+            </a>
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          {#if overview.usage.services.length === 0}
+            <p class="text-sm text-muted-foreground">{m.overview_spend_empty()}</p>
+          {:else}
+            <ul class="space-y-3">
+              {#each overview.usage.services as service (service.service)}
+                <li><Meter usage={service} compact /></li>
+              {/each}
+            </ul>
+          {/if}
+        </CardContent>
       </Card>
 
-      <Card title={m.overview_services_title()} description={m.overview_services_description()}>
-        {#if SERVICES.length === 0}
-          <Empty title={m.overview_services_empty_title()}>
-            {m.overview_services_empty_hint()}
-          </Empty>
-        {:else}
-          <ul class="flex flex-wrap gap-2">
-            {#each SERVICES as service (service.slug)}
-              <li><ServiceLink {service} variant="chip" /></li>
-            {/each}
-          </ul>
-        {/if}
+      <Card>
+        <CardHeader class="border-b">
+          <CardTitle><h2 class="text-sm font-semibold">{m.overview_services_title()}</h2></CardTitle
+          >
+          <CardDescription>{m.overview_services_description()}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {#if SERVICES.length === 0}
+            <Empty title={m.overview_services_empty_title()}>
+              {m.overview_services_empty_hint()}
+            </Empty>
+          {:else}
+            <ul class="flex flex-wrap gap-2">
+              {#each SERVICES as service (service.slug)}
+                <li><ServiceLink {service} /></li>
+              {/each}
+            </ul>
+          {/if}
+        </CardContent>
       </Card>
     </div>
   {/if}

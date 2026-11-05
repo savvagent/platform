@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { readdirSync, readFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /*
@@ -15,6 +15,18 @@ import { describe, expect, it } from 'vitest';
 const SRC = join(__dirname, '..');
 const SELF = join(__dirname, 'theme.test.ts');
 const SKIP = join(SRC, 'lib', 'paraglide');
+
+// Task 6b removes these.
+const UNMIGRATED = [
+  'lib/components/marketing/',
+  'routes/(marketing)/',
+  'lib/components/Alert.svelte',
+  'lib/components/Button.svelte',
+  'lib/components/LinkButton.svelte',
+  'lib/components/Card.svelte',
+  'lib/components/Field.svelte',
+  'lib/components/button.ts'
+];
 
 function sources(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -62,6 +74,26 @@ describe('theme', () => {
       for (const match of readFileSync(file, 'utf8').matchAll(OLD)) {
         found.push(`${relative(SRC, file)}: ${match[0]}`);
       }
+    }
+    expect(found).toEqual([]);
+  });
+
+  /*
+    The hand-written Alert, Button, LinkButton, Card and Field are replaced by the
+    shared components, and `sav-card`, `sav-input` and `sav-label` by their parts.
+    A leftover import would still build, and quietly keep a second look alive.
+  */
+  it('uses none of the hand-written components', () => {
+    const OLD_COMPONENT =
+      /(?:from\s+|import\s+)['"][^'"]*components\/(?:Alert|Button|LinkButton|Card|Field)\.svelte['"]|from\s+['"]\.\/(?:Alert|Button|LinkButton|Card|Field)\.svelte['"]|from\s+['"][^'"]*components\/button(?:\.js)?['"]|from\s+['"]\.\/button(?:\.js)?['"]/g;
+    const OLD_CLASS = /(?<![\w-])sav-(?:card|input|label)(?![\w-])/g;
+    const found: string[] = [];
+    for (const file of sources(SRC)) {
+      const rel = relative(SRC, file).split(sep).join('/');
+      if (!/\.(svelte|ts)$/.test(rel) || UNMIGRATED.some((p) => rel.startsWith(p))) continue;
+      const text = readFileSync(file, 'utf8');
+      for (const match of text.matchAll(OLD_COMPONENT)) found.push(`${rel}: ${match[0]}`);
+      for (const match of text.matchAll(OLD_CLASS)) found.push(`${rel}: ${match[0]}`);
     }
     expect(found).toEqual([]);
   });

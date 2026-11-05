@@ -15,8 +15,12 @@
   import { currentLocale } from '#lib/locale.js';
   import { m } from '#lib/paraglide/messages.js';
   import type { ServiceBudget } from '#lib/types.js';
-  import Alert from './Alert.svelte';
-  import Button from './Button.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import { Field, FieldDescription, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
+
+  import Spinner from './Spinner.svelte';
 
   /**
    * Set, change or remove one service's monthly budget, and its hard stop.
@@ -59,7 +63,7 @@
   let notice = $state<string | undefined>(undefined);
   let pending = $state<'save' | 'clear' | undefined>(undefined);
 
-  let input = $state<HTMLInputElement | undefined>(undefined);
+  let input = $state<HTMLInputElement | null>(null);
   let status = $state<HTMLElement | undefined>(undefined);
 
   const max = $derived(formatCents(MAX_MONTHLY_BUDGET_CENTS, currentLocale()));
@@ -134,29 +138,27 @@
 </script>
 
 <form class="space-y-3" onsubmit={save} novalidate>
-  <div>
-    <label class="sav-label" for="{id}-amount">{m.budget_amount_label()}</label>
-    <input
-      bind:this={input}
+  <Field>
+    <FieldLabel for="{id}-amount">{m.budget_amount_label()}</FieldLabel>
+    <Input
+      bind:ref={input}
       bind:value={amount}
       oninput={() => (notice = undefined)}
       id="{id}-amount"
       name="amount"
-      class="sav-input mt-1 w-full max-w-60"
+      class="max-w-60"
       inputmode="decimal"
       autocomplete="off"
       aria-invalid={fieldError ? 'true' : undefined}
       aria-describedby={fieldError ? `${id}-error ${id}-hint` : `${id}-hint`}
     />
-    <span id="{id}-hint" class="mt-1 block text-xs text-muted-foreground">
+    <FieldDescription id="{id}-hint">
       {m.budget_amount_hint({ max })}
-    </span>
+    </FieldDescription>
     {#if fieldError}
-      <span id="{id}-error" class="mt-1 block text-xs text-destructive"
-        >{fieldMessage(fieldError)}</span
-      >
+      <span id="{id}-error" class="block text-xs text-destructive">{fieldMessage(fieldError)}</span>
     {/if}
-  </div>
+  </Field>
 
   <div class="flex items-start gap-2">
     <input
@@ -178,20 +180,17 @@
   </div>
 
   {#if failure}
-    <Alert>{failure}</Alert>
+    <Alert variant="destructive">{failure}</Alert>
   {/if}
 
   <div class="flex flex-wrap gap-2">
-    <Button type="submit" pending={pending === 'save'} disabled={pending !== undefined}>
+    <Button type="submit" disabled={pending !== undefined}>
+      {#if pending === 'save'}<Spinner />{/if}
       {m.budget_save()}
     </Button>
     {#if row.budget}
-      <Button
-        tone="danger"
-        pending={pending === 'clear'}
-        disabled={pending !== undefined}
-        onclick={clear}
-      >
+      <Button variant="destructive" disabled={pending !== undefined} onclick={clear}>
+        {#if pending === 'clear'}<Spinner />{/if}
         {m.budget_clear()}
       </Button>
     {/if}

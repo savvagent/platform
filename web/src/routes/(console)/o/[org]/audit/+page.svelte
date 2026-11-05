@@ -5,9 +5,10 @@
   import { useOrg } from '#lib/org.svelte.js';
   import { absolute, relative } from '#lib/format.js';
   import type { AuditEvent } from '#lib/types.js';
-  import Alert from '#lib/components/Alert.svelte';
   import Empty from '#lib/components/Empty.svelte';
   import Loading from '#lib/components/Loading.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Card } from '@savvagent/console-ui/ui/card';
 
   /**
    * The security log.
@@ -65,13 +66,13 @@
   </div>
 
   {#if error}
-    <Alert>{error}</Alert>
+    <Alert variant="destructive">{error}</Alert>
   {:else if loading && events.length === 0}
     <Loading what={m.audit_loading()} />
   {:else if events.length === 0}
     <Empty title={m.audit_empty()} />
   {:else}
-    <div class="sav-card overflow-x-auto">
+    <Card class="overflow-x-auto py-0">
       <table class="w-full text-sm">
         <thead class="border-b border-border/60 text-left text-xs text-muted-foreground">
           <tr>
@@ -108,6 +109,6 @@
           {/each}
         </tbody>
       </table>
-    </div>
+    </Card>
   {/if}
 </div>

@@ -2,7 +2,7 @@
   import { serviceName } from '#lib/billing.js';
   import { m } from '#lib/paraglide/messages.js';
   import type { ServiceUsage } from '#lib/types.js';
-  import LinkButton from './LinkButton.svelte';
+  import { Button } from '@savvagent/console-ui/ui/button';
 
   /**
    * One notice per service whose paid usage is paused because the org has no
@@ -42,7 +42,7 @@
         >
           {#if owner}
             <p>{m.payment_required_owner({ service: serviceName(service.service) })}</p>
-            <LinkButton href={billingHref} size="sm">{m.payment_required_add_card()}</LinkButton>
+            <Button href={billingHref} size="sm">{m.payment_required_add_card()}</Button>
           {:else}
             <p>{m.payment_required_member({ service: serviceName(service.service) })}</p>
           {/if}

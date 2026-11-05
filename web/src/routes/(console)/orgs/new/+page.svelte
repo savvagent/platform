@@ -6,9 +6,11 @@
   import { m } from '#lib/paraglide/messages.js';
   import { session } from '#lib/session.svelte.js';
   import { slugPreview } from '#lib/format.js';
-  import Alert from '#lib/components/Alert.svelte';
-  import Button from '#lib/components/Button.svelte';
-  import Field from '#lib/components/Field.svelte';
+  import Spinner from '#lib/components/Spinner.svelte';
+  import { Alert } from '@savvagent/console-ui/ui/alert';
+  import { Button } from '@savvagent/console-ui/ui/button';
+  import { Field, FieldDescription, FieldLabel } from '@savvagent/console-ui/ui/field';
+  import { Input } from '@savvagent/console-ui/ui/input';
 
   /**
    * Create an organization. The creator becomes its owner — an org with no
@@ -19,6 +21,8 @@
    * error box: the reader has an action to take (confirm your email), and the
    * server's message says so.
    */
+
+  const id = $props.id();
 
   let name = $state('');
   let slug = $state('');
@@ -60,13 +64,17 @@
   </p>
 
   <form class="mt-6 space-y-4" onsubmit={submit}>
-    <Field label={m.orgnew_name_label()}>
-      <input class="sav-input" type="text" required bind:value={name} />
+    <Field>
+      <FieldLabel for="{id}-name">{m.orgnew_name_label()}</FieldLabel>
+      <Input id="{id}-name" type="text" required bind:value={name} />
     </Field>
 
-    <Field label={m.orgnew_slug_label()} hint={m.orgnew_slug_hint()}>
-      <input
-        class="sav-input sav-mono"
+    <Field>
+      <FieldLabel for="{id}-slug">{m.orgnew_slug_label()}</FieldLabel>
+      <Input
+        id="{id}-slug"
+        aria-describedby="{id}-slug-hint"
+        class="sav-mono"
         type="text"
         value={suggested}
         oninput={(event) => {
@@ -75,10 +83,14 @@
         }}
         required
       />
+      <FieldDescription id="{id}-slug-hint">{m.orgnew_slug_hint()}</FieldDescription>
     </Field>
 
-    {#if error}<Alert>{error}</Alert>{/if}
+    {#if error}<Alert variant="destructive">{error}</Alert>{/if}
 
-    <Button type="submit" {pending} disabled={!suggested}>{m.orgnew_submit()}</Button>
+    <Button type="submit" disabled={pending || !suggested}>
+      {#if pending}<Spinner />{/if}
+      {m.orgnew_submit()}
+    </Button>
   </form>
 </div>
