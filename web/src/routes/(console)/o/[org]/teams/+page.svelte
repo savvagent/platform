@@ -126,7 +126,7 @@
   {#if org.isAdmin}
     <Card>
       <CardHeader class="border-b">
-        <CardTitle><h2 class="text-sm font-semibold">{m.teams_new_title()}</h2></CardTitle>
+        <CardTitle level={2} class="text-sm font-semibold">{m.teams_new_title()}</CardTitle>
       </CardHeader>
       <CardContent>
         <form class="flex flex-wrap items-end gap-3" onsubmit={create}>

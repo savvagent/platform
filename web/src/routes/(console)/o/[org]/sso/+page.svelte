@@ -237,7 +237,7 @@
   {:else}
     <Card>
       <CardHeader class="border-b">
-        <CardTitle><h2 class="text-sm font-semibold">{m.sso_connection_title()}</h2></CardTitle>
+        <CardTitle level={2} class="text-sm font-semibold">{m.sso_connection_title()}</CardTitle>
         <CardDescription>{m.sso_connection_description()}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -303,7 +303,7 @@
 
     <Card>
       <CardHeader class="border-b">
-        <CardTitle><h2 class="text-sm font-semibold">{m.sso_domains_title()}</h2></CardTitle>
+        <CardTitle level={2} class="text-sm font-semibold">{m.sso_domains_title()}</CardTitle>
         <CardDescription>{m.sso_domains_description()}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -418,7 +418,7 @@
 
     <Card>
       <CardHeader class="border-b">
-        <CardTitle><h2 class="text-sm font-semibold">{m.sso_enforce_title()}</h2></CardTitle>
+        <CardTitle level={2} class="text-sm font-semibold">{m.sso_enforce_title()}</CardTitle>
         <CardDescription>{m.sso_enforce_description()}</CardDescription>
       </CardHeader>
       <CardContent>

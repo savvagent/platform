@@ -42,14 +42,9 @@
 
 <Card class="gap-5 py-5">
   <CardHeader>
-    <CardTitle>
-      <svelte:element
-        this={`h${level}`}
-        class="text-lg font-semibold tracking-tight text-foreground"
-      >
-        {plan.displayName}
-      </svelte:element>
-    </CardTitle>
+    <CardTitle {level} class="text-lg font-semibold tracking-tight text-foreground"
+      >{plan.displayName}</CardTitle
+    >
   </CardHeader>
   <CardContent class="flex flex-1 flex-col gap-5">
     <p class="flex flex-wrap items-baseline gap-x-2">

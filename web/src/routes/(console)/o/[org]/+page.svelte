@@ -143,7 +143,7 @@
     <div class="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader class="border-b">
-          <CardTitle><h2 class="text-sm font-semibold">{m.overview_period_title()}</h2></CardTitle>
+          <CardTitle level={2} class="text-sm font-semibold">{m.overview_period_title()}</CardTitle>
           <CardDescription>{m.overview_period_description()}</CardDescription>
           <CardAction>
             <a
@@ -169,7 +169,8 @@
 
       <Card>
         <CardHeader class="border-b">
-          <CardTitle><h2 class="text-sm font-semibold">{m.overview_services_title()}</h2></CardTitle
+          <CardTitle level={2} class="text-sm font-semibold"
+            >{m.overview_services_title()}</CardTitle
           >
           <CardDescription>{m.overview_services_description()}</CardDescription>
         </CardHeader>

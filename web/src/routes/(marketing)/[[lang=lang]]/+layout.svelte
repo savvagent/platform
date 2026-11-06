@@ -4,17 +4,11 @@
   import { beforeNavigate } from '$app/navigation';
   import { page } from '$app/state';
 
-  import {
-    LOCALE_NAMES,
-    appRuntime,
-    detect,
-    readCached,
-    useLocale,
-    type Locale
-  } from '#lib/locale.js';
+  import { LOCALE_NAMES, detect, readCached, useLocale, type Locale } from '#lib/locale.js';
   import { shellOrigin } from '#lib/shell.js';
   import { fullLoadGuard } from '#lib/navigate.js';
   import { m } from '#lib/paraglide/messages.js';
+  import { overwriteGetLocale } from '#lib/paraglide/runtime.js';
   import { session } from '#lib/session.svelte.js';
   import { SITE_ORIGIN, localizedPath, stripLocale } from '#lib/site.js';
   import MarketingFooter from '#lib/components/marketing/MarketingFooter.svelte';
@@ -29,7 +23,7 @@
    * renders, speaks the URL's language.
    *
    * `useLocale` pins the locale of both Paraglide runtimes: this app's
-   * (`appRuntime`) and `@savvagent/console-ui`'s own, which the header's
+   * (`overwriteGetLocale`) and `@savvagent/console-ui`'s own, which the header's
    * language picker and the footer's copyright read.
    *
    * Top-level, so it is in place before any child renders. The pinned locale
@@ -60,7 +54,7 @@
    */
   useLocale(
     untrack(() => data.lang),
-    appRuntime
+    overwriteGetLocale
   );
 
   /**

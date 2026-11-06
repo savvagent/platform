@@ -16,6 +16,7 @@ vi.mock(
 
 import { beforeNavigate } from '$app/navigation';
 import { page } from '#lib/components/marketing/fake-app-state.svelte.js';
+import { headerTrigger } from '#lib/header-trigger.js';
 import { fullLoadGuard } from '#lib/navigate.js';
 import { getLocale, overwriteGetLocale } from '#lib/paraglide/runtime.js';
 import Layout from './+layout.svelte';
@@ -60,7 +61,7 @@ describe('the marketing layout', () => {
   it('pins both the app and the shell to the page’s language', () => {
     const instance = render('es', '/es/pricing');
     expect(getLocale()).toBe('es');
-    expect(container.querySelector('header button[aria-label="Idioma"]')).not.toBeNull();
+    expect(headerTrigger(container, 'Idioma')).not.toBeNull();
     unmount(instance);
   });
 });

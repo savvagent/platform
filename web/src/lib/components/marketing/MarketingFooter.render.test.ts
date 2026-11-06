@@ -14,7 +14,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('$app/state', async () => await import('./fake-app-state.svelte'));
 
-import { appRuntime, useLocale } from '#lib/locale.js';
+import { useLocale } from '#lib/locale.js';
 import { getLocale, overwriteGetLocale } from '#lib/paraglide/runtime.js';
 import { session } from '#lib/session.svelte.js';
 import { CONTACT_EMAIL } from '#lib/site.js';
@@ -31,7 +31,7 @@ let container: HTMLElement;
 beforeEach(() => {
   container = document.createElement('div');
   document.body.appendChild(container);
-  useLocale('es', appRuntime);
+  useLocale('es', overwriteGetLocale);
   // The header's shell fetches the service list; an empty one keeps it off the network.
   vi.stubGlobal(
     'fetch',
@@ -44,7 +44,7 @@ afterEach(() => {
   page.url = new URL('http://localhost/');
   session.clear();
   vi.unstubAllGlobals();
-  useLocale('en', appRuntime);
+  useLocale('en', overwriteGetLocale);
   overwriteGetLocale(defaultGetLocale);
 });
 
