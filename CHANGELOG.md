@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.1](https://github.com/savvagent/platform/compare/v0.20.0...v0.20.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **web:** move to @savvagent/console-ui 0.3.0 for its contrast and a11y fixes ([#166](https://github.com/savvagent/platform/issues/166)) ([a6f3a49](https://github.com/savvagent/platform/commit/a6f3a49b0ba71b5a7624de92ef363c1345b41cd9))
+
 ## [0.20.0](https://github.com/savvagent/platform/compare/v0.19.0...v0.20.0) (2026-11-05)
 
 
